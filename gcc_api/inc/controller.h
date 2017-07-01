@@ -26,6 +26,8 @@
 //#define 	KP2		600
 //#define 	KP3		600
 
+#define 	ZERO 	0.0F
+
 
 typedef struct structureState {
 	float32_t pos[DIM];

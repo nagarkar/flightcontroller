@@ -1,12 +1,6 @@
 #include "../../api_fc/inc/controller.h"
 
 
-static void zeroFloat32(float32_t *arry, uint16_t n) {
-	for(uint16_t i = 0; i < n; i++)
-		arry[i] = 0.00;
-	return;
-}
-
 static float32_t normFloat32(float32_t *arry, uint16_t n) {
 	float32_t sum = 0.00;
 	float32_t sqRoot = 0.00;
@@ -35,33 +29,6 @@ static void crossFloat32(float32_t *vetArryResult, float32_t *vetArry1 ,float32_
 	return;
 }
 
-
-static float32_t dotFloat32(float32_t *vetArry1 ,float32_t *vetArry2) {
-	return ((vetArry1[I] * vetArry2[I]) + (vetArry1[J] * vetArry2[J]) + (vetArry1[K] * vetArry2[K]));
-}
-
-static void subFloat32(float32_t *vetArryResult, float32_t *vetArry1 ,float32_t *vetArry2) {
-	vetArryResult[I] = vetArry1[I] - vetArry2[I];
-	vetArryResult[J] = vetArry1[J] - vetArry2[J];
-	vetArryResult[K] = vetArry1[K] - vetArry2[K];
-	return;
-}
-
-static void addFloat32(float32_t *vetArryResult, float32_t *vetArry1 ,float32_t *vetArry2) {
-	vetArryResult[I] = vetArry1[I] + vetArry2[I];
-	vetArryResult[J] = vetArry1[J] + vetArry2[J];
-	vetArryResult[K] = vetArry1[K] + vetArry2[K];
-	return;
-}
-
-static void mulFloat32(float32_t *vetArry, float32_t mulVal, uint8_t n) {
-	for(uint8_t i = 0; i < n; i++) {
-		vetArry[i] *= mulVal;
-	}
-	return;
-}
-
-
 void controller(float32_t t, stateStruct *state, destStateStruct *destState, robotParamsStruct *robotParams, resultFM *result) {
 
 	float32_t g = robotParams->gravity;
@@ -70,18 +37,19 @@ void controller(float32_t t, stateStruct *state, destStateStruct *destState, rob
 	float32_t F = m * g;
 
 	float32_t M[DIM];
-	zeroFloat32(M, DIM);
+
+	arm_fill_f32(ZERO, M, DIM);
 
 	float32_t unitTangentV[DIM];
 
 	if(normFloat32(destState->vel, DIM) == 0.00)
-		zeroFloat32(unitTangentV, DIM);
+		arm_fill_f32(ZERO, unitTangentV, DIM);
 	else
 		unitFloat32(unitTangentV, destState->vel, DIM);
 
 	float32_t nHat[DIM];
 	if(normFloat32(destState->acc, DIM) == 0.00)
-		zeroFloat32(nHat, DIM);
+		arm_fill_f32(ZERO, nHat, DIM);
 	else
 		unitFloat32(nHat, destState->acc, DIM);
 
@@ -89,38 +57,38 @@ void controller(float32_t t, stateStruct *state, destStateStruct *destState, rob
 	crossFloat32(bHat, unitTangentV, nHat);
 
 	float32_t posErrorNominal[DIM];
-	subFloat32(posErrorNominal, destState->pos, state->pos);
+	arm_sub_f32(destState->pos, state->pos, posErrorNominal, DIM);
 
-	mulFloat32(nHat, dotFloat32(posErrorNominal, nHat), DIM);
+	float32_t dotResult = 0.0;
+	arm_dot_prod_f32(posErrorNominal, nHat, DIM, &dotResult);
+	arm_scale_f32(nHat, dotResult, nHat, DIM);
 
-	mulFloat32(bHat, dotFloat32(posErrorNominal, bHat), DIM);
+	arm_dot_prod_f32(posErrorNominal, bHat, DIM, &dotResult);
+	arm_scale_f32(bHat, dotResult, bHat, DIM);
 
 	float32_t errorPosition[DIM];
-	addFloat32(errorPosition, nHat, bHat);
+	arm_add_f32(nHat, bHat, errorPosition, DIM);
 
 	float32_t errorVelocity[DIM];
-	subFloat32(errorVelocity, destState->vel, state->vel);
-
+	arm_sub_f32(destState->vel, state->vel, errorVelocity, DIM);
 
 	float32_t gainMulTmp[DIM];
-	float32_t gainAddTmp1[DIM];
-	float32_t gainAddTmp2[DIM];
+	float32_t gainAddTmp[DIM];
 
-	// gainKd Kd1 = gainKd[0]
-
+	// gainKd Kd1 = gainKd[0], gainKd Kd2 = gainKd[1] and so on.
 	float32_t gainKd[] = {1000.0, 1000.0, 1000.0};
+
+	// gainKd Kp1 = gainKp[0], gainKd Kp2 = gainKp[1] and so on.
 	float32_t gainKp[] = {600.0, 600.0, 600.0};
 
-	float32_t commandedRDotDot[] = {0.0, 0.0, 0.0};
-
+	float32_t commandedRDotDot[DIM];
+	arm_fill_f32(ZERO, commandedRDotDot, DIM);
 
 	arm_mult_f32(gainKd, errorVelocity, gainMulTmp, DIM);
-	arm_add_f32(destState->acc, gainMulTmp, gainAddTmp1, DIM);
+	arm_add_f32(destState->acc, gainMulTmp, gainAddTmp, DIM);
 
 	arm_mult_f32(gainKp, errorPosition, gainMulTmp, DIM);
-	arm_add_f32(gainAddTmp1, gainMulTmp, commandedRDotDot, DIM);
-
-//	arm_add_f32(gainAddTmp1, gainAddTmp2, commandedRDotDot, DIM);
+	arm_add_f32(gainAddTmp, gainMulTmp, commandedRDotDot, DIM);
 
 	F = (commandedRDotDot[K] + g) * m;
 
@@ -139,31 +107,48 @@ void controller(float32_t t, stateStruct *state, destStateStruct *destState, rob
 	float32_t KpZ = 2.0;
 	float32_t KdZ = 0.5;
 
-//	float32_t rowMatArryTmp[] = {KpX, KdX};
-//
-//	float32_t colMatArryTmp[] = {
-//			txDes - state->rot[I],
-//			0.0 - state->omega[I]
-//	};
-//
-//	float32_t resultArryMat[] = {0.0};
-//
-//	arm_matrix_instance_f32 rowMatTmp;
-//	arm_matrix_instance_f32 colMatTmp;
-//	arm_matrix_instance_f32 resultMatrix;
-//
-//	arm_mat_init_f32(&rowMatTmp, 1, 2, rowMatArryTmp);
-//	arm_mat_init_f32(&colMatTmp, 2, 1, colMatArryTmp);
-//	arm_mat_init_f32(&resultMatrix, 1, 1, resultArryMat);
-//
-//	arm_mat_mult_f32(&rowMatTmp, &colMatTmp, &resultMatrix);
+	float32_t rowMatArryTmp[] = {KpX, KdX};
+	float32_t colMatArryTmp[] = {
+			txDes - state->rot[I],
+			0.0 - state->omega[I]
+	};
+	float32_t resultArryMat[] = {0.0};
 
-//	M[I] = resultArryMat[0];
+	arm_matrix_instance_f32 rowMatTmp;
+	arm_matrix_instance_f32 colMatTmp;
+	arm_matrix_instance_f32 resultMatrix;
 
-	M[I] = (KpX * (txDes - state->rot[I])) + (KdX * (0 - state->omega[I]));
-	M[J] = (KpY * (tyDes - state->rot[J])) + (KdY * (0 - state->omega[J]));
-	M[K] = (KpZ * (destState->yaw - state->rot[K])) + (KdZ * (destState->yawdot - state->omega[K]));
+	arm_mat_init_f32(&rowMatTmp, 1, 2, rowMatArryTmp);
+	arm_mat_init_f32(&colMatTmp, 2, 1, colMatArryTmp);
+	arm_mat_init_f32(&resultMatrix, 1, 1, resultArryMat);
+	arm_mat_mult_f32(&rowMatTmp, &colMatTmp, &resultMatrix);
+	M[I] = resultArryMat[0];
 
+
+	rowMatArryTmp[0] = KpY;
+	rowMatArryTmp[1] = KdY;
+	colMatArryTmp[0] = tyDes - state->rot[J];
+	colMatArryTmp[1] = 0.0 - state->omega[J];
+
+	arm_mat_init_f32(&rowMatTmp, 1, 2, rowMatArryTmp);
+	arm_mat_init_f32(&colMatTmp, 2, 1, colMatArryTmp);
+	arm_mat_init_f32(&resultMatrix, 1, 1, resultArryMat);
+	arm_mat_mult_f32(&rowMatTmp, &colMatTmp, &resultMatrix);
+	M[J] = resultArryMat[0];
+
+
+	rowMatArryTmp[0] = KpZ;
+	rowMatArryTmp[1] = KdZ;
+	colMatArryTmp[0] = destState->yaw - state->rot[K];
+	colMatArryTmp[1] = destState->yawdot - state->omega[K];
+
+	arm_mat_init_f32(&rowMatTmp, 1, 2, rowMatArryTmp);
+	arm_mat_init_f32(&colMatTmp, 2, 1, colMatArryTmp);
+	arm_mat_init_f32(&resultMatrix, 1, 1, resultArryMat);
+	arm_mat_mult_f32(&rowMatTmp, &colMatTmp, &resultMatrix);
+	M[K] = resultArryMat[0];
+
+	//	 Results
 	result->F = F;
 	result->M[I] = M[I];
 	result->M[J] = M[J];
