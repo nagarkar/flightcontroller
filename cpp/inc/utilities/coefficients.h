@@ -6,12 +6,6 @@ struct TVVector{
 	S;
 };
 
-struct point{
-	double x;
-	double y;
-	double z;
-};
-
 class Coefficents {
 private:
 	/* TYPEOF: T */ m_T;
