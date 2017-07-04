@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="4.0.1" links="0">
+ <framework name="qpcpp"/>
+ <package file="./std_events.qmp"/>
+ <package name="AttitudeGuage" stereotype="0x02" namespace="Attitude::">
+  <class name="AttitudeGuage" superclass="StdEvents::AO">
+   <attribute name="m_acc_handle" type="void *" visibility="0x01" properties="0x00"/>
+   <attribute name="m_mag_handle" type="void *" visibility="0x01" properties="0x00"/>
+   <attribute name="m_gyro_handle" type="void *" visibility="0x01" properties="0x00"/>
+   <attribute name="m_accInitStatus = COMPONENT_ERROR" type="DrvStatusTypeDef" visibility="0x00" properties="0x00"/>
+   <attribute name="m_magInitStatus = COMPONENT_ERROR" type="DrvStatusTypeDef" visibility="0x00" properties="0x00"/>
+   <attribute name="m_gyroInitStatus = COMPONENT_ERROR" type="DrvStatusTypeDef" visibility="0x00" properties="0x00"/>
+   <attribute name="m_gyroRate" type="float" visibility="0x00" properties="0x00"/>
+   <attribute name="m_measurements" type="uint32_t" visibility="0x02" properties="0x00"/>
+   <attribute name="{ CHECK_UP_INTERVAL = 100, MAX_RETRIES = 5 }" type="enum " visibility="0x02" properties="0x00"/>
+   <operation name="AttitudeGuage" type="" visibility="0x00" properties="0x00">
+    <code>  : AO(ATTITUDE_GUAGE_INTERVAL_TIMER_SIG,
+        (QStateHandler)&amp;initial,
+        &quot;ATTITUDE_GUAGE&quot;)
+    , m_gyroRate(0)</code>
+   </operation>
+   <operation name="Init" type="uint32_t" visibility="0x00" properties="0x00">
+    <code>static uint8_t isInitialized = 0;
+uint32_t prim = __get_PRIMASK();
+//__disable_irq();
+volatile status_t status;
+DrvStatusTypeDef result = COMPONENT_OK;
+status = AttitudeUtils::Initialize(result, &amp;m_acc_handle);
+if (status == MEMS_ERROR) {
+    ErrorEvt *evt = new ErrorEvt(ATTITUDE_GUAGE_FAILED_SIG, 0, ERROR_HARDWARE);
+    postLIFO(evt);
+}
+if (!prim) {
+//    __enable_irq();
+}
+return MEMS_SUCCESS;</code>
+   </operation>
+   <operation name="UpdateGyroRate" type="void" visibility="0x00" properties="0x00">
+    <code>static uint32_t numDelays = 0;
+numDelays++;
+int totalTime = numDelays * CHECK_UP_INTERVAL;
+// TODO: Deal with overflow
+m_gyroRate = ((float)m_measurements)/totalTime; // Hz</code>
+   </operation>
+   <operation name="GotNewMeasurements" type="bool" visibility="0x00" properties="0x00">
+    <code>static uint32_t previousMeasurementCount = 0;
+bool result = true;
+if (previousMeasurementCount == m_measurements) {
+    result = false;
+}
+previousMeasurementCount = m_measurements;
+return result;</code>
+   </operation>
+   <operation name="ProcessAttitude" type="void" visibility="0x00" properties="0x00">
+    <code>Acceleration linearAcc;
+AngularRate angularRate;
+
+AttitudeUtils::GetAttitude(linearAcc, angularRate, m_acc_handle);
+
+Evt *evt = new AttitudeDataEvt(linearAcc, angularRate);
+QF::PUBLISH(evt, this);
+
+m_measurements++;</code>
+   </operation>
+   <statechart>
+    <initial target="../1">
+     <action brief="SubscribeEvents">me-&gt;subscribe(ATTITUDE_GUAGE_STOP_REQ_SIG);
+//me-&gt;subscribe(ATTITUDE_GUAGE_STOP_CFM_SIG);
+me-&gt;subscribe(ATTITUDE_GUAGE_START_REQ_SIG);
+//me-&gt;subscribe(ATTITUDE_GUAGE_START_CFM_SIG);
+//me-&gt;subscribe(ATTITUDE_GUAGE_INTERVAL_TIMER_SIG);
+//me-&gt;subscribe(ATTITUDE_GUAGE_FAILED_SIG);
+me-&gt;subscribe(ATTITUDE_DATA_AVAILABLE_SIG);</action>
+     <initial_glyph conn="3,3,5,0,14,2">
+      <action box="0,-2,15,2"/>
+     </initial_glyph>
+    </initial>
+    <state name="Root">
+     <initial target="../1">
+      <initial_glyph conn="15,9,5,0,4,2">
+       <action box="0,-2,10,2"/>
+      </initial_glyph>
+     </initial>
+     <state name="Stopped">
+      <entry>LOG_EVENT(e);</entry>
+      <tran trig="ATTITUDE_GUAGE_START_REQ" target="../../2">
+       <action brief="^CFM">LOG_EVENT(e);
+me-&gt;PublishConfirmation(
+    EVT_CAST(*e),
+    ATTITUDE_GUAGE_START_CFM_SIG);</action>
+       <tran_glyph conn="21,18,2,0,4,-6,4,6,2">
+        <action box="-4,5,29,2"/>
+       </tran_glyph>
+      </tran>
+      <tran trig="ATTITUDE_GUAGE_STOP_REQ">
+       <action brief="^CFM">LOG_EVENT(e);
+me-&gt;PublishConfirmation(
+    EVT_CAST(*e),
+    ATTITUDE_GUAGE_STOP_CFM_SIG);</action>
+       <tran_glyph conn="11,15,3,-1,30">
+        <action box="4,-2,32,3"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="11,11,79,7">
+       <entry box="1,2,6,2"/>
+      </state_glyph>
+     </state>
+     <state name="Started">
+      <entry>LOG_EVENT(e);
+me-&gt;m_timer.armX(CHECK_UP_INTERVAL, CHECK_UP_INTERVAL);</entry>
+      <exit brief="Disable"/>
+      <initial target="../6">
+       <initial_glyph conn="78,37,4,0,6">
+        <action box="0,-2,10,2"/>
+       </initial_glyph>
+      </initial>
+      <tran trig="ATTITUDE_GUAGE_STOP_REQ" target="../../1">
+       <action brief="^CFM">LOG_EVENT(e);
+me-&gt;PublishConfirmation(
+    EVT_CAST(*e),
+    ATTITUDE_GUAGE_STOP_CFM_SIG);</action>
+       <tran_glyph conn="70,28,0,2,-4,-6,-4,6,-2">
+        <action box="-5,-7,26,3"/>
+       </tran_glyph>
+      </tran>
+      <tran trig="ATTITUDE_GUAGE_START_REQ">
+       <action brief="^CFM">LOG_EVENT(e);
+me-&gt;PublishConfirmation(
+    EVT_CAST(*e),
+    ATTITUDE_GUAGE_START_CFM_SIG);</action>
+       <tran_glyph conn="12,59,3,-1,33">
+        <action box="0,-2,30,2"/>
+       </tran_glyph>
+      </tran>
+      <tran trig="ATTITUDE_GUAGE_FAILED" target="../5">
+       <action>LOG_EVENT(e);</action>
+       <tran_glyph conn="90,57,1,1,-16">
+        <action box="-20,2,23,3"/>
+       </tran_glyph>
+      </tran>
+      <tran trig="ATTITUDE_GUAGE_INTERVAL_TIMER">
+       <action>me-&gt;UpdateGyroRate();
+if (!me-&gt;GotNewMeasurements()) {
+   me-&gt;postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
+}</action>
+       <tran_glyph conn="12,37,3,-1,27">
+        <action box="1,-2,30,2"/>
+       </tran_glyph>
+      </tran>
+      <state name="Failed">
+       <entry brief="retry if appropriate">LOG_EVENT(e);
+static uint8_t retries = 0;
+if (retries &lt; MAX_RETRIES) {
+    retries++;
+    me-&gt;postLIFO(new Evt(ATTITUDE_GUAGE_REINIT_SIG));
+} else {
+    PRINT(&quot;Exhaused Retries&quot;);
+    me-&gt;m_timer.disarm();
+}</entry>
+       <tran trig="ATTITUDE_GUAGE_REINIT" target="../../6">
+        <action>LOG_EVENT(e);</action>
+        <tran_glyph conn="74,56,1,2,9,-7">
+         <action box="0,-5,22,4"/>
+        </tran_glyph>
+       </tran>
+       <state_glyph node="55,53,19,6">
+        <entry box="1,2,6,2"/>
+       </state_glyph>
+      </state>
+      <state name="Initialized">
+       <entry brief="Init, Enable hardware">LOG_EVENT(e);
+me-&gt;Init();</entry>
+       <tran trig="ATTITUDE_DATA_AVAILABLE" target="../../7">
+        <action brief="ProcessAttitude">me-&gt;ProcessAttitude();</action>
+        <tran_glyph conn="69,47,3,1,-21">
+         <action box="-20,-2,23,4"/>
+        </tran_glyph>
+       </tran>
+       <state_glyph node="69,43,17,6">
+        <entry box="1,2,16,2"/>
+       </state_glyph>
+      </state>
+      <state name="CollectingData">
+       <entry>LOG_EVENT(e);</entry>
+       <exit>
+</exit>
+       <tran trig="ATTITUDE_DATA_AVAILABLE">
+        <action brief="ProcessAttitude">me-&gt;ProcessAttitude();</action>
+        <tran_glyph conn="48,53,1,-1,-29">
+         <action box="-26,-2,22,4"/>
+        </tran_glyph>
+       </tran>
+       <state_glyph node="14,44,34,11">
+        <entry box="1,2,27,2"/>
+        <exit box="1,4,6,2"/>
+       </state_glyph>
+      </state>
+      <state_glyph node="12,28,78,33">
+       <entry box="1,2,17,2"/>
+       <exit box="1,4,6,2"/>
+      </state_glyph>
+     </state>
+     <state_glyph node="5,5,91,58"/>
+    </state>
+    <state_diagram size="98,64"/>
+   </statechart>
+  </class>
+  <class name="AttitudeDataEvt" superclass="StdEvents::Evt">
+   <attribute name="m_acc" type="Acceleration" visibility="0x00" properties="0x00"/>
+   <attribute name="m_angularRate" type="AngularRate" visibility="0x00" properties="0x00"/>
+   <operation name="AttitudeDataEvt" type="" visibility="0x00" properties="0x00">
+    <parameter name="acc" type="Acceleration"/>
+    <parameter name="angularRate" type="AngularRate"/>
+    <code> : Evt(ATTITUDE_CHANGED_SIG)
+    , m_acc(acc)
+    , m_angularRate(angularRate)</code>
+   </operation>
+  </class>
+  <directory name="AttitudeGuage">
+   <file name="AttitudeGuage.h">
+    <text>#ifndef _AO_ATTITUDE_GUAGE_H
+#define _AO_ATTITUDE_GUAGE_H
+
+// STM32 Supporting Libs
+#include &quot;stm32f4xx_hal.h&quot;
+#include &quot;stm32f4xx_nucleo.h&quot;
+#include &lt;stdbool.h&gt;
+
+// QP Helpers
+#include &quot;qpcpp.h&quot;
+#include &quot;bsp.h&quot;
+#include &quot;active_events.h&quot;
+#include &quot;active_log.h&quot;
+
+#include &quot;LSM6DS0_ACC_GYRO_driver.h&quot;
+#include &quot;LSM6DS0_ACC_GYRO_driver_HL.h&quot;
+#include &quot;component.h&quot;
+#include &quot;x_nucleo_iks01a1_accelero.h&quot;
+#include &quot;x_nucleo_iks01a1_gyro.h&quot;
+
+#include &quot;Attitude.h&quot;
+#include &quot;AttitudeUtils.h&quot;
+
+//// CONSUMES EVENTS /////////////////////////
+//    ATTITUDE_GUAGE_START_REQ_SIG
+//    ATTITUDE_GUAGE_STOP_REQ_SIG
+//    ATTITUDE_DATA_AVAILABLE_SIG
+//// PRODUCES EVENTS /////////////////////////
+//    ATTITUDE_GUAGE_START_CFM_SIG
+//    ATTITUDE_GUAGE_COMPONENT_FAILED_SIG
+//    ATTITUDE_GUAGE_STOP_CFM_SIG
+//    ATTITUDE_CHANGED_SIG
+//////////////////////////////////////////////
+
+
+$declare(AttitudeGuage)
+
+#endif // _AO_ATTITUDE_GUAGE_H</text>
+   </file>
+   <file name="AttitudeGuage.cpp">
+    <text>#include &quot;AttitudeGuage.h&quot;
+
+#include &quot;x_nucleo_iks01a1_accelero.h&quot;
+#include &quot;app_ao_config.h&quot;
+#include &quot;active_log.h&quot;
+
+using namespace StdEvents;
+using namespace QP;
+
+extern &quot;C&quot; void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+   if (GPIO_Pin != GPIO_PIN_5) {
+        return;
+   }
+   QF::PUBLISH(new Evt(ATTITUDE_DATA_AVAILABLE_SIG), NULL);
+}
+
+$define(AttitudeGuage)</text>
+   </file>
+   <file name="Attitude.h">
+    <text>#ifndef _AO_ATTITUDE_H
+#define _AO_ATTITUDE_H
+
+#ifdef __cplusplus
+extern &quot;C&quot; {
+#endif
+
+typedef struct {
+    float x;
+    float y;
+    float z;
+} AttitudeDim;
+
+typedef AttitudeDim Acceleration;
+typedef AttitudeDim Velocity;
+typedef AttitudeDim Position;
+
+typedef AttitudeDim AngularAcc;
+typedef AttitudeDim AngularRate;
+typedef AttitudeDim AngularPos;
+
+typedef AttitudeDim MagneticStrength;
+
+struct SixAxisAttitude {
+    AngularRate  angularRate;
+    Acceleration linearAcc;
+};
+
+struct NineAxisAttitude {
+    AngularRate  angularRate;
+    Acceleration linearAcc;
+    MagneticStrength magneticStrength;
+};
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // _AO_ATTITUDE_H
+</text>
+   </file>
+   <file name="AttitudeUtils.h">
+    <text>#ifndef _AO_ATTITUDE_UTILS_H
+#define _AO_ATTITUDE_UTILS_H
+
+#ifdef __cplusplus
+extern &quot;C&quot; {
+#endif
+
+#include &quot;Attitude.h&quot;
+#include &quot;component.h&quot;
+#include &quot;LSM6DS0_ACC_GYRO_driver.h&quot;
+
+namespace Attitude {
+class AttitudeUtils {
+private:
+    static int cycleCounterCount;
+    static float cycleCounterAvg;
+    static int counter;
+public:
+    static status_t Initialize(DrvStatusTypeDef &amp; result, void **hhandle);
+    static status_t GetAttitude(Acceleration &amp;acc, AngularRate &amp;angRate, void *handle);
+};
+
+}// namespace
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // _AO_ATTITUDE_UTILS_H
+</text>
+   </file>
+  </directory>
+ </package>
+</model>
