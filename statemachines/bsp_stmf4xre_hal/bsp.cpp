@@ -41,8 +41,14 @@ __weak void BSP_Init() {
 #endif
 }
 
+__weak void BSP_OVERRIDE_UART2_CALLBACKS(USART_HANDLE_TYPE_DEF *uart) {
+	(void)0;
+}
+
 __weak void BSP_OVERRIDE_UART_CALLBACKS(USART_HANDLE_TYPE_DEF *uart) {
-    (void)0;
+	//TODO: Check if it's UARTx before calling BSP_OVERRIDE_UARTX_CALLBACKS(uartx);
+	BSP_OVERRIDE_UART2_CALLBACKS(uart);
+	(void)0;
 }
 
 __weak HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
@@ -57,7 +63,7 @@ __weak void BSP_InitPerfMarker() {
     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 }
 
-__w void BSP_Initialize_Semihosting() {
+__weak void BSP_Initialize_Semihosting() {
     initialise_monitor_handles();
 }
 

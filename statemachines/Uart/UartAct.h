@@ -26,6 +26,9 @@
 #include "UartOut.h"
 #include "active_log.h"
 
+extern "C" void AO_UartIn_DmaDataReadyCallback(void);
+extern "C" void App_UART_DMATransmitCplt(DMA_HandleTypeDef *hdma);
+
 using namespace QP;
 using namespace StdEvents;
 

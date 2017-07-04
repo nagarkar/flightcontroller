@@ -26,8 +26,16 @@ void _UartCommanderProcessCommand(char command) {
         UART_CMDR_PrintUsage();
         return;
     }
-    PRINT("Processing %c\r\n", command);
     UART_CMDR_ProcessCommand(command);
+}
+
+__weak void UART_CMDR_PrintUsage() {
+	PRINT("For usage, type the command 'u'.\r\n");
+	PRINT("No other commands specified.\r\n");
+}
+
+__weak void UART_CMDR_ProcessCommand(char command) {
+	PRINT("No Command processor. Please implement the function 'void UART_CMDR_ProcessCommand(char command)'.\r\n");
 }
 
 namespace AOs {

@@ -62,11 +62,14 @@ void BSP_Printf(char const *format, ...);
     HAL_UART_Transmit_DMA(x, y, z); \
     BSP_OVERRIDE_UART_CALLBACKS(x); \
 }
+
 #define BSP_XMIT_ON_DEFAULT_UART(buf,len) HAL_UART_Transmit(&huart2, (uint8_t *)buf, len, 0xFFFF /* timeout */);
 #define BSP_UART_RECEIVE_DMA(x,y,z) HAL_UART_Receive_DMA(x, y, z)
 #define BSP_UART_DMA_STOP(x) HAL_UART_DMAStop(x)
 
 typedef UART_HandleTypeDef USART_HANDLE_TYPE_DEF;
+
+void BSP_OVERRIDE_UART2_CALLBACKS(USART_HANDLE_TYPE_DEF *uart);
 void BSP_OVERRIDE_UART_CALLBACKS(USART_HANDLE_TYPE_DEF *uart);
 void BSP_EnableRxInt(USART_HANDLE_TYPE_DEF *uart);
 void BSP_DisableRxInt(USART_HANDLE_TYPE_DEF *uart);

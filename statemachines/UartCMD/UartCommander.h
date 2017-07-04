@@ -38,14 +38,13 @@ extern "C" {
 #endif
 
 //// EXTERNAL PLUGS ////////
-extern void UART_CMDR_PrintUsage();
-extern void UART_CMDR_ProcessCommand(char command);
+void UART_CMDR_PrintUsage();
+void UART_CMDR_ProcessCommand(char command);
 //// EXTERNAL PLUGS END ////
 
 #ifdef __cplusplus
 }
 #endif
-
 
 void _UartCommanderProcessCommand(char command);
 

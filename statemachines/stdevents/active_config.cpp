@@ -41,6 +41,13 @@ void QP_Systick_Handler(void) {
     QXK_ISR_EXIT();
 }
 
+void QP_QXK_ISR_ENTRY(void) {
+	QXK_ISR_ENTRY();
+}
+void QP_QXK_ISR_EXIT(void) {
+	QXK_ISR_EXIT();
+}
+
 // Must be overridden
 __weak void QP_StartActiveObjectsAndPublishBootTimeEvents(void) {
    (void)0;

@@ -29,6 +29,8 @@ void QP_PreInitialize(void);
 int QP_InitializeRun(void);
 
 void QP_Systick_Handler(void);
+void QP_QXK_ISR_ENTRY(void);
+void QP_QXK_ISR_EXIT(void);
 
 void QP_StartActiveObjectsAndPublishBootTimeEvents(void);
 

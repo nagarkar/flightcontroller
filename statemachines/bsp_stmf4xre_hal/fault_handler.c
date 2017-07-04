@@ -11,6 +11,28 @@ void printUsageErrorMsg(uint32_t CFSRValue);
 void printBusFaultErrorMsg(uint32_t CFSRValue);
 void printMemoryManagementErrorMsg(uint32_t CFSRValue);
 void stackDump(uint32_t stack[]);
+void infiniteLoop(void);
+
+
+void WWDG_IRQHandler( void ) {
+	infiniteLoop();
+}
+
+void MemManage_Handler( void ) {
+	infiniteLoop();
+}
+
+void BusFault_Handler( void ) {
+	infiniteLoop();
+}
+
+void UsageFault_Handler( void ) {
+	infiniteLoop();
+}
+
+void DebugMon_Handler( void ) {
+	infiniteLoop();
+}
 
 void Hard_Fault_Handler(uint32_t stack[]) {
 	static char msg[80];
@@ -118,6 +140,13 @@ void stackDump(uint32_t stack[])
    printErrorMsg(msg);
 }
 
+
+void infiniteLoop( void ) {
+	static int tick = 0;
+	for (;;) {
+		tick++;
+	}
+}
 #ifdef __cplusplus
 }
 #endif

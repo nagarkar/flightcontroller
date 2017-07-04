@@ -25,8 +25,57 @@
 
 Q_DEFINE_THIS_MODULE("Uart Active")
 
+
 using namespace QP;
 using namespace StdEvents;
+using namespace AOs;
+
+extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hal) {
+    UartOut::DmaDoneCallback();
+}
+
+extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *hal) {
+	UartIn::DmaDoneCallback();
+}
+
+extern "C" void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *hal) {
+	(void)0; // Unused. You can call the UartOut::DmaDoneCallback() function if required.
+}
+extern "C" void AO_UartIn_DmaDataReadyCallback(void) {
+	UartIn::DmaDataReadyCallback();
+}
+
+void BSP_OVERRIDE_UART2_CALLBACKS(USART_HANDLE_TYPE_DEF *uart) {
+	uart->hdmatx->XferCpltCallback = App_UART_DMATransmitCplt;
+}
+
+extern "C" void App_UART_DMATransmitCplt(DMA_HandleTypeDef *hdma) {
+  UART_HandleTypeDef* huart = ( UART_HandleTypeDef* )((DMA_HandleTypeDef* )hdma)->Parent;
+  /* DMA Normal mode*/
+  if((hdma->Instance->CR & DMA_SxCR_CIRC) == 0U)
+  {
+	huart->TxXferCount = 0U;
+
+	/* Disable the DMA transfer for transmit request by setting the DMAT bit
+	   in the UART CR3 register */
+	CLEAR_BIT(huart->Instance->CR3, USART_CR3_DMAT);
+
+	/* Enable the UART Transmit Complete Interrupt */
+	//SET_BIT(huart->Instance->CR1, USART_CR1_TCIE);
+	huart->gState = HAL_UART_STATE_READY;
+	HAL_UART_TxCpltCallback(huart);
+  }
+  /* DMA Circular mode */
+  else
+  {
+	HAL_UART_TxCpltCallback(huart);
+  }
+
+}
+
+using namespace QP;
+using namespace StdEvents;
+using namespace AOs;
 
 namespace AOs {
 
