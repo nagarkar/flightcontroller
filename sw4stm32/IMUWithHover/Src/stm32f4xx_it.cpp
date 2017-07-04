@@ -36,7 +36,19 @@
 #include "stm32f4xx_it.h"
 
 /* USER CODE BEGIN 0 */
+#include "qpcpp.h"
+#include "UartAct.h"
+#include "UartIn.h"
+#include "UartOut.h"
+#include "bsp.h"
+#include "active_config.h"
+/* USER CODE END 0 */
 
+/* External variables --------------------------------------------------------*/
+extern UART_HandleTypeDef huart2;
+extern DMA_HandleTypeDef hdma_usart2_rx;
+extern DMA_HandleTypeDef hdma_usart2_tx;
+void USART2_IRQHandler_Override(void);
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -83,5 +95,74 @@ void EXTI9_5_IRQHandler(void)
 
 /* USER CODE BEGIN 1 */
 
+/**
+* @brief This function handles DMA1 stream5 global interrupt.
+*/
+void DMA1_Stream5_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Stream5_IRQn 0 */
+  QP_QXK_ISR_ENTRY();
+  /* USER CODE END DMA1_Stream5_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart2_rx);
+  /* USER CODE BEGIN DMA1_Stream5_IRQn 1 */
+  QP_QXK_ISR_EXIT();
+  /* USER CODE END DMA1_Stream5_IRQn 1 */
+}
+
+/**
+* @brief This function handles DMA1 stream6 global interrupt.
+*/
+void DMA1_Stream6_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Stream6_IRQn 0 */
+	QP_QXK_ISR_ENTRY();
+	BSP_OVERRIDE_UART_CALLBACKS(&huart2);
+  /* USER CODE END DMA1_Stream6_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart2_tx);
+  /* USER CODE BEGIN DMA1_Stream6_IRQn 1 */
+  	  QP_QXK_ISR_EXIT();
+  /* USER CODE END DMA1_Stream6_IRQn 1 */
+}
+
+/**
+* @brief This function handles USART2 global interrupt.
+*/
+void USART2_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART2_IRQn 0 */
+  USART2_IRQHandler_Override();
+  //return; // don't execute the next line.
+  /* USER CODE END USART2_IRQn 0 */
+  //HAL_UART_IRQHandler(&huart2);
+  /* USER CODE BEGIN USART2_IRQn 1 */
+
+  /* USER CODE END USART2_IRQn 1 */
+}
+
+
+/* USER CODE BEGIN 1 */
+
+void USART2_IRQHandler_Override(void) {
+	QP_QXK_ISR_ENTRY();
+	UART_HandleTypeDef *hal = &huart2;
+	volatile uint32_t isrflags   = READ_REG(hal->Instance->SR);
+	if (isrflags & USART_SR_ORE) {
+		// Over-run error. Read DR followed by SR to clear flag.
+		// Note - ORE will trigger interrupt when RXNE interrupt is enabled.
+		uint32_t rxdata = READ_REG(hal->Instance->DR);
+	} else {
+		// Do not check RXNEIE bit as it may have been cleared automatically by DMA.
+		// It is okay to not check as we don't use other UART interrupts.
+		// Disable interrupt to avoid re-entering ISR before event is processed.
+		CLEAR_BIT(hal->Instance->CR1, USART_CR1_RXNEIE);
+		//CLEAR_BIT(hal->Instance->SR, USART_SR_RXNE);
+		(void)0;
+		AO_UartIn_DmaDataReadyCallback();
+	}
+	QP_QXK_ISR_EXIT();
+}
+
 /* USER CODE END 1 */
+
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+

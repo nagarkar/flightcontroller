@@ -116,10 +116,6 @@ enum
 	PRIO_MAX = QF_MAX_ACTIVE
 };
 
-void AO_InfiniteLoop( void );
-
-void hard_fault_handler_c(unsigned long *hardfault_args);
-
 #ifdef __cplusplus
 }
 #endif
