@@ -27,13 +27,18 @@
  extern "C" {
 #endif
 
+extern void initialise_monitor_handles(void);
+
 #define QF_CRIT_STAT_TYPE void *
 
 /*** Private Function Prototypes **/
 /**/
 
 __weak void BSP_Init() {
-   BSP_InitPerfMarker();
+    BSP_InitPerfMarker();
+#if defined(SEMIHOSTING_ENABLED)
+    BSP_Initialize_Semihosting();
+#endif
 }
 
 __weak void BSP_OVERRIDE_UART_CALLBACKS(USART_HANDLE_TYPE_DEF *uart) {
@@ -50,6 +55,10 @@ __weak HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
 __weak void BSP_InitPerfMarker() {
     DWT->CYCCNT = 0;
     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+}
+
+__w void BSP_Initialize_Semihosting() {
+    initialise_monitor_handles();
 }
 
 static uint16_t PRINTF_BUF_LEN = 200;

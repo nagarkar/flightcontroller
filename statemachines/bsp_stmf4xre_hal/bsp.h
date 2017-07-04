@@ -36,6 +36,8 @@ void BSP_Init(void);
 
 // Cycle Counters         //
 #define GetElapsedCycles(fromCycle)    (DWT->CYCCNT - (fromCycle))
+#define GetPerfCycle()    (DWT->CYCCNT)
+
 void BSP_InitPerfMarker(void);
 // Cycle Counters DONE    //
 
@@ -54,12 +56,6 @@ enum KernelUnawareISRs { // see NOTE00
 
 void BSP_Printf(char const *format, ...);
 
-void BSP_LED_DeInit(uint16_t LED);
-void BSP_LED_Init(uint16_t LED);
-void BSP_LED_On(uint16_t LED);
-void BSP_LED_Off(uint16_t LED);
-
-void BSP_Delay(volatile uint32_t delay);
 #define BSP_GET_SYSTEM_MS (HAL_GetTick() * BSP_MSEC_PER_TICK)
 
 #define BSP_UART_TRANSMIT_DMA(x,y,z) { \
@@ -75,6 +71,10 @@ void BSP_OVERRIDE_UART_CALLBACKS(USART_HANDLE_TYPE_DEF *uart);
 void BSP_EnableRxInt(USART_HANDLE_TYPE_DEF *uart);
 void BSP_DisableRxInt(USART_HANDLE_TYPE_DEF *uart);
 uint32_t BSP_GetCountOfRemainingDmaXferUnits(USART_HANDLE_TYPE_DEF *uart);
+
+#if defined(SEMIHOSTING_ENABLED)
+void BSP_Initialize_Semihosting(void);
+#endif
 
 #ifdef __cplusplus
 }

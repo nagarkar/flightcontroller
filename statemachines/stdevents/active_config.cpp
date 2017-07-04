@@ -35,6 +35,12 @@ int QP_InitializeRun(void) {
     return QF::run();
 }
 
+void QP_Systick_Handler(void) {
+    QXK_ISR_ENTRY();
+    QP::QF::TICK_X(0, NULL);
+    QXK_ISR_EXIT();
+}
+
 // Must be overridden
 __weak void QP_StartActiveObjectsAndPublishBootTimeEvents(void) {
    (void)0;
