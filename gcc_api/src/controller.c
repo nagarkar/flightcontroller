@@ -2,34 +2,56 @@
 
 
 static float32_t normFloat32(float32_t *arry, uint16_t n) {
-	float32_t sum = 0.00;
+	float32_t dotResult = 0.00;
 	float32_t sqRoot = 0.00;
 
-	for(uint16_t i = 0; i < n; i++)
-		sum += (arry[i] * arry[i]);
+	arm_dot_prod_f32(arry, arry, DIM, &dotResult);
 
-	arm_sqrt_f32(sum, &sqRoot);
+	arm_sqrt_f32(dotResult, &sqRoot);
 	return sqRoot;
 }
 
 static void unitFloat32(float32_t *vetArryResult, float32_t *vetArry, uint8_t n) {
 
 	float32_t norm = normFloat32(vetArry, n);
+	norm = 1 / norm;
 
-	for(uint8_t i = 0; i < n; i++)
-		vetArryResult[i] = (vetArry[i] / norm);
+	arm_scale_f32(vetArry, norm, vetArryResult, DIM);
 
 	return;
 }
 
 static void crossFloat32(float32_t *vetArryResult, float32_t *vetArry1 ,float32_t *vetArry2) {
-	vetArryResult[I] = (vetArry1[J] * vetArry2[K]) -  (vetArry1[K] * vetArry2[J]);
-	vetArryResult[J] = (vetArry1[K] * vetArry2[I]) -  (vetArry1[I] * vetArry2[K]);
-	vetArryResult[K] = (vetArry1[I] * vetArry2[J]) -  (vetArry1[J] * vetArry2[I]);
+
+	float32_t matArry3x3Tmp[] = {
+			0.0, 			- vetArry2[K],		vetArry2[J],
+			vetArry2[K], 	0.0,				- vetArry2[I],
+			- vetArry2[J], 	vetArry2[I],		0.0
+	};
+
+	vetArryResult[I] = 0.0;
+	vetArryResult[J] = 0.0;
+	vetArryResult[K] = 0.0;
+
+	arm_matrix_instance_f32 matA;
+	arm_matrix_instance_f32 matB;
+	arm_matrix_instance_f32 resultMatrix;
+
+	// Create a 1 x 3 row Column matrix as matrix a = [aI, aJ, aK]
+	arm_mat_init_f32(&matA, 1, 3, vetArry1);
+
+	arm_mat_init_f32(&matB, 3, 3, matArry3x3Tmp);
+
+	arm_mat_init_f32(&resultMatrix, 1, 3, vetArryResult);
+
+	arm_mat_mult_f32(&matA, &matB, &resultMatrix);
+
 	return;
 }
 
-void controller(float32_t t, stateStruct *state, destStateStruct *destState, robotParamsStruct *robotParams, resultFM *result) {
+resultFM controller(float32_t t, stateStruct *state, destStateStruct *destState, robotParamsStruct *robotParams) {
+
+	resultFM result;
 
 	float32_t g = robotParams->gravity;
 	float32_t m = robotParams->mass;
@@ -149,11 +171,11 @@ void controller(float32_t t, stateStruct *state, destStateStruct *destState, rob
 	M[K] = resultArryMat[0];
 
 	//	 Results
-	result->F = F;
-	result->M[I] = M[I];
-	result->M[J] = M[J];
-	result->M[K] = M[K];
+	result.F = F;
+	result.M[I] = M[I];
+	result.M[J] = M[J];
+	result.M[K] = M[K];
 
-	return;
+	return result;
 }
 

@@ -55,6 +55,6 @@ typedef struct structResultFM{
 	float32_t M[DIM];
 }resultFM;
 
-void controller(float32_t, stateStruct *, destStateStruct *, robotParamsStruct *, resultFM *);
+resultFM controller(float32_t, stateStruct *, destStateStruct *, robotParamsStruct *);
 
 #endif /* CONTROLLER_H_ */
