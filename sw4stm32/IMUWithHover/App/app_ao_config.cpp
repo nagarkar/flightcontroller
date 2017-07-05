@@ -35,10 +35,6 @@ void QP_StartActiveObjectsAndPublishBootTimeEvents(void) {
 	Evt * e;
 	//TOGGLE_EVENT_LOGGING();
 
-	guage.Start(PRIO_ATTITUDE_GUAGE_PRIO);
-	e = new Evt(ATTITUDE_GUAGE_START_REQ_SIG);
-	QF::PUBLISH(e, NULL);
-
 	uart.Start(PRIO_UART2_ACT);
 	e = new Evt(UART_ACT_START_REQ_SIG);
 	QF::PUBLISH(e, NULL);
@@ -47,7 +43,12 @@ void QP_StartActiveObjectsAndPublishBootTimeEvents(void) {
 	e = new Evt(UART_COMMANDER_START_REQ_SIG);
 	QF::PUBLISH(e, NULL);
 
+	guage.Start(PRIO_ATTITUDE_GUAGE_PRIO);
+	e = new Evt(ATTITUDE_GUAGE_START_REQ_SIG);
+	QF::PUBLISH(e, NULL);
+
 	QF::PUBLISH(new Evt(UART_COMMANDER_SHOW_USAGE_SIG), NULL);
+
 }
 
 void QP_AllocateSubscriberLists(void) {

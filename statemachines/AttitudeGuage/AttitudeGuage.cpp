@@ -19,7 +19,7 @@
 
 #include "x_nucleo_iks01a1_accelero.h"
 #include "app_ao_config.h"
-//#include "active_log.h"
+#include "active_log.h"
 
 using namespace StdEvents;
 using namespace QP;
@@ -48,14 +48,14 @@ AttitudeGuage::AttitudeGuage()
 {}
 
 //${AttitudeGuage::AttitudeGuage::Init} ......................................
-uint32_t AttitudeGuage::Init() {
-    //static uint8_t isInitialized = 0;
+status_t AttitudeGuage::Init() {
     uint32_t prim = __get_PRIMASK();
     //__disable_irq();
     volatile status_t status;
     DrvStatusTypeDef result = COMPONENT_OK;
     status = AttitudeUtils::Initialize(result, &m_acc_handle);
     if (status == MEMS_ERROR) {
+        PRINT("ERROR in AttitudeGuage.Init()");
         ErrorEvt *evt = new ErrorEvt(ATTITUDE_GUAGE_FAILED_SIG, 0, ERROR_HARDWARE);
         postLIFO(evt);
     }
@@ -66,11 +66,12 @@ uint32_t AttitudeGuage::Init() {
 }
 //${AttitudeGuage::AttitudeGuage::UpdateGyroRate} ............................
 void AttitudeGuage::UpdateGyroRate() {
-    //static uint32_t numDelays = 0;
-    //numDelays++;
-    //int totalTime = numDelays * CHECK_UP_INTERVAL;
+    static uint32_t numDelays = 0;
+    numDelays++;
+    int totalTime = numDelays * CHECK_UP_INTERVAL;
     // TODO: Deal with overflow
-    m_gyroRate = 900;//((float)m_measurements)/totalTime; // Hz
+    m_gyroRate = (1.0 * m_measurements)/totalTime; // Hz
+    m_previousMeasurementCount = m_measurements;
 }
 //${AttitudeGuage::AttitudeGuage::GotNewMeasurements} ........................
 bool AttitudeGuage::GotNewMeasurements() {
@@ -86,12 +87,17 @@ void AttitudeGuage::ProcessAttitude() {
     Acceleration linearAcc;
     AngularRate angularRate;
 
-    AttitudeUtils::GetAttitude(linearAcc, angularRate, m_acc_handle);
+    status_t status = AttitudeUtils::GetAttitude(
+        linearAcc, angularRate, m_acc_handle);
+
+    if (status == MEMS_ERROR) {
+        postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
+        return;
+    }
 
     //Evt *evt = new AttitudeDataEvt(linearAcc, angularRate);
-    QF::PUBLISH(new Evt(ATTITUDE_CHANGED_SIG), this);
+    //QF::PUBLISH(evt, this);
 
-    m_previousMeasurementCount = m_measurements;
     m_measurements++;
 }
 //${AttitudeGuage::AttitudeGuage::SM} ........................................
@@ -104,6 +110,7 @@ QP::QState AttitudeGuage::initial(AttitudeGuage * const me, QP::QEvt const * con
     //me->subscribe(ATTITUDE_GUAGE_INTERVAL_TIMER_SIG);
     //me->subscribe(ATTITUDE_GUAGE_FAILED_SIG);
     me->subscribe(ATTITUDE_DATA_AVAILABLE_SIG);
+
     return Q_TRAN(&Root);
 }
 //${AttitudeGuage::AttitudeGuage::SM::Root} ..................................
@@ -128,13 +135,13 @@ QP::QState AttitudeGuage::Stopped(AttitudeGuage * const me, QP::QEvt const * con
     switch (e->sig) {
         // ${AttitudeGuage::AttitudeGuage::SM::Root::Stopped}
         case Q_ENTRY_SIG: {
-            //LOG_EVENT(e);
+            LOG_EVENT(e);
             status_ = Q_HANDLED();
             break;
         }
         // ${AttitudeGuage::AttitudeGuage::SM::Root::Stopped::ATTITUDE_GUAGE_START_REQ}
         case ATTITUDE_GUAGE_START_REQ_SIG: {
-            //LOG_EVENT(e);
+            LOG_EVENT(e);
             me->PublishConfirmation(
                 EVT_CAST(*e),
                 ATTITUDE_GUAGE_START_CFM_SIG);
@@ -143,7 +150,7 @@ QP::QState AttitudeGuage::Stopped(AttitudeGuage * const me, QP::QEvt const * con
         }
         // ${AttitudeGuage::AttitudeGuage::SM::Root::Stopped::ATTITUDE_GUAGE_STOP_REQ}
         case ATTITUDE_GUAGE_STOP_REQ_SIG: {
-            //LOG_EVENT(e);
+            LOG_EVENT(e);
             me->PublishConfirmation(
                 EVT_CAST(*e),
                 ATTITUDE_GUAGE_STOP_CFM_SIG);
@@ -163,19 +170,25 @@ QP::QState AttitudeGuage::Started(AttitudeGuage * const me, QP::QEvt const * con
     switch (e->sig) {
         // ${AttitudeGuage::AttitudeGuage::SM::Root::Started}
         case Q_ENTRY_SIG: {
-            //LOG_EVENT(e);
+            LOG_EVENT(e);
             me->m_timer.armX(CHECK_UP_INTERVAL, CHECK_UP_INTERVAL);
+            status_ = Q_HANDLED();
+            break;
+        }
+        // ${AttitudeGuage::AttitudeGuage::SM::Root::Started}
+        case Q_EXIT_SIG: {
+            me->m_timer.disarm();
             status_ = Q_HANDLED();
             break;
         }
         // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::initial}
         case Q_INIT_SIG: {
-            status_ = Q_TRAN(&Initialized);
+            status_ = Q_TRAN(&CollectingData);
             break;
         }
         // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::ATTITUDE_GUAGE_STOP_REQ}
         case ATTITUDE_GUAGE_STOP_REQ_SIG: {
-            //LOG_EVENT(e);
+            LOG_EVENT(e);
             me->PublishConfirmation(
                 EVT_CAST(*e),
                 ATTITUDE_GUAGE_STOP_CFM_SIG);
@@ -184,29 +197,10 @@ QP::QState AttitudeGuage::Started(AttitudeGuage * const me, QP::QEvt const * con
         }
         // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::ATTITUDE_GUAGE_START_REQ}
         case ATTITUDE_GUAGE_START_REQ_SIG: {
-            //LOG_EVENT(e);
+            LOG_EVENT(e);
             me->PublishConfirmation(
                 EVT_CAST(*e),
                 ATTITUDE_GUAGE_START_CFM_SIG);
-            status_ = Q_HANDLED();
-            break;
-        }
-        // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::ATTITUDE_GUAGE_FAILED}
-        case ATTITUDE_GUAGE_FAILED_SIG: {
-            //LOG_EVENT(e);
-            status_ = Q_TRAN(&Failed);
-            break;
-        }
-        // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::ATTITUDE_GUAGE_INTERVAL_TIMER}
-        case ATTITUDE_GUAGE_INTERVAL_TIMER_SIG: {
-            me->UpdateGyroRate();
-            //if (!me->GotNewMeasurements()) {
-            //me->postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
-            if (me->m_previousMeasurementCount == me->m_measurements) {
-               if(me->Init() == MEMS_ERROR) {
-            	   me->postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
-               }
-            }
             status_ = Q_HANDLED();
             break;
         }
@@ -223,47 +217,15 @@ QP::QState AttitudeGuage::Failed(AttitudeGuage * const me, QP::QEvt const * cons
     switch (e->sig) {
         // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::Failed}
         case Q_ENTRY_SIG: {
-            //LOG_EVENT(e);
-            //if (me->retries < MAX_RETRIES) {
-//            	me->retries++;
-  //              me->postLIFO(new Evt(ATTITUDE_GUAGE_REINIT_SIG));
-    //        } else {
-                //PRINT("Exhaused Retries");
-      //          me->m_timer.disarm();
-        //    }
-            status_ = Q_HANDLED();
-            break;
-        }
-        // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::Failed::ATTITUDE_GUAGE_REINIT}
-        case ATTITUDE_GUAGE_REINIT_SIG: {
-            //LOG_EVENT(e);
-            status_ = Q_TRAN(&Initialized);
-            break;
-        }
-        default: {
-            status_ = Q_SUPER(&Started);
-            break;
-        }
-    }
-    return status_;
-}
-//${AttitudeGuage::AttitudeGuage::SM::Root::Started::Initialized} ............
-QP::QState AttitudeGuage::Initialized(AttitudeGuage * const me, QP::QEvt const * const e) {
-    QP::QState status_;
-    switch (e->sig) {
-        // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::Initialized}
-        case Q_ENTRY_SIG: {
-            //LOG_EVENT(e);
-            if (me->Init() == MEMS_SUCCESS) {
-            	me->retries = 0;
+            LOG_EVENT(e);
+            static uint8_t retries = 0;
+            //me->m_timer.disarm();
+            if (retries < MAX_RETRIES) {
+                retries++;
+            } else {
+                PRINT("Exhaused Retries");
             }
             status_ = Q_HANDLED();
-            break;
-        }
-        // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::Initialized::ATTITUDE_DATA_AVAILABLE}
-        case ATTITUDE_DATA_AVAILABLE_SIG: {
-            me->ProcessAttitude();
-            status_ = Q_TRAN(&CollectingData);
             break;
         }
         default: {
@@ -279,14 +241,11 @@ QP::QState AttitudeGuage::CollectingData(AttitudeGuage * const me, QP::QEvt cons
     switch (e->sig) {
         // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::CollectingData}
         case Q_ENTRY_SIG: {
-            //LOG_EVENT(e);
-            status_ = Q_HANDLED();
-            break;
-        }
-        // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::CollectingData}
-        case Q_EXIT_SIG: {
-
-
+            LOG_EVENT(e);
+            status_t status = me->Init();
+            if (status == MEMS_ERROR) {
+              me->postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
+            }
             status_ = Q_HANDLED();
             break;
         }
@@ -294,6 +253,12 @@ QP::QState AttitudeGuage::CollectingData(AttitudeGuage * const me, QP::QEvt cons
         case ATTITUDE_DATA_AVAILABLE_SIG: {
             me->ProcessAttitude();
             status_ = Q_HANDLED();
+            break;
+        }
+        // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::CollectingData::ATTITUDE_GUAGE_FAILED}
+        case ATTITUDE_GUAGE_FAILED_SIG: {
+            LOG_EVENT(e);
+            status_ = Q_TRAN(&Failed);
             break;
         }
         default: {

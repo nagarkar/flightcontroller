@@ -59,26 +59,17 @@ namespace Attitude {
 
 //${AttitudeGuage::AttitudeGuage} ............................................
 class AttitudeGuage : public StdEvents::AO {
-protected:
-    void * m_acc_handle;
-    void * m_mag_handle;
-    void * m_gyro_handle;
-
-public:
-    DrvStatusTypeDef m_accInitStatus = COMPONENT_ERROR;
-    DrvStatusTypeDef m_magInitStatus = COMPONENT_ERROR;
-    DrvStatusTypeDef m_gyroInitStatus = COMPONENT_ERROR;
-    float m_gyroRate;
-
 private:
+    void * m_acc_handle;
+    float m_gyroRate;
     uint32_t m_measurements;
-    uint32_t m_previousMeasurementCount;
-    uint32_t retries;
     enum  { CHECK_UP_INTERVAL = 1000, MAX_RETRIES = 5 };
+    uint32_t m_previousMeasurementCount;
+    uint8_t retries;
 
 public:
     AttitudeGuage();
-    uint32_t Init();
+    status_t Init();
     void UpdateGyroRate();
     bool GotNewMeasurements();
     void ProcessAttitude();
@@ -89,7 +80,6 @@ protected:
     static QP::QState Stopped(AttitudeGuage * const me, QP::QEvt const * const e);
     static QP::QState Started(AttitudeGuage * const me, QP::QEvt const * const e);
     static QP::QState Failed(AttitudeGuage * const me, QP::QEvt const * const e);
-    static QP::QState Initialized(AttitudeGuage * const me, QP::QEvt const * const e);
     static QP::QState CollectingData(AttitudeGuage * const me, QP::QEvt const * const e);
 };
 //${AttitudeGuage::AttitudeDataEvt} ..........................................
