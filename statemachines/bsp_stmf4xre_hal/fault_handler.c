@@ -73,14 +73,36 @@ void printErrorMsg(const char * errMsg)
 #endif
 }
 
-void printUsageErrorMsg(uint32_t CFSRValue)
-{
-   printErrorMsg("Usage fault: ");
-   CFSRValue >>= 16; // right shift to lsb
+void printUsageErrorMsg(uint32_t CFSRValue) {
+	char msg[100];
+	printErrorMsg("Usage fault: ");
+	CFSRValue >>= 16; // right shift to lsb
 
-   if((CFSRValue & (1<<9)) != 0) {
-      printErrorMsg("Divide by zero\n");
-   }
+	if((CFSRValue & (1<<9)) != 0) {
+		printErrorMsg("Divide by zero\n");
+	}
+	if((CFSRValue & (1<<8)) != 0) {
+		printErrorMsg("Unaligned access usage \n");
+	}
+	if((CFSRValue & (1<<3)) != 0) {
+		printErrorMsg("NOCOP (No Coprocessor)\n");
+	}
+	if((CFSRValue & (1<<2)) != 0) {
+		sprintf(msg, "%s %s",
+			"INVPC: The processor has attempted an illegal load of EXC_RETURN to the PC, as a result "
+			"of an invalid context, or an invalid EXC_RETURN value\n");
+		printErrorMsg(msg);
+		sprintf(msg, "%s %s,"
+			"When this bit is set to 1, the PC value stacked for the exception return points to ",
+			"the instruction that tried to perform the illegal load of the PC");
+		printErrorMsg(msg);
+	}
+	if((CFSRValue & (1<<1)) != 0) {
+		printErrorMsg("DIVBYZERO\n");
+	}
+	if((CFSRValue & (1<<0)) != 0) {
+		printErrorMsg("UNDEFINSTR\n");
+	}
 }
 
 void printBusFaultErrorMsg(uint32_t CFSRValue)

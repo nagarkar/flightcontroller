@@ -73,7 +73,7 @@ defined in linker script */
  * @retval : None
 */
 
-    .section  .text.Reset_Handler
+  .section  .text.Reset_Handler
   .weak  Reset_Handler
   .type  Reset_Handler, %function
 Reset_Handler:  
@@ -115,6 +115,7 @@ LoopFillZerobss:
   bl  main
   bx  lr    
 .size  Reset_Handler, .-Reset_Handler
+
 
 /**
  * @brief  This is the code that gets called when the processor receives an 
@@ -254,8 +255,8 @@ g_pfnVectors:
    .weak      NMI_Handler
    .thumb_set NMI_Handler,Default_Handler
   
-   //.weak      HardFault_Handler
-   //.thumb_set HardFault_Handler,Default_Handler
+   .weak      HardFault_Handler
+   .thumb_set HardFault_Handler,Default_Handler
   
    .weak      MemManage_Handler
    .thumb_set MemManage_Handler,Default_Handler

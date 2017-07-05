@@ -63,12 +63,13 @@ void USART2_IRQHandler_Override(void);
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-
+  QP_QXK_ISR_ENTRY();
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
   QP_Systick_Handler();
+  QXK_ISR_EXIT();
   /* USER CODE END SysTick_IRQn 1 */
 }
 
@@ -130,12 +131,10 @@ void DMA1_Stream6_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
 	/* USER CODE BEGIN USART2_IRQn 0 */
-	QP_QXK_ISR_ENTRY();
 	USART2_IRQHandler_Override();
   	/* USER CODE END USART2_IRQn 0 */
 	
 	/* USER CODE BEGIN USART2_IRQn 1 */
-	QP_QXK_ISR_EXIT();
 	/* USER CODE END USART2_IRQn 1 */
 }
 

@@ -36,9 +36,7 @@ int QP_InitializeRun(void) {
 }
 
 void QP_Systick_Handler(void) {
-    QXK_ISR_ENTRY();
     QP::QF::TICK_X(0, NULL);
-    QXK_ISR_EXIT();
 }
 
 void QP_QXK_ISR_ENTRY(void) {
@@ -60,15 +58,15 @@ __weak void QP_AllocateSubscriberLists(void) {
 
 // MEMORY POOL ALLOCATION CODE START
 enum {
-    EVT_SIZE_SMALL = 32,
-    EVT_SIZE_MEDIUM = 64,
-    EVT_SIZE_LARGE = 256,
+    EVT_SIZE_SMALL = 16,
+    EVT_SIZE_MEDIUM = 36,
+    EVT_SIZE_LARGE = 64,
 };
 
 enum {
     EVT_COUNT_SMALL = 128,
     EVT_COUNT_MEDIUM = 16,
-    EVT_COUNT_LARGE = 4
+    EVT_COUNT_LARGE = 100
 };
 
 uint32_t evtPoolSmall[ROUND_UP_DIV_4(EVT_SIZE_SMALL * EVT_COUNT_SMALL)];

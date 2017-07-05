@@ -71,14 +71,10 @@ void Error_Handler(void);
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 static void ACC_Init(void);
-static void UpdateMetrics(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
 
-static void UpdateMetrics(void) {
-
-}
 /* USER CODE END 0 */
 
 int main(void)

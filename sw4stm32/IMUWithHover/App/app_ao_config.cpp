@@ -43,9 +43,10 @@ void QP_StartActiveObjectsAndPublishBootTimeEvents(void) {
 	e = new Evt(UART_COMMANDER_START_REQ_SIG);
 	QF::PUBLISH(e, NULL);
 
-	guage.Start(PRIO_ATTITUDE_GUAGE_PRIO);
+	assert_param(guage.Start(PRIO_ATTITUDE_GUAGE_PRIO) >= 0);
 	e = new Evt(ATTITUDE_GUAGE_START_REQ_SIG);
 	QF::PUBLISH(e, NULL);
+	assert_param(guage.ProcessAttitude() == MEMS_SUCCESS);
 
 	QF::PUBLISH(new Evt(UART_COMMANDER_SHOW_USAGE_SIG), NULL);
 

@@ -204,9 +204,9 @@ PendSV_Handler:
     BNE     PendSV_save_ao    /* branch if (next tread is extended) */
 
 PendSV_activate:
-  .ifdef  __FPU_PRESENT       /* if VFP available... */
+  //.ifdef  __FPU_PRESENT       /* if VFP available... */
     PUSH    {r0,lr}           /* ...push lr (EXC_RETURN) plus stack-aligner */
-  .endif                      /* VFP available */
+  //.endif                      /* VFP available */
     /* The QXK activator must be called in a thread context, while this code
     * executes in the handler contex of the PendSV exception. The switch
     * to the Thread mode is accomplished by returning from PendSV using
@@ -254,13 +254,13 @@ PendSV_save_ao:
     PUSH    {r4-r7}           /* save the high registers */
   .else                       /* M3/M4/M7 */
     PUSH    {r4-r11}          /* save r4-r11 on top of the exception frame */
-  .ifdef  __FPU_PRESENT       /* if VFP available... */
+  //.ifdef  __FPU_PRESENT       /* if VFP available... */
     TST     lr,#(1 << 4)      /* is it return with the VFP exception frame? */
     IT      EQ                /* if lr[4] is zero... */
     VSTMDBEQ sp!,{s16-s31}    /* ... save VFP registers s16..s31 */
 
     PUSH    {r0,lr}           /* save the "aligner" and the EXC_RETURN */
-  .endif                      /* VFP available */
+  //.endif                      /* VFP available */
   .endif                      /* M3/M4/M7 */
 
     CMP     r2,#0
@@ -295,14 +295,14 @@ PendSV_restore_ao:
     MVNS    r1,r1             /* r2 := ~6 == 0xFFFFFFF9 */
     MOV     lr,r1             /* make sure MSP is used */
   .else                       /* M3/M4/M7 */
-  .ifdef  __FPU_PRESENT       /* if VFP available... */
+  //.ifdef  __FPU_PRESENT       /* if VFP available... */
     POP     {r0,lr}           /* restore alighner and EXC_RETURN into lr */
     TST     lr,#(1 << 4)      /* is it return to the VFP exception frame? */
     IT      EQ                /* if EXC_RETURN[4] is zero... */
     VLDMIAEQ sp!,{s16-s31}    /* ... restore VFP registers s16..s31 */
-  .else
-    BIC     lr,lr,#(1 << 2)   /* make sure MSP is used */
-  .endif                      /* VFP available */
+  //.else
+  //  BIC     lr,lr,#(1 << 2)   /* make sure MSP is used */
+  //.endif                      /* VFP available */
     POP     {r4-r11}          /* restore r4-r11 from the next thread's stack*/
   .endif                      /* M3/M4/M7 */
 
@@ -347,12 +347,12 @@ PendSV_save_ex:
     LDR     r1,[r3,#QXK_CURR] /* r1 := QXK_attr_.curr (restore value) */
   .else                       /* M3/M4/M7 */
     STMDB   r0!,{r4-r11}      /* save r4-r11 on top of the exception frame */
-  .ifdef  __FPU_PRESENT       /* if VFP available... */
+  //.ifdef  __FPU_PRESENT       /* if VFP available... */
     TST     lr,#(1 << 4)      /* is it return with the VFP exception frame? */
     IT      EQ                /* if lr[4] is zero... */
     VSTMDBEQ r0!,{s16-s31}    /* ... save VFP registers s16..s31 */
     STMDB   r0!,{r1,lr}       /* save the "aligner" and the EXC_RETURN */
-  .endif                      /* VFP available */
+  //.endif                      /* VFP available */
   .endif                      /* M3/M4/M7 */
 
     /* store the SP of the current extended-thread */
@@ -395,14 +395,14 @@ PendSV_restore_ex:
   .else                       /* M3/M4/M7 */
     MOVS    r1,#0
     MSR     BASEPRI,r1        /* enable interrupts (clear BASEPRI) */
-  .ifdef  __FPU_PRESENT       /* if VFP available... */
+  //.ifdef  __FPU_PRESENT       /* if VFP available... */
     LDMIA   r2!,{r1,lr}       /* restore aligner and EXC_RETURN into lr */
     TST     lr,#(1 << 4)      /* is it return to the VFP exception frame? */
     IT      EQ                /* if lr[4] is zero... */
     VLDMIAEQ r2!,{s16-s31}    /* ... restore VFP registers s16..s31 */
-  .else
-    ORR     lr,lr,#(1 << 2)   /* make sure PSP is used */
-  .endif                      /* VFP available */
+  //.else
+  //  ORR     lr,lr,#(1 << 2)   /* make sure PSP is used */
+  //.endif                      /* VFP available */
     LDMIA   r2!,{r4-r11}      /* restore r4-r11 from the next thread's stack*/
   .endif                      /* M3/M4/M7 */
 
@@ -432,11 +432,11 @@ Thread_ret:
     /* before triggering the NMI exception, make sure that the
     * VFP stack frame will NOT be used...
     */
-  .ifdef  __FPU_PRESENT       /* if VFP available... */
+  //.ifdef  __FPU_PRESENT       /* if VFP available... */
     MRS     r0,CONTROL        /* r0 := CONTROL */
     BICS    r0,r0,#4          /* r0 := r0 & ~4 (FPCA bit) */
     MSR     CONTROL,r0        /* CONTROL := r0 (clear CONTROL[2] FPCA bit) */
-  .endif                      /* VFP available */
+  //.endif                      /* VFP available */
 
     /* trigger NMI to return to preempted task...
     * NOTE: The NMI exception is triggered with nterrupts DISABLED
@@ -471,11 +471,11 @@ NMI_Handler:
   .else                       /* M3/M4/M7 */
     MOVS    r0,#0
     MSR     BASEPRI,r0        /* enable interrupts (clear BASEPRI) */
-  .ifdef  __FPU_PRESENT       /* if VFP available... */
+  //.ifdef  __FPU_PRESENT       /* if VFP available... */
     POP     {r0,pc}           /* pop stack "aligner" and EXC_RETURN to PC */
-  .else                       /* no VFP */
-    BX      lr                /* return to the preempted task */
-  .endif                      /* VFP available */
+  //.else                       /* no VFP */
+  //  BX      lr                /* return to the preempted task */
+  //.endif                      /* VFP available */
   .endif                      /* M3/M4/M7 */
   .size   NMI_Handler, . - NMI_Handler
 
@@ -527,9 +527,9 @@ QXK_stackInit_:
 
     /* make room for the thread's stack frame... */
     SUBS    r3,r3,#16*4       /* r3 := top of the 16-register stack frame */
-  .ifdef  __FPU_PRESENT       /* if VFP available... */
+  //.ifdef  __FPU_PRESENT       /* if VFP available... */
     SUBS    r3,r3,#2*4        /* r3 := top of the 18-register stack frame */
-  .endif                      /* VFP available */
+  //.endif                      /* VFP available */
 
     /* pre-fill the unused part of the stack with 0xDEADBEEF................*/
     LDR     r0,=0xDEADBEEF
@@ -545,7 +545,7 @@ QXK_stackInit_fill:
 
     STR     r3,[r0,#QMACTIVE_THREAD] /* act->thread := top of stack */
 
-  .ifdef  __FPU_PRESENT       /* if VFP available... */
+  //.ifdef  __FPU_PRESENT       /* if VFP available... */
     MOVS    r2,#0
     STMIA   r3!,{r2}          /* stack "aligner" */
 
@@ -553,7 +553,7 @@ QXK_stackInit_fill:
     MOVS    r2,#2
     MVNS    r2,r2             /* r2 := ~2 == 0xFFFFFFFD */
     STMIA   r3!,{r2}          /* save EXC_RETURN */
-  .endif                      /* VFP available */
+  //.endif                      /* VFP available */
 
     MOVS    r2,#0x04
     STMIA   r3!,{r2}          /* r4 */

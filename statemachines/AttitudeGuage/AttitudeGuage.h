@@ -65,14 +65,14 @@ private:
     uint32_t m_measurements;
     enum  { CHECK_UP_INTERVAL = 1000, MAX_RETRIES = 5 };
     uint32_t m_previousMeasurementCount;
-    uint8_t retries;
 
 public:
     AttitudeGuage();
     status_t Init();
     void UpdateGyroRate();
     bool GotNewMeasurements();
-    void ProcessAttitude();
+    status_t ProcessAttitude();
+    uint8_t Start(uint8_t prio);
 
 protected:
     static QP::QState initial(AttitudeGuage * const me, QP::QEvt const * const e);
@@ -80,7 +80,6 @@ protected:
     static QP::QState Stopped(AttitudeGuage * const me, QP::QEvt const * const e);
     static QP::QState Started(AttitudeGuage * const me, QP::QEvt const * const e);
     static QP::QState Failed(AttitudeGuage * const me, QP::QEvt const * const e);
-    static QP::QState CollectingData(AttitudeGuage * const me, QP::QEvt const * const e);
 };
 //${AttitudeGuage::AttitudeDataEvt} ..........................................
 class AttitudeDataEvt : public StdEvents::Evt {

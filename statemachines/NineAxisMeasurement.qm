@@ -9,17 +9,16 @@
    <attribute name="m_measurements" type="uint32_t" visibility="0x02" properties="0x00"/>
    <attribute name="{ CHECK_UP_INTERVAL = 1000, MAX_RETRIES = 5 }" type="enum " visibility="0x02" properties="0x00"/>
    <attribute name="m_previousMeasurementCount" type="uint32_t" visibility="0x02" properties="0x00"/>
-   <attribute name="retries" type="uint8_t" visibility="0x02" properties="0x00"/>
    <operation name="AttitudeGuage" type="" visibility="0x00" properties="0x00">
     <code>  : AO(ATTITUDE_GUAGE_INTERVAL_TIMER_SIG,
         (QStateHandler)&amp;initial,
         &quot;ATTITUDE_GUAGE&quot;)
-    , m_gyroRate(0)</code>
+    , m_gyroRate(0)
+    , m_measurements(0)
+    , m_previousMeasurementCount(0)</code>
    </operation>
-   <operation name="Init" type="uint32_t" visibility="0x00" properties="0x00">
-    <code>uint32_t prim = __get_PRIMASK();
-//__disable_irq();
-volatile status_t status;
+   <operation name="Init" type="status_t" visibility="0x00" properties="0x00">
+    <code>volatile status_t status;
 DrvStatusTypeDef result = COMPONENT_OK;
 status = AttitudeUtils::Initialize(result, &amp;m_acc_handle);
 if (status == MEMS_ERROR) {
@@ -27,28 +26,24 @@ if (status == MEMS_ERROR) {
     ErrorEvt *evt = new ErrorEvt(ATTITUDE_GUAGE_FAILED_SIG, 0, ERROR_HARDWARE);
     postLIFO(evt);
 }
-if (!prim) {
-//    __enable_irq();
-}
-return MEMS_SUCCESS;</code>
+return status;</code>
    </operation>
    <operation name="UpdateGyroRate" type="void" visibility="0x00" properties="0x00">
     <code>static uint32_t numDelays = 0;
 numDelays++;
 int totalTime = numDelays * CHECK_UP_INTERVAL;
 // TODO: Deal with overflow
-m_gyroRate = (1.0 * m_measurements)/totalTime; // Hz
-m_previousMeasurementCount = m_measurements;</code>
+m_gyroRate = (1.0 * m_measurements)/totalTime; // Hz</code>
    </operation>
    <operation name="GotNewMeasurements" type="bool" visibility="0x00" properties="0x00">
-    <code>bool result = true;
-if (m_previousMeasurementCount == m_measurements) {
-    result = false;
-}
-m_previousMeasurementCount = m_measurements;
-return result;</code>
+    <code>if (m_previousMeasurementCount == m_measurements) {
+    return false;
+} else {
+    m_previousMeasurementCount = m_measurements;
+    return true;
+}</code>
    </operation>
-   <operation name="ProcessAttitude" type="void" visibility="0x00" properties="0x00">
+   <operation name="ProcessAttitude" type="status_t" visibility="0x00" properties="0x00">
     <code>Acceleration linearAcc;
 AngularRate angularRate;
 
@@ -57,31 +52,34 @@ status_t status = AttitudeUtils::GetAttitude(
 
 if (status == MEMS_ERROR) {
     postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
-    return;
+} else {
+    //Evt *evt = new AttitudeDataEvt(linearAcc, angularRate);
+    //QF::PUBLISH(evt, this);
+    m_measurements++;
 }
-
-//Evt *evt = new AttitudeDataEvt(linearAcc, angularRate);
-//QF::PUBLISH(evt, this);
-
-m_measurements++;</code>
+return status;</code>
+   </operation>
+   <operation name="Start" type="uint8_t" visibility="0x00" properties="0x00">
+    <parameter name="prio" type="uint8_t"/>
+    <code>if (Init() != MEMS_SUCCESS || AO::Start(prio) &lt; 0) {
+    return -1;
+}
+attitudeGuage = this;
+return 0;</code>
    </operation>
    <statechart>
     <initial target="../1">
      <action brief="SubscribeEvents">me-&gt;subscribe(ATTITUDE_GUAGE_STOP_REQ_SIG);
-//me-&gt;subscribe(ATTITUDE_GUAGE_STOP_CFM_SIG);
 me-&gt;subscribe(ATTITUDE_GUAGE_START_REQ_SIG);
-//me-&gt;subscribe(ATTITUDE_GUAGE_START_CFM_SIG);
-//me-&gt;subscribe(ATTITUDE_GUAGE_INTERVAL_TIMER_SIG);
-//me-&gt;subscribe(ATTITUDE_GUAGE_FAILED_SIG);
 me-&gt;subscribe(ATTITUDE_DATA_AVAILABLE_SIG);
-</action>
-     <initial_glyph conn="3,3,5,0,14,2">
+me-&gt;subscribe(ATTITUDE_GUAGE_FAILED_SIG);</action>
+     <initial_glyph conn="3,3,5,0,10,2">
       <action box="0,-2,15,2"/>
      </initial_glyph>
     </initial>
     <state name="Root">
      <initial target="../1">
-      <initial_glyph conn="15,9,5,0,4,2">
+      <initial_glyph conn="11,9,5,0,4,2">
        <action box="0,-2,10,2"/>
       </initial_glyph>
      </initial>
@@ -92,7 +90,7 @@ me-&gt;subscribe(ATTITUDE_DATA_AVAILABLE_SIG);
 me-&gt;PublishConfirmation(
     EVT_CAST(*e),
     ATTITUDE_GUAGE_START_CFM_SIG);</action>
-       <tran_glyph conn="21,18,2,0,4,-6,4,6,2">
+       <tran_glyph conn="17,18,2,0,4,-6,4,6,3">
         <action box="-4,5,29,2"/>
        </tran_glyph>
       </tran>
@@ -101,29 +99,24 @@ me-&gt;PublishConfirmation(
 me-&gt;PublishConfirmation(
     EVT_CAST(*e),
     ATTITUDE_GUAGE_STOP_CFM_SIG);</action>
-       <tran_glyph conn="11,15,3,-1,30">
+       <tran_glyph conn="7,15,3,-1,30">
         <action box="4,-2,32,3"/>
        </tran_glyph>
       </tran>
-      <state_glyph node="11,11,79,7">
+      <state_glyph node="7,11,45,7">
        <entry box="1,2,6,2"/>
       </state_glyph>
      </state>
      <state name="Started">
-      <entry brief="Armx">LOG_EVENT(e);
+      <entry brief="ArmX">LOG_EVENT(e);
 me-&gt;m_timer.armX(CHECK_UP_INTERVAL, CHECK_UP_INTERVAL);</entry>
-      <exit brief="Disarm">me-&gt;m_timer.disarm();</exit>
-      <initial target="../4">
-       <initial_glyph conn="17,36,4,0,3">
-        <action box="0,-2,10,2"/>
-       </initial_glyph>
-      </initial>
+      <exit brief="DisarmX">me-&gt;m_timer.disarm();</exit>
       <tran trig="ATTITUDE_GUAGE_STOP_REQ" target="../../1">
        <action brief="^CFM">LOG_EVENT(e);
 me-&gt;PublishConfirmation(
     EVT_CAST(*e),
     ATTITUDE_GUAGE_STOP_CFM_SIG);</action>
-       <tran_glyph conn="70,28,0,2,-4,-6,-4,6,-2">
+       <tran_glyph conn="47,29,0,2,-4,13,-4,-13,-3">
         <action box="-5,-7,26,3"/>
        </tran_glyph>
       </tran>
@@ -132,51 +125,58 @@ me-&gt;PublishConfirmation(
 me-&gt;PublishConfirmation(
     EVT_CAST(*e),
     ATTITUDE_GUAGE_START_CFM_SIG);</action>
-       <tran_glyph conn="12,59,3,-1,33">
+       <tran_glyph conn="8,48,3,-1,38">
         <action box="0,-2,30,2"/>
        </tran_glyph>
       </tran>
-      <state name="Failed">
-       <entry brief="retry if appropriate">LOG_EVENT(e);
-static uint8_t retries = 0;
-//me-&gt;m_timer.disarm();
-if (retries &lt; MAX_RETRIES) {
-    retries++;
-} else {
-    PRINT(&quot;Exhaused Retries&quot;);
-}</entry>
-       <state_glyph node="65,38,19,6">
-        <entry box="1,2,6,2"/>
-       </state_glyph>
-      </state>
-      <state name="CollectingData">
-       <entry brief="Init Hw">LOG_EVENT(e);
-status_t status = me-&gt;Init();
-if (status == MEMS_ERROR) {
-  postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
-}</entry>
-       <tran trig="ATTITUDE_DATA_AVAILABLE">
-        <action brief="ProcessAttitude">me-&gt;ProcessAttitude();</action>
-        <tran_glyph conn="47,48,1,-1,-28">
-         <action box="-26,-2,22,4"/>
-        </tran_glyph>
-       </tran>
-       <tran trig="ATTITUDE_GUAGE_FAILED" target="../../3">
-        <action>LOG_EVENT(e);</action>
-        <tran_glyph conn="47,46,1,2,29,-2">
-         <action box="4,1,23,3"/>
-        </tran_glyph>
-       </tran>
-       <state_glyph node="14,39,33,11">
-        <entry box="1,2,27,2"/>
-       </state_glyph>
-      </state>
-      <state_glyph node="12,28,78,33">
+      <tran trig="ATTITUDE_GUAGE_INTERVAL_TIMER">
+       <action brief="CheckIfValid, ^FAILED">LOG_EVENT(e);
+if(!me-&gt;GotNewMeasurements()) {
+    me-&gt;postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
+}
+PRINT(&quot;GYRO Rate: %d&quot;, me-&gt;m_gyroRate);</action>
+       <tran_glyph conn="8,43,3,-1,38">
+        <action box="1,-2,31,4"/>
+       </tran_glyph>
+      </tran>
+      <tran trig="ATTITUDE_GUAGE_FAILED" target="../../3">
+       <tran_glyph conn="49,33,1,0,23,2">
+        <action box="0,-2,24,2"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="8,29,41,25">
        <entry box="1,2,17,2"/>
        <exit box="1,4,12,2"/>
       </state_glyph>
      </state>
-     <state_glyph node="5,5,91,58"/>
+     <state name="Failed">
+      <entry brief="Retry">LOG_EVENT(e);
+uint8_t retries = 0;
+status_t status = MEMS_ERROR;
+while(retries &lt; MAX_RETRIES &amp;&amp; status == MEMS_ERROR) {
+    retries++;
+    status = me-&gt;Init();
+    if (status == MEMS_ERROR) {
+        continue;
+    }
+    status = me-&gt;ProcessAttitude();
+    if (status == MEMS_SUCCESS) {
+        break;
+    }
+}
+if (status == MEMS_ERROR &amp;&amp; retries == MAX_RETRIES) {
+    PRINT(&quot;Exhaused Retries&quot;);
+}</entry>
+      <tran trig="ATTITUDE_DATA_AVAILABLE" target="../../2">
+       <tran_glyph conn="71,41,2,1,7,-22">
+        <action box="-13,8,25,2"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="62,35,19,6">
+       <entry box="1,2,6,2"/>
+      </state_glyph>
+     </state>
+     <state_glyph node="1,5,91,52"/>
     </state>
     <state_diagram size="98,64"/>
    </statechart>
@@ -243,12 +243,24 @@ $declare(AttitudeGuage)
 using namespace StdEvents;
 using namespace QP;
 
+namespace Attitude {
+
+AttitudeGuage *attitudeGuage;
+
 extern &quot;C&quot; void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-   if (GPIO_Pin != GPIO_PIN_5) {
+    static int count = 0;
+    if (GPIO_Pin != GPIO_PIN_5) {
         return;
-   }
-   QF::PUBLISH(new Evt(ATTITUDE_DATA_AVAILABLE_SIG), NULL);
+    }
+    if (attitudeGuage-&gt;ProcessAttitude() == MEMS_SUCCESS) {
+        QF::PUBLISH(new Evt(ATTITUDE_DATA_AVAILABLE_SIG), NULL);
+    } else {
+        QF::PUBLISH(new Evt(ATTITUDE_GUAGE_FAILED_SIG), NULL);
+    }
+    count++;
 }
+
+} // Namespace
 
 $define(AttitudeGuage)</text>
    </file>

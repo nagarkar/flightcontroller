@@ -129,9 +129,10 @@ public:
       , m_name(name)
       , m_confirmationCount(0)
     {}
-    void Start(uint8_t  prio) {
+    virtual uint8_t Start(uint8_t  prio) {
         QActive::start(prio, m_evtQueueStor, ARRAY_COUNT(m_evtQueueStor), NULL, 0);
         m_deferQueue.init(m_deferQueueStor, ARRAY_COUNT(m_deferQueueStor));
+        return 0;
     }
     void ResetConfirmationCount();
 
@@ -177,6 +178,7 @@ public:
       , m_timer(owner, timeoutSignal)
       , m_owner(owner)
       , m_name(name)
+	  , m_confirmationCount(0)
     {}
     void Init() {
         QHsm::init();

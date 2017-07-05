@@ -147,7 +147,7 @@ DrvStatusTypeDef LSM6DS3_Sensor_IO_ITConfig( void )
   HAL_GPIO_Init(M_INT1_GPIO_PORT, &GPIO_InitStructureInt1);
 
   /* Enable and set EXTI Interrupt priority */
-  HAL_NVIC_SetPriority(M_INT1_EXTI_IRQn, 0x00, 0x00);
+  HAL_NVIC_SetPriority(M_INT1_EXTI_IRQn, 0x00, 2);
   HAL_NVIC_EnableIRQ(M_INT1_EXTI_IRQn);
 
   /* Enable INT2 GPIO clock */
@@ -167,7 +167,7 @@ DrvStatusTypeDef LSM6DS3_Sensor_IO_ITConfig( void )
   HAL_GPIO_Init(M_INT2_GPIO_PORT, &GPIO_InitStructureInt2);
 
   /* Enable and set EXTI Interrupt priority */
-  HAL_NVIC_SetPriority(M_INT2_EXTI_IRQn, 0x00, 0x00);
+  HAL_NVIC_SetPriority(M_INT2_EXTI_IRQn, 0x00, 2);
   HAL_NVIC_EnableIRQ(M_INT2_EXTI_IRQn);
 
   return COMPONENT_OK;
@@ -203,7 +203,7 @@ DrvStatusTypeDef LPS22HB_Sensor_IO_ITConfig( void )
   HAL_GPIO_Init(M_INT1_GPIO_PORT, &GPIO_InitStructureInt1);
 
   /* Enable and set EXTI Interrupt priority */
-  HAL_NVIC_SetPriority(M_INT1_EXTI_IRQn, 0x00, 0x00);
+  HAL_NVIC_SetPriority(M_INT1_EXTI_IRQn, 0x00, 2);
   HAL_NVIC_EnableIRQ(M_INT1_EXTI_IRQn);
 
   return COMPONENT_OK;
@@ -458,12 +458,12 @@ static void I2C_EXPBD_MspInit( void )
   NUCLEO_I2C_EXPBD_RELEASE_RESET();
 
   /* Enable and set I2C_EXPBD Interrupt to the highest priority */
-  HAL_NVIC_SetPriority(NUCLEO_I2C_EXPBD_EV_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(NUCLEO_I2C_EXPBD_EV_IRQn, 0, 2);
   HAL_NVIC_EnableIRQ(NUCLEO_I2C_EXPBD_EV_IRQn);
 
 #if ((defined (USE_STM32F4XX_NUCLEO)) || (defined (USE_STM32L1XX_NUCLEO)) || (defined (USE_STM32L4XX_NUCLEO)))
   /* Enable and set I2C_EXPBD Interrupt to the highest priority */
-  HAL_NVIC_SetPriority(NUCLEO_I2C_EXPBD_ER_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(NUCLEO_I2C_EXPBD_ER_IRQn, 0, 2);
   HAL_NVIC_EnableIRQ(NUCLEO_I2C_EXPBD_ER_IRQn);
 #endif
 
