@@ -20,6 +20,7 @@
 #include "UartOut.h"
 #include "qpcpp.h"
 #include "active_events.h"
+#include "active_config.h"
 #include "active_log.h"
 #include "bsp.h"
 
@@ -29,6 +30,30 @@ Q_DEFINE_THIS_MODULE("Uart Active")
 using namespace QP;
 using namespace StdEvents;
 using namespace AOs;
+
+/**
+* @brief This function handles USART2 global interrupt.
+*/
+void USART2_IRQHandler(void)
+{
+	QP_QXK_ISR_ENTRY();
+	UART_HandleTypeDef *hal = &huart2;
+	volatile uint32_t isrflags   = READ_REG(hal->Instance->SR);
+	if (isrflags & USART_SR_ORE) {
+		// Over-run error. Read DR followed by SR to clear flag.
+		// Note - ORE will trigger interrupt when RXNE interrupt is enabled.
+		uint32_t rxdata = READ_REG(hal->Instance->DR);
+	} else {
+		// Do not check RXNEIE bit as it may have been cleared automatically by DMA.
+		// It is okay to not check as we don't use other UART interrupts.
+		// Disable interrupt to avoid re-entering ISR before event is processed.
+		CLEAR_BIT(hal->Instance->CR1, USART_CR1_RXNEIE);
+		//CLEAR_BIT(hal->Instance->SR, USART_SR_RXNE);
+		(void)0;
+		AO_UartIn_DmaDataReadyCallback();
+	}
+	QP_QXK_ISR_EXIT();
+}
 
 extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hal) {
     UartOut::DmaDoneCallback();

@@ -36,10 +36,6 @@
 #include "stm32f4xx_it.h"
 
 /* USER CODE BEGIN 0 */
-#include "qpcpp.h"
-#include "UartAct.h"
-#include "UartIn.h"
-#include "UartOut.h"
 #include "bsp.h"
 #include "active_config.h"
 /* USER CODE END 0 */
@@ -48,7 +44,6 @@
 extern UART_HandleTypeDef huart2;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 extern DMA_HandleTypeDef hdma_usart2_tx;
-void USART2_IRQHandler_Override(void);
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -69,7 +64,7 @@ void SysTick_Handler(void)
   HAL_SYSTICK_IRQHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
   QP_Systick_Handler();
-  QXK_ISR_EXIT();
+  QP_QXK_ISR_EXIT();
   /* USER CODE END SysTick_IRQn 1 */
 }
 
@@ -125,41 +120,6 @@ void DMA1_Stream6_IRQHandler(void)
 	/* USER CODE END DMA1_Stream6_IRQn 1 */
 }
 
-/**
-* @brief This function handles USART2 global interrupt.
-*/
-void USART2_IRQHandler(void)
-{
-	/* USER CODE BEGIN USART2_IRQn 0 */
-	USART2_IRQHandler_Override();
-  	/* USER CODE END USART2_IRQn 0 */
-	
-	/* USER CODE BEGIN USART2_IRQn 1 */
-	/* USER CODE END USART2_IRQn 1 */
-}
-
-
-/* USER CODE BEGIN 1 */
-
-void USART2_IRQHandler_Override(void) {
-	QP_QXK_ISR_ENTRY();
-	UART_HandleTypeDef *hal = &huart2;
-	volatile uint32_t isrflags   = READ_REG(hal->Instance->SR);
-	if (isrflags & USART_SR_ORE) {
-		// Over-run error. Read DR followed by SR to clear flag.
-		// Note - ORE will trigger interrupt when RXNE interrupt is enabled.
-		uint32_t rxdata = READ_REG(hal->Instance->DR);
-	} else {
-		// Do not check RXNEIE bit as it may have been cleared automatically by DMA.
-		// It is okay to not check as we don't use other UART interrupts.
-		// Disable interrupt to avoid re-entering ISR before event is processed.
-		CLEAR_BIT(hal->Instance->CR1, USART_CR1_RXNEIE);
-		//CLEAR_BIT(hal->Instance->SR, USART_SR_RXNE);
-		(void)0;
-		AO_UartIn_DmaDataReadyCallback();
-	}
-	QP_QXK_ISR_EXIT();
-}
 
 /* USER CODE END 1 */
 
