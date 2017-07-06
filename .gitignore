@@ -1,0 +1,11 @@
+#exclude project specefic folders and files
+
+f0_CMSIS_dsp/.settings/*.*
+
+f0_CMSIS_dsp/Debug/*.*
+
+# Exclude project files
+.cproject
+.project
+f0_CMSIS_dsp Run.cfg
+LinkerScript.ld
