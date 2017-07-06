@@ -15,14 +15,16 @@
         &quot;ATTITUDE_GUAGE&quot;)
     , m_gyroRate(0)
     , m_measurements(0)
-    , m_previousMeasurementCount(0)</code>
+    , m_previousMeasurementCount(0)
+    , m_acc_handle(NULL)</code>
    </operation>
    <operation name="Init" type="status_t" visibility="0x00" properties="0x00">
+    <documentation>docs</documentation>
     <code>volatile status_t status;
 DrvStatusTypeDef result = COMPONENT_OK;
 status = AttitudeUtils::Initialize(result, &amp;m_acc_handle);
 if (status == MEMS_ERROR) {
-    PRINT(&quot;ERROR in AttitudeGuage.Init()&quot;);
+    PRINT(&quot;ERROR in AttitudeGuage.Init()\r\n&quot;);
     ErrorEvt *evt = new ErrorEvt(ATTITUDE_GUAGE_FAILED_SIG, 0, ERROR_HARDWARE);
     postLIFO(evt);
 }
@@ -31,9 +33,9 @@ return status;</code>
    <operation name="UpdateGyroRate" type="void" visibility="0x00" properties="0x00">
     <code>static uint32_t numDelays = 0;
 numDelays++;
-int totalTime = numDelays * CHECK_UP_INTERVAL;
+int totalMillis = numDelays * CHECK_UP_INTERVAL;
 // TODO: Deal with overflow
-m_gyroRate = (1.0 * m_measurements)/totalTime; // Hz</code>
+m_gyroRate = (1000.0 * m_measurements)/totalMillis; // Hz</code>
    </operation>
    <operation name="GotNewMeasurements" type="bool" visibility="0x00" properties="0x00">
     <code>if (m_previousMeasurementCount == m_measurements) {
@@ -53,19 +55,15 @@ status_t status = AttitudeUtils::GetAttitude(
 if (status == MEMS_ERROR) {
     postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
 } else {
-    //Evt *evt = new AttitudeDataEvt(linearAcc, angularRate);
-    //QF::PUBLISH(evt, this);
     m_measurements++;
+    Evt *evt = new AttitudeDataEvt(linearAcc, angularRate);
+    QF::PUBLISH(evt, this);
 }
 return status;</code>
    </operation>
    <operation name="Start" type="uint8_t" visibility="0x00" properties="0x00">
     <parameter name="prio" type="uint8_t"/>
-    <code>if (Init() != MEMS_SUCCESS || AO::Start(prio) &lt; 0) {
-    return -1;
-}
-attitudeGuage = this;
-return 0;</code>
+    <code>return AO::Start(prio);</code>
    </operation>
    <statechart>
     <initial target="../1">
@@ -78,6 +76,7 @@ me-&gt;subscribe(ATTITUDE_GUAGE_FAILED_SIG);</action>
      </initial_glyph>
     </initial>
     <state name="Root">
+     <documentation>Documentation</documentation>
      <initial target="../1">
       <initial_glyph conn="11,9,5,0,4,2">
        <action box="0,-2,10,2"/>
@@ -133,15 +132,23 @@ me-&gt;PublishConfirmation(
        <action brief="CheckIfValid, ^FAILED">LOG_EVENT(e);
 if(!me-&gt;GotNewMeasurements()) {
     me-&gt;postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
-}
-PRINT(&quot;GYRO Rate: %d&quot;, me-&gt;m_gyroRate);</action>
+} else {
+    me-&gt;UpdateGyroRate();
+    PRINT(&quot;GYRO Rate: %d\r\n&quot;, me-&gt;m_gyroRate);
+}</action>
        <tran_glyph conn="8,43,3,-1,38">
         <action box="1,-2,31,4"/>
        </tran_glyph>
       </tran>
       <tran trig="ATTITUDE_GUAGE_FAILED" target="../../3">
-       <tran_glyph conn="49,33,1,0,23,2">
+       <tran_glyph conn="49,33,1,0,22,4">
         <action box="0,-2,24,2"/>
+       </tran_glyph>
+      </tran>
+      <tran trig="ATTITUDE_DATA_AVAILABLE">
+       <action>me-&gt;ProcessAttitude();</action>
+       <tran_glyph conn="44,54,2,-1,-3,-30">
+        <action box="-27,-2,25,2"/>
        </tran_glyph>
       </tran>
       <state_glyph node="8,29,41,25">
@@ -155,28 +162,31 @@ uint8_t retries = 0;
 status_t status = MEMS_ERROR;
 while(retries &lt; MAX_RETRIES &amp;&amp; status == MEMS_ERROR) {
     retries++;
+    QF_CRIT_ENTRY(0);
     status = me-&gt;Init();
     if (status == MEMS_ERROR) {
         continue;
     }
     status = me-&gt;ProcessAttitude();
+    QF_CRIT_EXIT(0);
     if (status == MEMS_SUCCESS) {
         break;
     }
 }
 if (status == MEMS_ERROR &amp;&amp; retries == MAX_RETRIES) {
-    PRINT(&quot;Exhaused Retries&quot;);
+    PRINT(&quot;Exhaused Retries\r\n&quot;);
 }</entry>
       <tran trig="ATTITUDE_DATA_AVAILABLE" target="../../2">
-       <tran_glyph conn="71,41,2,1,7,-22">
+       <action>me-&gt;ProcessAttitude();</action>
+       <tran_glyph conn="70,43,2,1,5,-21">
         <action box="-13,8,25,2"/>
        </tran_glyph>
       </tran>
-      <state_glyph node="62,35,19,6">
+      <state_glyph node="61,37,19,6">
        <entry box="1,2,6,2"/>
       </state_glyph>
      </state>
-     <state_glyph node="1,5,91,52"/>
+     <state_glyph node="1,5,91,55"/>
     </state>
     <state_diagram size="98,64"/>
    </statechart>
@@ -245,20 +255,13 @@ using namespace QP;
 
 namespace Attitude {
 
-AttitudeGuage *attitudeGuage;
-
 extern &quot;C&quot; void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-    static int count = 0;
     if (GPIO_Pin != GPIO_PIN_5) {
         return;
     }
-    if (attitudeGuage-&gt;ProcessAttitude() == MEMS_SUCCESS) {
-        QF::PUBLISH(new Evt(ATTITUDE_DATA_AVAILABLE_SIG), NULL);
-    } else {
-        QF::PUBLISH(new Evt(ATTITUDE_GUAGE_FAILED_SIG), NULL);
-    }
-    count++;
+    QF::PUBLISH(new Evt(ATTITUDE_DATA_AVAILABLE_SIG), NULL);
 }
+
 
 } // Namespace
 

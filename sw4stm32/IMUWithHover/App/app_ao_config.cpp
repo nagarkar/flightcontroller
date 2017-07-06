@@ -25,15 +25,12 @@ static AttitudeGuage guage;
 static UartAct uart(&huart2);
 static UartCommander uartCmd(&uart.GetInFifo());
 
-QP::QSubscrList subscrSto[MAX_PUB_SIG];
-
 /** PRIVATE FUNCTION PROTOTYPES **/
 /** End **/
 
 void QP_StartActiveObjectsAndPublishBootTimeEvents(void) {
 
 	Evt * e;
-	//TOGGLE_EVENT_LOGGING();
 
 	uart.Start(PRIO_UART2_ACT);
 	e = new Evt(UART_ACT_START_REQ_SIG);
@@ -46,12 +43,7 @@ void QP_StartActiveObjectsAndPublishBootTimeEvents(void) {
 	assert_param(guage.Start(PRIO_ATTITUDE_GUAGE_PRIO) >= 0);
 	e = new Evt(ATTITUDE_GUAGE_START_REQ_SIG);
 	QF::PUBLISH(e, NULL);
-	assert_param(guage.ProcessAttitude() == MEMS_SUCCESS);
 
 	QF::PUBLISH(new Evt(UART_COMMANDER_SHOW_USAGE_SIG), NULL);
 
-}
-
-void QP_AllocateSubscriberLists(void) {
-	QF::psInit(subscrSto, Q_DIM(subscrSto)); // init publish-subscribe
 }

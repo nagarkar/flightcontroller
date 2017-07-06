@@ -26,16 +26,13 @@ using namespace QP;
 
 namespace Attitude {
 
-AttitudeGuage *attitudeGuage = NULL;
-
 extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     if (GPIO_Pin != GPIO_PIN_5) {
         return;
     }
-    if (attitudeGuage != NULL && attitudeGuage->ProcessAttitude() == MEMS_SUCCESS) {
-        QF::PUBLISH(new Evt(ATTITUDE_DATA_AVAILABLE_SIG), NULL);
-    }
+    QF::PUBLISH(new Evt(ATTITUDE_DATA_AVAILABLE_SIG), NULL);
 }
+
 
 } // Namespace
 
@@ -53,12 +50,10 @@ AttitudeGuage::AttitudeGuage()
         (QStateHandler)&initial,
         "ATTITUDE_GUAGE")
     , m_gyroRate(0)
-	, m_measurements(0)
-	, m_previousMeasurementCount(0)
-	, m_acc_handle(NULL)
-{
-	attitudeGuage = this;
-}
+    , m_measurements(0)
+    , m_previousMeasurementCount(0)
+    , m_acc_handle(NULL)
+{}
 
 //${AttitudeGuage::AttitudeGuage::Init} ......................................
 status_t AttitudeGuage::Init() {
@@ -67,8 +62,8 @@ status_t AttitudeGuage::Init() {
     status = AttitudeUtils::Initialize(result, &m_acc_handle);
     if (status == MEMS_ERROR) {
         PRINT("ERROR in AttitudeGuage.Init()\r\n");
-        //ErrorEvt *evt = new ErrorEvt(ATTITUDE_GUAGE_FAILED_SIG, 0, ERROR_HARDWARE);
-        //postLIFO(evt);
+        ErrorEvt *evt = new ErrorEvt(ATTITUDE_GUAGE_FAILED_SIG, 0, ERROR_HARDWARE);
+        postLIFO(evt);
     }
     return status;
 }
@@ -98,7 +93,7 @@ status_t AttitudeGuage::ProcessAttitude() {
         linearAcc, angularRate, m_acc_handle);
 
     if (status == MEMS_ERROR) {
-        //postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
+        postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
     } else {
         m_measurements++;
         Evt *evt = new AttitudeDataEvt(linearAcc, angularRate);
@@ -108,10 +103,7 @@ status_t AttitudeGuage::ProcessAttitude() {
 }
 //${AttitudeGuage::AttitudeGuage::Start} .....................................
 uint8_t AttitudeGuage::Start(uint8_t prio) {
-    if (Init() != MEMS_SUCCESS || AO::Start(prio) < 0) {
-        return -1;
-    }
-    return 0;
+    return AO::Start(prio);
 }
 //${AttitudeGuage::AttitudeGuage::SM} ........................................
 QP::QState AttitudeGuage::initial(AttitudeGuage * const me, QP::QEvt const * const e) {
@@ -214,8 +206,8 @@ QP::QState AttitudeGuage::Started(AttitudeGuage * const me, QP::QEvt const * con
             if(!me->GotNewMeasurements()) {
                 me->postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
             } else {
-            	me->UpdateGyroRate();
-            	PRINT("GYRO Rate: %d\r\n", me->m_gyroRate);
+                me->UpdateGyroRate();
+                PRINT("GYRO Rate: %f\r\n", me->m_gyroRate);
             }
             status_ = Q_HANDLED();
             break;
@@ -223,6 +215,12 @@ QP::QState AttitudeGuage::Started(AttitudeGuage * const me, QP::QEvt const * con
         // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::ATTITUDE_GUAGE_FAILED}
         case ATTITUDE_GUAGE_FAILED_SIG: {
             status_ = Q_TRAN(&Failed);
+            break;
+        }
+        // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::ATTITUDE_DATA_AVAILABLE}
+        case ATTITUDE_DATA_AVAILABLE_SIG: {
+            me->ProcessAttitude();
+            status_ = Q_HANDLED();
             break;
         }
         default: {
@@ -262,6 +260,7 @@ QP::QState AttitudeGuage::Failed(AttitudeGuage * const me, QP::QEvt const * cons
         }
         // ${AttitudeGuage::AttitudeGuage::SM::Root::Failed::ATTITUDE_DATA_AVAILABLE}
         case ATTITUDE_DATA_AVAILABLE_SIG: {
+            me->ProcessAttitude();
             status_ = Q_TRAN(&Started);
             break;
         }

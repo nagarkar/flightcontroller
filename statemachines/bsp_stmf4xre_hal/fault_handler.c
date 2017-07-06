@@ -38,11 +38,11 @@ void Hard_Fault_Handler(uint32_t stack[]) {
 	static char msg[80];
 	//if((CoreDebug->DHCSR & 0x01) != 0) {
 	printErrorMsg("In Hard Fault Handler\n");
-	sprintf(msg, "SCB->HFSR = 0x%08x\n", SCB->HFSR);
+	sprintf(msg, "SCB->HFSR = 0x%08lu\n", SCB->HFSR);
 	printErrorMsg(msg);
 	if ((SCB->HFSR & (1 << 30)) != 0) {
 		printErrorMsg("Forced Hard Fault\n");
-		sprintf(msg, "SCB->CFSR = 0x%08x\n", SCB->CFSR );
+		sprintf(msg, "SCB->CFSR = 0x%08lu\n", SCB->CFSR );
 		printErrorMsg(msg);
 		if((SCB->CFSR & 0xFFFF0000) != 0) {
 			printUsageErrorMsg(SCB->CFSR);
@@ -89,10 +89,10 @@ void printUsageErrorMsg(uint32_t CFSRValue) {
 	}
 	if((CFSRValue & (1<<2)) != 0) {
 		sprintf(msg, "%s %s",
-			"INVPC: The processor has attempted an illegal load of EXC_RETURN to the PC, as a result "
+			"INVPC: The processor has attempted an illegal load of EXC_RETURN to the PC, as a result ",
 			"of an invalid context, or an invalid EXC_RETURN value\n");
 		printErrorMsg(msg);
-		sprintf(msg, "%s %s,"
+		sprintf(msg, "%s %s",
 			"When this bit is set to 1, the PC value stacked for the exception return points to ",
 			"the instruction that tried to perform the illegal load of the PC");
 		printErrorMsg(msg);
@@ -144,21 +144,21 @@ enum { r0, r1, r2, r3, r12, lr, pc, psr};
 void stackDump(uint32_t stack[])
 {
    static char msg[80];
-   sprintf(msg, "r0  = 0x%08x\n", stack[r0]);
+   sprintf(msg, "r0  = 0x%08lu\n", stack[r0]);
    printErrorMsg(msg);
-   sprintf(msg, "r1  = 0x%08x\n", stack[r1]);
+   sprintf(msg, "r1  = 0x%08lu\n", stack[r1]);
    printErrorMsg(msg);
-   sprintf(msg, "r2  = 0x%08x\n", stack[r2]);
+   sprintf(msg, "r2  = 0x%08lu\n", stack[r2]);
    printErrorMsg(msg);
-   sprintf(msg, "r3  = 0x%08x\n", stack[r3]);
+   sprintf(msg, "r3  = 0x%08lu\n", stack[r3]);
    printErrorMsg(msg);
-   sprintf(msg, "r12 = 0x%08x\n", stack[r12]);
+   sprintf(msg, "r12 = 0x%08lu\n", stack[r12]);
    printErrorMsg(msg);
-   sprintf(msg, "lr  = 0x%08x\n", stack[lr]);
+   sprintf(msg, "lr  = 0x%08lu\n", stack[lr]);
    printErrorMsg(msg);
-   sprintf(msg, "pc  = 0x%08x\n", stack[pc]);
+   sprintf(msg, "pc  = 0x%08lu\n", stack[pc]);
    printErrorMsg(msg);
-   sprintf(msg, "psr = 0x%08x\n", stack[psr]);
+   sprintf(msg, "psr = 0x%08lu\n", stack[psr]);
    printErrorMsg(msg);
 }
 

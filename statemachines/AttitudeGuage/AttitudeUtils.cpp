@@ -68,7 +68,6 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle) {
 		return Initialize(result, hhandle);
 	}
 
-
 	// CTRL_REG1_G Register
 	STATUS_T_SET(status, LSM6DS0_ACC_GYRO_W_GyroDataRate(handle, LSM6DS0_ACC_GYRO_ODR_G_952Hz));
 	STATUS_T_SET(status, LSM6DS0_ACC_GYRO_W_GyroBandwidthSelection(handle, LSM6DS0_ACC_GYRO_BW_G_ULTRA_HIGH));
@@ -99,28 +98,17 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle) {
 	STATUS_T_SET(status, LSM6DS0_ACC_GYRO_W_XL_DataReadyOnINT(handle, LSM6DS0_ACC_GYRO_INT_DRDY_XL_ENABLE));
 	STATUS_T_SET(status, LSM6DS0_ACC_GYRO_W_GYRO_DataReadyOnINT(handle, LSM6DS0_ACC_GYRO_INT_DRDY_G_ENABLE));
 
-	//DrvContextTypeDef *ctx = (DrvContextTypeDef *)handle;
-	//HAL_StatusTypeDef halStatus = HAL_OK;
-	//u8_t acc_8_t[6] = {0, 0, 0, 0, 0, 0};
-	//HAL_STATUS_SET(halStatus, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_XL, I2C_MEMADD_SIZE_8BIT, acc_8_t, 6, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
-	//status = HAL_I2C_Mem_Read_DMA(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_XL, I2C_MEMADD_SIZE_8BIT, acc_8_t, 6);
-	//status = HAL_I2C_Mem_Read_IT(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_XL, I2C_MEMADD_SIZE_8BIT, acc_8_t, 6);
-	//Log::Print("Finished Reading first acc data");
 	QF_CRIT_EXIT(0);
 
-
-	//return (status == MEMS_SUCCESS && halStatus == HAL_OK) ? MEMS_SUCCESS: MEMS_ERROR;
 	return status;
 }
 
 status_t  AttitudeUtils::GetAttitude(Acceleration &acc, AngularRate &angRate, void *handle) {
-	//return MEMS_SUCCESS;
+
 	uint32_t marker = GetPerfCycle();
 	//BSP_LED_Off(LED2); // If the LED2 is off, it means the program hanged somewhere in this fn.
 
 	u8_t value;
-
-	QF_CRIT_ENTRY(0);
 
 	LSM6DS0_ACC_GYRO_ReadReg(handle, LSM6DS0_ACC_GYRO_STATUS_REG, &value, 1);
 
@@ -136,15 +124,12 @@ status_t  AttitudeUtils::GetAttitude(Acceleration &acc, AngularRate &angRate, vo
 	HAL_STATUS_SET(status, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_XL, I2C_MEMADD_SIZE_8BIT, acc_8_t, 6, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
 	HAL_STATUS_SET(status, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_G, I2C_MEMADD_SIZE_8BIT, acc_8_t, 6, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
 
-	QF_CRIT_EXIT(0);
-
 	//status = HAL_I2C_Mem_Read_IT(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_G, I2C_MEMADD_SIZE_8BIT, acc_8_t, 6);
 	counter++;
 	uint32_t cycleCounter = GetElapsedCycles(marker);
 	cycleCounterAvg = (cycleCounterAvg * ((float)cycleCounterCount)/(cycleCounterCount + 1));
 	cycleCounterAvg += ((float)cycleCounter)/(cycleCounterCount + 1);
 	cycleCounterCount++;
-	//BSP_LED_On(LED2);
 
 	return (status == HAL_OK) ? MEMS_SUCCESS : MEMS_ERROR;
 }

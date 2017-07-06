@@ -16,13 +16,14 @@
 //****************************************************************************
 //${stdevents::active_config.cpp} ............................................
 #include "active_config.h"
+#include "app_ao_config.h"
 #include "qpcpp.h"
 #include "macros.h"
 #include "stm32f4xx_hal.h"
 
 using namespace QP;
 
-Q_DEFINE_THIS_MODULE("Active Config")
+QP::QSubscrList subscrSto[MAX_PUB_SIG];
 
 void QP_PreInitialize(void) {
     QF::init();
@@ -51,9 +52,8 @@ __weak void QP_StartActiveObjectsAndPublishBootTimeEvents(void) {
    (void)0;
 }
 
-// Must be overridden
 __weak void QP_AllocateSubscriberLists(void) {
-   (void)0;
+	QF::psInit(subscrSto, Q_DIM(subscrSto)); // init publish-subscribe
 }
 
 // MEMORY POOL ALLOCATION CODE START
