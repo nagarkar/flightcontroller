@@ -32,9 +32,14 @@ private:
     static int cycleCounterCount;
     static float cycleCounterAvg;
     static int counter;
+    static float accSensitivity;
+    static float gyroSensitivity;
+    static const float ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ = 9.8f;
 public:
     static status_t Initialize(DrvStatusTypeDef & result, void **hhandle);
     static status_t GetAttitude(Acceleration &acc, AngularRate &angRate, void *handle);
+    static status_t ResetAccSensitivity( void *handle );
+    static status_t ResetGyroSensitivity( void *handle );
 };
 
 }// namespace

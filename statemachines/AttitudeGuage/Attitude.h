@@ -28,13 +28,13 @@ typedef struct {
     float z;
 } AttitudeDim;
 
-typedef AttitudeDim Acceleration;
-typedef AttitudeDim Velocity;
-typedef AttitudeDim Position;
+typedef AttitudeDim Acceleration; /* XYZ rates in meters per sec-square */
+typedef AttitudeDim Velocity; /* XYZ rates in meters per sec */
+typedef AttitudeDim Position; /* XYZ in meters*/
 
-typedef AttitudeDim AngularAcc;
-typedef AttitudeDim AngularRate;
-typedef AttitudeDim AngularPos;
+typedef AttitudeDim AngularAcc;  /* XYZ acc in degrees per sec-square */
+typedef AttitudeDim AngularRate; /* XYZ rate in degrees per sec */
+typedef AttitudeDim AngularPos; /* XYZ angles in degrees */
 
 typedef AttitudeDim MagneticStrength;
 
