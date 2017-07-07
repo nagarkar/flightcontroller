@@ -43,6 +43,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/STM32F4xx-Nucleo}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/X_NUCLEO_IKS01A1}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/Components/lsm6ds3}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/Components/lis3mdl}&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1976369179" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__weak=__attribute__((weak))"/>
@@ -71,6 +72,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/STM32F4xx-Nucleo}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/X_NUCLEO_IKS01A1}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/Components/lsm6ds3}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/Components/lis3mdl}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.698045675" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__weak=__attribute__((weak))"/>
@@ -106,7 +108,6 @@
 							<tool id="fr.ac6.managedbuild.tool.gnu.cross.assembler.832023885" name="MCU GCC Assembler" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler">
 								<option id="gnu.both.asm.option.include.paths.2036989977" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value=""/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/Components/lsm6ds3}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1353163638" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.assembler.input.1516008493" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler.input"/>
@@ -118,6 +119,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="hardware/iks01a1/drivers/BSP/Components/lis3mdl"/>
 						<entry excluding="LSM6DS0_ACC_GYRO_driver_ck.h|LSM6DS0_ACC_GYRO_driver_ck.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="hardware/iks01a1/drivers/BSP/Components/lsm6ds0"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="hardware/iks01a1/drivers/BSP/Components/lsm6ds3"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="hardware/iks01a1/drivers/BSP/STM32F4xx-Nucleo"/>
@@ -169,6 +171,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/Components/X_NUCLEO_IKS01A1}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/STM32F4xx-Nucleo}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/Components/lsm6ds3}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/Components/lis3mdl}&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1976369179" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__weak=__attribute__((weak))"/>
@@ -196,6 +199,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/Components/X_NUCLEO_IKS01A1}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/STM32F4xx-Nucleo}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/Components/lsm6ds3}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/Components/lis3mdl}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1514920184" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__weak=__attribute__((weak))"/>
@@ -235,6 +239,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/Components/X_NUCLEO_IKS01A1}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/STM32F4xx-Nucleo}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/Components/lsm6ds3}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HighSpeedOdrLoop/hardware/iks01a1/drivers/BSP/Components/lis3mdl}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1353163638" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.assembler.input.1516008493" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler.input"/>
@@ -258,7 +263,7 @@
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Debug">
-			<resource resourceType="PROJECT" workspacePath="HighSpeedOdrLoop"/>
+			<resource resourceType="PROJECT" workspacePath="/HighSpeedOdrLoop"/>
 		</configuration>
 		<configuration configurationName="Release"/>
 	</storageModule>

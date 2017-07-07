@@ -45,6 +45,10 @@
 #include "component.h"
 #include "x_nucleo_iks01a1_accelero.h"
 #include "x_nucleo_iks01a1_gyro.h"
+#include "x_nucleo_iks01a1_magneto.h"
+#include "LIS3MDL_MAG_driver.h"
+#include "LIS3MDL_MAG_driver_HL.h"
+
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -53,6 +57,7 @@
 
 void * handle;
 void * gyroHandle;
+void * magHandle;
 int counter;
 int cycleCounterCount;
 float cycleCounterAvg;
@@ -71,6 +76,7 @@ void Error_Handler(void);
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 static void ACC_Init(void);
+static void MAG_Init(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -107,6 +113,7 @@ int main(void)
 	  if (prevCounter == counter) {
 		  BSP_LED_Off(LED2); // If the LED2 is off, it means the program hanged at ACC_Init()
 		  ACC_Init();
+		  MAG_Init();
 		  BSP_LED_On(LED2);
 	  }
 	  prevCounter = counter;
@@ -251,6 +258,54 @@ static void ACC_Init(void) {
 	}
 }
 
+static void MAG_Init(void) {
+	static uint8_t isInitialized = 0;
+	uint32_t prim = __get_PRIMASK();
+	__disable_irq();
+
+	volatile status_t status;
+	volatile DrvStatusTypeDef result = COMPONENT_OK;
+
+	if (isInitialized == 1) {
+		result = BSP_MAGNETO_DeInit(&magHandle);
+		isInitialized = 0;
+	}
+	result = BSP_MAGNETO_Init(LIS3MDL_0, &magHandle);
+	//STATUS_SET(status, LIS3MDL_MAG_R_SoftRST(magHandle, LIS3MDL_MAG_SOFT_RST_YES));
+	//result = BSP_MAGNETO_Init(LIS3MDL_0, &magHandle);
+	if (result == COMPONENT_OK) {
+		isInitialized = 1;
+		result = BSP_MAGNETO_Sensor_Enable(magHandle);
+		//if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1) != RESET) {
+		//	LIS3MDL_MAG_R_SoftRST(magHandle, LIS3MDL_MAG_SOFT_RST_YES);
+		//}
+	}
+	if (result != COMPONENT_OK) {
+		if (!prim) {
+			__enable_irq();
+		}
+		MAG_Init();
+	}
+	// CTRL_REG1 Register
+	//STATUS_SET(status, LIS3MDL_MAG_W_OutputDataRate(magHandle, LIS3MDL_MAG_DO_80Hz));
+	// CTRL_REG3
+	//STATUS_SET(status, LIS3MDL_MAG_W_SystemOperatingMode(magHandle, LIS3MDL_MAG_MD_CONTINUOUS));
+
+	//INT_CFG
+	//STATUS_SET(status, LIS3MDL_MAG_W_InterruptActive(magHandle, LIS3MDL_MAG_IEA_HIGH));
+	//STATUS_SET(status, LIS3MDL_MAG_W_InterruptEnable(magHandle, LIS3MDL_MAG_IEN_ENABLE));
+
+/*
+	DrvContextTypeDef *ctx = (DrvContextTypeDef *)magHandle;
+	u8_t acc_8_t[6] = {0, 0, 0, 0, 0, 0};
+	HAL_StatusTypeDef hs = HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LIS3MDL_MAG_OUTX_L, I2C_MEMADD_SIZE_8BIT, acc_8_t, 6, NUCLEO_I2C_EXPBD_TIMEOUT_MAX);
+*/
+
+	if (!prim) {
+		__enable_irq();
+	}
+}
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	if (GPIO_Pin != GPIO_PIN_5) {
 		return;
@@ -270,8 +325,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	HAL_StatusTypeDef status;
 
 	u8_t acc_8_t[6] = {0, 0, 0, 0, 0, 0};
-	status = HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_XL, I2C_MEMADD_SIZE_8BIT, acc_8_t, 6, NUCLEO_I2C_EXPBD_TIMEOUT_MAX);
-	status = HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_G, I2C_MEMADD_SIZE_8BIT, acc_8_t, 6, NUCLEO_I2C_EXPBD_TIMEOUT_MAX);
+	HAL_StatusTypeDef hs = HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_XL, I2C_MEMADD_SIZE_8BIT, acc_8_t, 6, NUCLEO_I2C_EXPBD_TIMEOUT_MAX);
+	hs = HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_G, I2C_MEMADD_SIZE_8BIT, acc_8_t, 6, NUCLEO_I2C_EXPBD_TIMEOUT_MAX);
+	hs = HAL_I2C_Mem_Read(GetI2CHandle(), ((DrvContextTypeDef *)magHandle)->address, LIS3MDL_MAG_OUTX_H, I2C_MEMADD_SIZE_8BIT, acc_8_t, 6, NUCLEO_I2C_EXPBD_TIMEOUT_MAX);
+
 	//status = HAL_I2C_Mem_Read_IT(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_G, I2C_MEMADD_SIZE_8BIT, acc_8_t, 6);
 	counter++;
 	uint32_t cycleCounter = GetPerfMarkerElapsed(marker);
