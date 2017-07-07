@@ -61,6 +61,7 @@ namespace Attitude {
 class AttitudeGuage : public StdEvents::AO {
 private:
     void * m_acc_handle;
+    void * m_mag_handle;
     float m_gyroRate;
     uint32_t m_measurements;
     enum  { CHECK_UP_INTERVAL = 1000, MAX_RETRIES = 5 };
@@ -86,9 +87,10 @@ class AttitudeDataEvt : public StdEvents::Evt {
 public:
     Acceleration m_acc;
     AngularRate m_angularRate;
+    MagneticField m_field;
 
 public:
-    AttitudeDataEvt(Acceleration acc, AngularRate angularRate);
+    AttitudeDataEvt(Acceleration acc, AngularRate angularRate, MagneticField field);
 };
 
 } // namespace Attitude

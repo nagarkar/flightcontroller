@@ -53,13 +53,14 @@ AttitudeGuage::AttitudeGuage()
     , m_measurements(0)
     , m_previousMeasurementCount(0)
     , m_acc_handle(NULL)
+	, m_mag_handle(NULL)
 {}
 
 //${AttitudeGuage::AttitudeGuage::Init} ......................................
 status_t AttitudeGuage::Init() {
     volatile status_t status;
     DrvStatusTypeDef result = COMPONENT_OK;
-    status = AttitudeUtils::Initialize(result, &m_acc_handle);
+    status = AttitudeUtils::Initialize(result, &m_acc_handle, &m_mag_handle);
     if (status == MEMS_ERROR) {
         PRINT("ERROR in AttitudeGuage.Init()\r\n");
         ErrorEvt *evt = new ErrorEvt(ATTITUDE_GUAGE_FAILED_SIG, 0, ERROR_HARDWARE);
@@ -88,15 +89,16 @@ bool AttitudeGuage::GotNewMeasurements() {
 status_t AttitudeGuage::ProcessAttitude() {
     Acceleration linearAcc;
     AngularRate angularRate;
+    MagneticField field;
 
     status_t status = AttitudeUtils::GetAttitude(
-        linearAcc, angularRate, m_acc_handle);
+        linearAcc, angularRate, field, m_acc_handle, m_mag_handle);
 
     if (status == MEMS_ERROR) {
         postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
     } else {
         m_measurements++;
-        Evt *evt = new AttitudeDataEvt(linearAcc, angularRate);
+        Evt *evt = new AttitudeDataEvt(linearAcc, angularRate, field);
         QF::PUBLISH(evt, this);
     }
     return status;
@@ -273,10 +275,11 @@ QP::QState AttitudeGuage::Failed(AttitudeGuage * const me, QP::QEvt const * cons
 }
 //${AttitudeGuage::AttitudeDataEvt} ..........................................
 //${AttitudeGuage::AttitudeDataEvt::AttitudeDataEvt} .........................
-AttitudeDataEvt::AttitudeDataEvt(Acceleration acc, AngularRate angularRate)
+AttitudeDataEvt::AttitudeDataEvt(Acceleration acc, AngularRate angularRate, MagneticField field)
  : Evt(ATTITUDE_CHANGED_SIG)
     , m_acc(acc)
     , m_angularRate(angularRate)
+	, m_field(field)
 {}
 
 } // namespace Attitude

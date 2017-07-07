@@ -23,9 +23,9 @@ extern "C" {
 #endif
 
 typedef struct {
-    float x;
-    float y;
-    float z;
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
 } AttitudeDim;
 
 typedef AttitudeDim Acceleration; /* XYZ rates in meters per sec-square */
@@ -35,6 +35,8 @@ typedef AttitudeDim Position; /* XYZ in meters*/
 typedef AttitudeDim AngularAcc;  /* XYZ acc in degrees per sec-square */
 typedef AttitudeDim AngularRate; /* XYZ rate in degrees per sec */
 typedef AttitudeDim AngularPos; /* XYZ angles in degrees */
+
+typedef AttitudeDim MagneticField; /* XYZ gauss*/
 
 typedef AttitudeDim MagneticStrength;
 

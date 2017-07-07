@@ -26,6 +26,8 @@ extern "C" {
 #include "component.h"
 #include "LSM6DS0_ACC_GYRO_driver.h"
 
+#include "MahonyAHRS.h"
+
 namespace Attitude {
 class AttitudeUtils {
 private:
@@ -34,12 +36,16 @@ private:
     static int counter;
     static float accSensitivity;
     static float gyroSensitivity;
-    static const float ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ = 9.8f;
+    static float magSensitivity;
+    static Q_cxyz q;
+    static AngularPos orientation;
+    static constexpr float ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ = 9.8f;
 public:
-    static status_t Initialize(DrvStatusTypeDef & result, void **hhandle);
-    static status_t GetAttitude(Acceleration &acc, AngularRate &angRate, void *handle);
+    static status_t Initialize(DrvStatusTypeDef & result, void **hhandle, void **magHandle);
+    static status_t GetAttitude(Acceleration &acc, AngularRate &angRate, MagneticField &magField, void *handle, void *magHandle);
     static status_t ResetAccSensitivity( void *handle );
     static status_t ResetGyroSensitivity( void *handle );
+    static status_t ResetMagSensitivity( void *handle );
 };
 
 }// namespace
