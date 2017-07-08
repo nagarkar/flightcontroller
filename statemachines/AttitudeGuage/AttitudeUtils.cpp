@@ -198,7 +198,7 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, voi
 	// CTRL_REG1_G Register
 	STATUS_T_SET(status, LSM6DS0_ACC_GYRO_W_GyroDataRate(handle, LSM6DS0_ACC_GYRO_ODR_G_952Hz));
 	//STATUS_T_SET(status, LSM6DS0_ACC_GYRO_W_GyroBandwidthSelection(handle, LSM6DS0_ACC_GYRO_BW_G_ULTRA_HIGH));
-	//STATUS_T_SET(status, LSM6DS0_ACC_GYRO_W_GyroFullScale(handle, LSM6DS0_ACC_GYRO_FS_G_2000dps));
+	STATUS_T_SET(status, LSM6DS0_ACC_GYRO_W_GyroFullScale(handle, LSM6DS0_ACC_GYRO_FS_G_245dps));
 	//STATUS_T_SET(status, LSM6DS0_ACC_GYRO_W_AutoIndexOnMultiAccess(handle, LSM6DS0_ACC_GYRO_IF_ADD_INC_ENABLE));
 
 	// CTRL_REG4 Register
@@ -236,7 +236,6 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, voi
 status_t  AttitudeUtils::GetAttitude(Acceleration &acc, AngularRate &angRate, MagneticField &magField, void *handle, void *magHandle) {
 
 	uint32_t marker = GetPerfCycle();
-
 	u8_t value;
 
 	LSM6DS0_ACC_GYRO_ReadReg(handle, LSM6DS0_ACC_GYRO_STATUS_REG, &value, 1);
@@ -250,7 +249,6 @@ status_t  AttitudeUtils::GetAttitude(Acceleration &acc, AngularRate &angRate, Ma
 
 	u8_t acc_8_t[6] = {0, 0, 0, 0, 0, 0};
 
-	// Read 12 registers at a time via I2C containing gyro and acc data.
 	HAL_STATUS_SET(status, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_G /* X Axis, low bit, gyro register */,
 		I2C_MEMADD_SIZE_8BIT /* MemAddress Size */, acc_8_t /* Data */, 6 /* Data Size */, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
 	extractXYZ(acc_8_t, angRate.x, angRate.y, angRate.z, gyroSensitivity/* mg/LSb */ * (1.0f/1000));
@@ -267,18 +265,22 @@ status_t  AttitudeUtils::GetAttitude(Acceleration &acc, AngularRate &angRate, Ma
 		HAL_STATUS_SET(status, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LIS3MDL_MAG_OUTX_L /* X Axis, low bit, gyro register */,
 				I2C_MEMADD_SIZE_8BIT /* MemAddress Size */, acc_8_t /* Data */, 6 /* Data Size */, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
 		extractXYZ(acc_8_t, cachedMagField.x, cachedMagField.y, cachedMagField.z, magSensitivity/* gauss/LSb */ * (1.0f/1000));
+		cachedMagField.z = 0.0f; // TODO: Don't read this in the first place if you are going to zero it out.
 	}
 	magField = cachedMagField;
 	acc = cachedAcc;
 	float mult = 3.14159265358979323846f/180;
 	MahonyAHRSupdate(&q, angRate.x * mult, angRate.y * mult, angRate.z * mult, acc.x, acc.y, acc.z, magField.x, magField.y, magField.z);
 	normalizeQ(q);
+
+	// Print attitude quaternion for matlab etc to read over serial and display
+	PRINT("orientation,%f,%f,%f,%f\r\n", q.q0, q.q1, q.q2, q.q3);
+
 	counter++;
 	uint32_t cycleCounter = GetElapsedCycles(marker);
 	cycleCounterAvg = (cycleCounterAvg * ((float)cycleCounterCount)/(cycleCounterCount + 1));
 	cycleCounterAvg += ((float)cycleCounter)/(cycleCounterCount + 1);
 	cycleCounterCount++;
-
 	return (status == HAL_OK) ? MEMS_SUCCESS : MEMS_ERROR;
 }
 }// namespace

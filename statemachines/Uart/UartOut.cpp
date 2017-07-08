@@ -218,33 +218,28 @@ QP::QState UartOut::Active(UartOut * const me, QP::QEvt const * const e) {
     switch (e->sig) {
         // ${Uart::UartOut::SM::Root::Started::Active}
         case Q_ENTRY_SIG: {
-            LOG_EVENT_NOQP(e);
             me->m_timer.armX(ACTIVE_TIMEOUT);
             status_ = Q_HANDLED();
             break;
         }
         // ${Uart::UartOut::SM::Root::Started::Active}
         case Q_EXIT_SIG: {
-            LOG_EVENT_NOQP(e);
             me->m_timer.disarm();
             status_ = Q_HANDLED();
             break;
         }
         // ${Uart::UartOut::SM::Root::Started::Active::initial}
         case Q_INIT_SIG: {
-            LOG_EVENT_NOQP(e);
             status_ = Q_TRAN(&Normal);
             break;
         }
         // ${Uart::UartOut::SM::Root::Started::Active::UART_OUT_CONTINUE}
         case UART_OUT_CONTINUE_SIG: {
-            LOG_EVENT_NOQP(e);
             status_ = Q_TRAN(&Active);
             break;
         }
         // ${Uart::UartOut::SM::Root::Started::Active::UART_OUT_DONE}
         case UART_OUT_DONE_SIG: {
-            LOG_EVENT_NOQP(e);
             status_ = Q_TRAN(&Inactive);
             break;
         }
@@ -268,7 +263,6 @@ QP::QState UartOut::Normal(UartOut * const me, QP::QEvt const * const e) {
     switch (e->sig) {
         // ${Uart::UartOut::SM::Root::Started::Active::Normal}
         case Q_ENTRY_SIG: {
-            LOG_EVENT_NOQP(e);
             Fifo &fifo = *(me->m_fifo);
             uint32_t addr = fifo.GetReadAddr();
             uint32_t len = fifo.GetUsedCount();
@@ -285,7 +279,6 @@ QP::QState UartOut::Normal(UartOut * const me, QP::QEvt const * const e) {
         }
         // ${Uart::UartOut::SM::Root::Started::Active::Normal::UART_OUT_DMA_DONE}
         case UART_OUT_DMA_DONE_SIG: {
-            LOG_EVENT_NOQP(e);
             me->m_fifo->IncReadIndex(me->m_writeCount);
             Evt *evt;
             if (me->m_fifo->GetUsedCount()) {
@@ -299,14 +292,12 @@ QP::QState UartOut::Normal(UartOut * const me, QP::QEvt const * const e) {
         }
         // ${Uart::UartOut::SM::Root::Started::Active::Normal::UART_OUT_STOP_REQ}
         case UART_OUT_STOP_REQ_SIG: {
-            LOG_EVENT_NOQP(e);
             me->Defer(e);
             status_ = Q_TRAN(&StopWait);
             break;
         }
         // ${Uart::UartOut::SM::Root::Started::Active::Normal::UART_OUT_WRITE_REQ}
         case UART_OUT_WRITE_REQ_SIG: {
-            LOG_EVENT_NOQP(e);
             me->PublishConfirmation(
                 EVT_CAST(*e),
                 UART_OUT_WRITE_CFM_SIG);

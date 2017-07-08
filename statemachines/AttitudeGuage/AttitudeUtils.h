@@ -27,6 +27,7 @@ extern "C" {
 #include "LSM6DS0_ACC_GYRO_driver.h"
 
 #include "MahonyAHRS.h"
+#include "MadgwickAHRS.h"
 
 namespace Attitude {
 class AttitudeUtils {
