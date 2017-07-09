@@ -64,7 +64,7 @@ private:
     void * m_mag_handle;
     float m_gyroRate;
     uint32_t m_measurements;
-    enum  { CHECK_UP_INTERVAL = 1000, MAX_RETRIES = 5 };
+    enum  { CHECK_UP_INTERVAL = 1000, MAX_RETRIES = 5, MAX_INIT_ATTEMPTS_BEFORE_RESET = 5};
     uint32_t m_previousMeasurementCount;
 
 public:

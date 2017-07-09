@@ -36,6 +36,12 @@ int QP_InitializeRun(void) {
     return QF::run();
 }
 
+extern "C" void HAL_SYSTICK_Callback(void) {
+	QP_QXK_ISR_ENTRY();
+	QP_Systick_Handler();
+	QP_QXK_ISR_EXIT();
+}
+
 void QP_Systick_Handler(void) {
     QP::QF::TICK_X(0, NULL);
 }

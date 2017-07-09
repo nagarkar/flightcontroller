@@ -58,13 +58,10 @@ extern DMA_HandleTypeDef hdma_usart2_tx;
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-  QP_QXK_ISR_ENTRY();
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-  QP_Systick_Handler();
-  QP_QXK_ISR_EXIT();
   /* USER CODE END SysTick_IRQn 1 */
 }
 

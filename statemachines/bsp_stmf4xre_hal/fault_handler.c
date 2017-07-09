@@ -34,6 +34,12 @@ void DebugMon_Handler( void ) {
 	infiniteLoop();
 }
 
+void Default_Fault_Handler(uint32_t interruptNumber) {
+	if (interruptNumber == 54) {
+		BSP_SystemResetOrLoop();
+	}
+}
+
 void Hard_Fault_Handler(uint32_t stack[]) {
 	static char msg[80];
 	//if((CoreDebug->DHCSR & 0x01) != 0) {

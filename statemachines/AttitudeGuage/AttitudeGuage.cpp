@@ -58,9 +58,14 @@ AttitudeGuage::AttitudeGuage()
 
 //${AttitudeGuage::AttitudeGuage::Init} ......................................
 status_t AttitudeGuage::Init() {
+	static int initializationAttempts = 0;
     volatile status_t status;
     DrvStatusTypeDef result = COMPONENT_OK;
     status = AttitudeUtils::Initialize(result, &m_acc_handle, &m_mag_handle);
+    initializationAttempts++;
+    if (initializationAttempts > MAX_INIT_ATTEMPTS_BEFORE_RESET) {
+    	BSP_SystemResetOrLoop();
+    }
     if (status == MEMS_ERROR) {
         PRINT("ERROR in AttitudeGuage.Init()\r\n");
         ErrorEvt *evt = new ErrorEvt(ATTITUDE_GUAGE_FAILED_SIG, 0, ERROR_HARDWARE);
@@ -243,13 +248,13 @@ QP::QState AttitudeGuage::Failed(AttitudeGuage * const me, QP::QEvt const * cons
             status_t status = MEMS_ERROR;
             while(retries < MAX_RETRIES && status == MEMS_ERROR) {
                 retries++;
-                QF_CRIT_ENTRY(0);
+                //QF_CRIT_ENTRY(0);
                 status = me->Init();
                 if (status == MEMS_ERROR) {
                     continue;
                 }
                 status = me->ProcessAttitude();
-                QF_CRIT_EXIT(0);
+                //QF_CRIT_EXIT(0);
                 if (status == MEMS_SUCCESS) {
                     break;
                 }

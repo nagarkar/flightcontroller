@@ -17,9 +17,7 @@
 //${BSP::bsp_stmf4xre_hal::bsp.cpp} ..........................................
 #include "bsp.h"
 #include "usart.h"
-#include "stm32f4xx_hal.h"
 #include "gpio.h"
-#include "stm32f4xx_hal_gpio.h"
 #include "macros.h"
 #include "qpcpp.h"
 
@@ -28,6 +26,9 @@
 #endif
 
 extern void initialise_monitor_handles(void);
+
+RTC_HandleTypeDef hrtc;
+void MX_RTC_Init(void);
 
 #define QF_CRIT_STAT_TYPE void *
 
@@ -39,6 +40,52 @@ __weak void BSP_Init() {
 #if defined(SEMIHOSTING_ENABLED)
     BSP_Initialize_Semihosting();
 #endif
+    MX_RTC_Init();
+	uint32_t resetCount = HAL_RTCEx_BKUPRead(&hrtc, RESETCOUNT_REG);
+	// If Reset Count > 5, it means we are starting from a power-on, so reset it to 0
+	if (resetCount > 5) {
+		HAL_RTCEx_BKUPWrite(&hrtc, RESETCOUNT_REG, 0);
+	}
+}
+
+__weak void Default_HandlerX(void) {
+	BSP_SystemResetOrLoop();
+}
+
+__weak void BSP_SystemResetOrLoop() {
+	uint32_t resetCount = HAL_RTCEx_BKUPRead(&hrtc, RESETCOUNT_REG);
+	if (resetCount < 5) {
+		HAL_RTCEx_BKUPWrite(&hrtc, RESETCOUNT_REG, resetCount + 1);
+		NVIC_SystemReset();
+	} else {
+		while(0==0){};
+	}
+
+}
+
+void MX_RTC_Init(void) {
+  hrtc.Instance = RTC;
+  hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+  hrtc.Init.AsynchPrediv = 127;
+  hrtc.Init.SynchPrediv = 255;
+  hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+  hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+  hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+  if (HAL_RTC_Init(&hrtc) != HAL_OK) {
+    Error_Handler();
+  }
+}
+
+void HAL_RTC_MspInit(RTC_HandleTypeDef* rtcHandle) {
+  if(rtcHandle->Instance==RTC) {
+    __HAL_RCC_RTC_ENABLE();
+  }
+}
+
+void HAL_RTC_MspDeInit(RTC_HandleTypeDef* rtcHandle) {
+  if(rtcHandle->Instance==RTC) {
+    __HAL_RCC_RTC_DISABLE();
+  }
 }
 
 __weak void BSP_OVERRIDE_UART2_CALLBACKS(USART_HANDLE_TYPE_DEF *uart) {

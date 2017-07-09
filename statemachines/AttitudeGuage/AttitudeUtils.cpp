@@ -158,7 +158,7 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, voi
 	cycleCounterCount = 0;
 	static uint8_t isInitialized = 0, isMagInitialized = 0;
 
-	QF_CRIT_ENTRY(0);
+	//QF_CRIT_ENTRY(0);
 
 	volatile status_t status = MEMS_SUCCESS;
 
@@ -176,7 +176,7 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, voi
 		}
 	}
 	if (result != COMPONENT_OK) {
-		QF_CRIT_EXIT(0);
+		//QF_CRIT_EXIT(0);
 		return Initialize(result, hhandle, hmagHandle);
 	}
 
@@ -191,7 +191,7 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, voi
 		result = BSP_MAGNETO_Sensor_Enable(magHandle);
 	}
 	if (result != COMPONENT_OK) {
-		QF_CRIT_EXIT(0);
+		//QF_CRIT_EXIT(0);
 		return Initialize(result, hhandle, hmagHandle);
 	}
 
@@ -228,7 +228,9 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, voi
 	//STATUS_T_SET(status, LSM6DS0_ACC_GYRO_W_XL_DataReadyOnINT(handle, LSM6DS0_ACC_GYRO_INT_DRDY_XL_ENABLE));
 	STATUS_T_SET(status, LSM6DS0_ACC_GYRO_W_GYRO_DataReadyOnINT(handle, LSM6DS0_ACC_GYRO_INT_DRDY_G_ENABLE));
 
-	QF_CRIT_EXIT(0);
+	STATUS_T_SET(status, LIS3MDL_MAG_W_OutputDataRate(magHandle, LIS3MDL_MAG_DO_80Hz)); // About 1/10th the gyro/acc rate.
+
+	//QF_CRIT_EXIT(0);
 
 	return status;
 }
@@ -255,22 +257,27 @@ status_t  AttitudeUtils::GetAttitude(Acceleration &acc, AngularRate &angRate, Ma
 
 	static Acceleration cachedAcc;
 	static MagneticField cachedMagField;
-	if (counter % 10 == 0) { // Sample acc and mag field at about 100Hz, or every 10 ms
+	//if (counter % 10 == 0) { // Sample acc and mag field at about 100Hz, or every 10 ms. Only works if Gyro freq is set to 952 Hz.
 
 		HAL_STATUS_SET(status, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_XL /* X Axis, low bit, gyro register */,
 			I2C_MEMADD_SIZE_8BIT /* MemAddress Size */, acc_8_t /* Data */, 6 /* Data Size */, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
 		extractXYZ(acc_8_t, cachedAcc.x, cachedAcc.y, cachedAcc.z, accSensitivity/* mdps/LSb */ * (1.0f/1000) * ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ);
+	//}
 
+	if (counter % 10 == 0) { // Sample acc and mag field at 80Hz, or every 10 ms. Only works if Gyro freq is set to 952 Hz.
 		ctx = (DrvContextTypeDef *)magHandle;
 		HAL_STATUS_SET(status, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LIS3MDL_MAG_OUTX_L /* X Axis, low bit, gyro register */,
 				I2C_MEMADD_SIZE_8BIT /* MemAddress Size */, acc_8_t /* Data */, 6 /* Data Size */, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
 		extractXYZ(acc_8_t, cachedMagField.x, cachedMagField.y, cachedMagField.z, magSensitivity/* gauss/LSb */ * (1.0f/1000));
-		cachedMagField.z = 0.0f; // TODO: Don't read this in the first place if you are going to zero it out.
+		// Emperically, zeroing out z axis mag field seems to reduce slow rotations of the attitude when the board is stationary.
+		// TODO: Don't read this in the first place if you are going to zero it out.
+		cachedMagField.z = 0.0f;
 	}
 	magField = cachedMagField;
 	acc = cachedAcc;
 	float mult = 3.14159265358979323846f/180;
 	MahonyAHRSupdate(&q, angRate.x * mult, angRate.y * mult, angRate.z * mult, acc.x, acc.y, acc.z, magField.x, magField.y, magField.z);
+	//MahonyAHRSupdateIMU(&q, angRate.x * mult, angRate.y * mult, angRate.z * mult, acc.x, acc.y, acc.z);
 	normalizeQ(q);
 
 	// Print attitude quaternion for matlab etc to read over serial and display

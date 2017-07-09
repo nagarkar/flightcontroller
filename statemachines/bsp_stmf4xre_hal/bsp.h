@@ -27,12 +27,17 @@
 #include <stdio.h>
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_rtc.h"
+#include "stm32f4xx_hal_rtc_ex.h"
 #include "usart.h"
 
 #define BSP_TICKS_PER_SEC            (1000)
 #define BSP_MSEC_PER_TICK            (1000 / BSP_TICKS_PER_SEC)
 
+#define RESETCOUNT_REG RTC_BKP_DR0
+
 void BSP_Init(void);
+void BSP_SystemResetOrLoop(void);
 
 // Cycle Counters         //
 #define GetElapsedCycles(fromCycle)    (DWT->CYCCNT - (fromCycle))
