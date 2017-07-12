@@ -71,6 +71,7 @@ Q_cxyz AttitudeUtils::q = {1.0f, 0.0f, 0.0f, 0.0f};
 const float32_t mag_rot_f32[9] = {	0.9673f, 	0.1121f, 	-0.2277f,
 	    							0.0189f,  	-0.9266f,	-0.3756f,
 									0.2530,		-0.3590,    0.8984};
+
 arm_matrix_instance_f32 mag_rot = {3, 3, (float32_t *)mag_rot_f32};
 
 const float32_t acc_rot_f32[9] = {	0.9673f, 	0.1121f, 	-0.2277f,
@@ -102,14 +103,14 @@ static void updateMagVector(MagneticField &magField) {
 	magField.z -= MAG_OFFSET_Z;
 
 	// Rotate
-	//float32_t vect_members[3] = { magField.x, magField.y, magField.z };
-	//arm_matrix_instance_f32 vect = {3, 1, vect_members};
-	//float32_t result[3];
-	//arm_matrix_instance_f32 resultVector = {3, 1, result};
-	//arm_mat_mult_f32(&mag_rot, &vect, &resultVector);
-	//magField.x = resultVector.pData[0];
-	//magField.y = resultVector.pData[1];
-	//magField.z = resultVector.pData[2];
+//	float32_t vect_members[3] = { magField.x, magField.y, magField.z };
+//	arm_matrix_instance_f32 vect = {3, 1, vect_members};
+//	float32_t result[3];
+//	arm_matrix_instance_f32 resultVector = {3, 1, result};
+//	arm_mat_mult_f32(&mag_rot, &vect, &resultVector);
+//	magField.x = resultVector.pData[0];
+//	magField.y = resultVector.pData[1];
+//	magField.z = resultVector.pData[2];
 
 	// Scale
 	magField.x /= MAG_RADIUS_X;

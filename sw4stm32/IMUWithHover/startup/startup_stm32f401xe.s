@@ -140,6 +140,11 @@ Default_Handler:
 Infinite_Loop:
   b  Infinite_Loop
   .size  Default_Handler, .-Default_Handler
+
+.align 4
+/* The address of the NVIC interrupt control register. */
+NVIC_INT_CTRL_CONST: .word 0xe000ed04
+
 /******************************************************************************
 *
 * The minimal vector table for a Cortex M3. Note that the proper constructs
