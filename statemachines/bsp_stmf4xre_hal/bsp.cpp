@@ -21,6 +21,8 @@
 #include "macros.h"
 #include "qpcpp.h"
 
+#define MAX_RESET_COUNT_BEFORE_FAILURE 100
+
 #ifdef __cplusplus
  extern "C" {
 #endif
@@ -48,13 +50,9 @@ __weak void BSP_Init() {
 	}
 }
 
-__weak void Default_HandlerX(void) {
-	BSP_SystemResetOrLoop();
-}
-
 __weak void BSP_SystemResetOrLoop() {
 	uint32_t resetCount = HAL_RTCEx_BKUPRead(&hrtc, RESETCOUNT_REG);
-	if (resetCount < 5) {
+	if (resetCount < MAX_RESET_COUNT_BEFORE_FAILURE) {
 		HAL_RTCEx_BKUPWrite(&hrtc, RESETCOUNT_REG, resetCount + 1);
 		NVIC_SystemReset();
 	} else {

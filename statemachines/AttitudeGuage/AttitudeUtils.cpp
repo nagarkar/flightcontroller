@@ -1,4 +1,5 @@
 #include "AttitudeUtils.h"
+#include "app_ao_config.h"
 
 // QP/Framework
 #include "bsp.h"
@@ -20,6 +21,28 @@
 #include "x_nucleo_iks01a1_magneto.h"
 #include "LIS3MDL_MAG_driver.h"
 #include "LIS3MDL_MAG_driver_HL.h"
+#include "arm_math.h"
+
+#define NUM_TAPS_19              	19
+#define DIRTY_MEASUREMENT_TIME	 	100
+#define TIME_FOR_MEAN_MEASUREMENT 	1000
+
+static uint16_t numTaps19 = NUM_TAPS_19;
+
+static float32_t FILTER_COEFF_LPF_50HZ[NUM_TAPS_19] = {
+	0.0006,    0.0021,    0.0063,    0.0149,	0.0288,		0.0471,    0.0673,    0.0858,	 0.0988,
+	0.1035,
+	0.0988,    0.0858,    0.0673,    0.0471,	0.0288,		0.0149,    0.0063,    0.0021,    0.0006,
+};
+
+static float32_t FILTER_STATE_ACC_X[NUM_TAPS_19],  FILTER_STATE_ACC_Y[NUM_TAPS_19], FILTER_STATE_ACC_Z[NUM_TAPS_19];
+static arm_fir_instance_f32 accFilterX, accFilterY, accFilterZ;
+
+static float32_t FILTER_STATE_GYRO_X[NUM_TAPS_19],  FILTER_STATE_GYRO_Y[NUM_TAPS_19], FILTER_STATE_GYRO_Z[NUM_TAPS_19];
+static arm_fir_instance_f32 gyroFilterX, gyroFilterY, gyroFilterZ;
+
+static float32_t FILTER_STATE_MAG_X[NUM_TAPS_19],  FILTER_STATE_MAG_Y[NUM_TAPS_19], FILTER_STATE_MAG_Z[NUM_TAPS_19];
+static arm_fir_instance_f32 magFilterX, magFilterY, magFilterZ;
 
 
 using namespace StdEvents;
@@ -37,8 +60,31 @@ Q_cxyz AttitudeUtils::q = {1.0f, 0.0f, 0.0f, 0.0f};
 #define STATUS_T_SET(status, fn)  status =  ((fn) == MEMS_ERROR) ? MEMS_ERROR: status
 #define HAL_STATUS_SET(status, fn)  status = (status == HAL_OK) ? (fn) : status;
 
-static void extractXYZ(u8_t *regValue, float &x, float &y, float &z, float sensitivity);
+#define MAG_OFFSET_X  -0.0217
+#define MAG_OFFSET_Y  -0.0852
+#define MAG_OFFSET_Z  0.4549
+
+#define MAG_RADIUS_X  0.5070
+#define MAG_RADIUS_Y  0.4698
+#define MAG_RADIUS_Z  0.4546
+
+const float32_t mag_rot_f32[9] = {	0.9673f, 	0.1121f, 	-0.2277f,
+	    							0.0189f,  	-0.9266f,	-0.3756f,
+									0.2530,		-0.3590,    0.8984};
+arm_matrix_instance_f32 mag_rot = {3, 3, (float32_t *)mag_rot_f32};
+
+const float32_t acc_rot_f32[9] = {	0.9673f, 	0.1121f, 	-0.2277f,
+	    							0.0189f,  	-0.9266f,	-0.3756f,
+									0.2530,		-0.3590,    0.8984};
+arm_matrix_instance_f32 acc_rot = {3, 3, (float32_t *)acc_rot_f32};
+
+
+static void extractXYZ(u8_t *regValue, AttitudeDim &dims, arm_fir_instance_f32 &filterX,
+	arm_fir_instance_f32 &filterY, arm_fir_instance_f32 &filterZ, float sensitivity);
+static void extractXYZNoFilter(u8_t *regValue, AttitudeDim &dims,  float sensitivity);
+
 static void normalizeQ(Q_cxyz &q);
+static void updateMagVector(MagneticField &magField);
 
 static void normalizeQ(Q_cxyz &q) {
 	float norm = q.q0*q.q0 + q.q1*q.q1 + q.q2*q.q2 + q.q3*q.q3;
@@ -48,21 +94,64 @@ static void normalizeQ(Q_cxyz &q) {
 	q.q3 = q.q3/sqrtf(norm);
 }
 
-static void extractXYZ(u8_t *regValue, float &x, float &y, float &z, float sensitivity) {
-	SensorAxes_t acceleration;
+static void updateMagVector(MagneticField &magField) {
+
+	// Center
+	magField.x -= MAG_OFFSET_X;
+	magField.y -= MAG_OFFSET_Y;
+	magField.z -= MAG_OFFSET_Z;
+
+	// Rotate
+	//float32_t vect_members[3] = { magField.x, magField.y, magField.z };
+	//arm_matrix_instance_f32 vect = {3, 1, vect_members};
+	//float32_t result[3];
+	//arm_matrix_instance_f32 resultVector = {3, 1, result};
+	//arm_mat_mult_f32(&mag_rot, &vect, &resultVector);
+	//magField.x = resultVector.pData[0];
+	//magField.y = resultVector.pData[1];
+	//magField.z = resultVector.pData[2];
+
+	// Scale
+	magField.x /= MAG_RADIUS_X;
+	magField.y /= MAG_RADIUS_Y;
+	magField.z /= MAG_RADIUS_Z;
+}
+
+static void extractXYZ(u8_t *regValue, AttitudeDim &dims, arm_fir_instance_f32 &filterX,
+		arm_fir_instance_f32 &filterY, arm_fir_instance_f32 &filterZ, float sensitivity) {
+
+	float filterOutput;
+
 	int16_t dataRaw[3];
 	dataRaw[0] = ( ( ( ( int16_t )regValue[1] ) << 8 ) + ( int16_t )regValue[0] );
 	dataRaw[1] = ( ( ( ( int16_t )regValue[3] ) << 8 ) + ( int16_t )regValue[2] );
 	dataRaw[2] = ( ( ( ( int16_t )regValue[5] ) << 8 ) + ( int16_t )regValue[4] );
 
-	acceleration.AXIS_X = ( int32_t )( dataRaw[0] * sensitivity );
-	acceleration.AXIS_Y = ( int32_t )( dataRaw[1] * sensitivity );
-	acceleration.AXIS_Z = ( int32_t )( dataRaw[2] * sensitivity );
+	dims.x = dataRaw[0] * sensitivity;
+	arm_fir_f32(&accFilterX, &dims.x, &filterOutput, 1);
+	dims.x = filterOutput;
 
-	x = dataRaw[0] * sensitivity;
-	y = dataRaw[1] * sensitivity;
-	z = dataRaw[2] * sensitivity;
+	dims.y = dataRaw[1] * sensitivity;
+	arm_fir_f32(&accFilterY, &dims.y, &filterOutput, 1);
+	dims.y = filterOutput;
+
+	dims.z = dataRaw[2] * sensitivity;
+	arm_fir_f32(&accFilterZ, &dims.z, &filterOutput, 1);
+	dims.z = filterOutput;
 }
+
+static void extractXYZNoFilter(u8_t *regValue, AttitudeDim &dims, float sensitivity) {
+
+	int16_t dataRaw[3];
+	dataRaw[0] = ( ( ( ( int16_t )regValue[1] ) << 8 ) + ( int16_t )regValue[0] );
+	dataRaw[1] = ( ( ( ( int16_t )regValue[3] ) << 8 ) + ( int16_t )regValue[2] );
+	dataRaw[2] = ( ( ( ( int16_t )regValue[5] ) << 8 ) + ( int16_t )regValue[4] );
+
+	dims.x = dataRaw[0] * sensitivity;
+	dims.y = dataRaw[1] * sensitivity;
+	dims.z = dataRaw[2] * sensitivity;
+}
+
 
 /**
  * Copied from LSM6DS0_ACC_GYRO_driver_HL.c (method: LSM6DS0_X_Get_Sensitivity). Make sure this is in sync with method.
@@ -232,6 +321,18 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, voi
 
 	//QF_CRIT_EXIT(0);
 
+	arm_fir_init_f32(&accFilterX, numTaps19, &FILTER_COEFF_LPF_50HZ[0], &FILTER_STATE_ACC_X[0], 1);
+	arm_fir_init_f32(&accFilterY, numTaps19, &FILTER_COEFF_LPF_50HZ[0], &FILTER_STATE_ACC_Y[0], 1);
+	arm_fir_init_f32(&accFilterZ, numTaps19, &FILTER_COEFF_LPF_50HZ[0], &FILTER_STATE_ACC_Z[0], 1);
+
+	arm_fir_init_f32(&gyroFilterX, numTaps19, &FILTER_COEFF_LPF_50HZ[0], &FILTER_STATE_GYRO_X[0], 1);
+	arm_fir_init_f32(&gyroFilterY, numTaps19, &FILTER_COEFF_LPF_50HZ[0], &FILTER_STATE_GYRO_Y[0], 1);
+	arm_fir_init_f32(&gyroFilterZ, numTaps19, &FILTER_COEFF_LPF_50HZ[0], &FILTER_STATE_GYRO_Z[0], 1);
+
+	arm_fir_init_f32(&magFilterX, numTaps19, &FILTER_COEFF_LPF_50HZ[0], &FILTER_STATE_MAG_X[0], 1);
+	arm_fir_init_f32(&magFilterY, numTaps19, &FILTER_COEFF_LPF_50HZ[0], &FILTER_STATE_MAG_Y[0], 1);
+	arm_fir_init_f32(&magFilterZ, numTaps19, &FILTER_COEFF_LPF_50HZ[0], &FILTER_STATE_MAG_Z[0], 1);
+
 	return status;
 }
 
@@ -250,10 +351,30 @@ status_t  AttitudeUtils::GetAttitude(Acceleration &acc, AngularRate &angRate, Ma
 	HAL_StatusTypeDef status = HAL_OK;
 
 	u8_t acc_8_t[6] = {0, 0, 0, 0, 0, 0};
-
+	static float angRateMeanX = 0, angRateMeanY = 0, angRateMeanZ = 0;
 	HAL_STATUS_SET(status, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_G /* X Axis, low bit, gyro register */,
 		I2C_MEMADD_SIZE_8BIT /* MemAddress Size */, acc_8_t /* Data */, 6 /* Data Size */, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
-	extractXYZ(acc_8_t, angRate.x, angRate.y, angRate.z, gyroSensitivity/* mg/LSb */ * (1.0f/1000));
+#if defined(GYRO_LPF)
+	extractXYZ(acc_8_t, angRate, gyroFilterX, gyroFilterY, gyroFilterZ, gyroSensitivity/* mg/LSb */ * (1.0f/1000));
+#else
+	extractXYZNoFilter(acc_8_t, angRate, gyroSensitivity/* mg/LSb */ * (1.0f/1000));
+#endif
+
+#if defined(GYRO_MEAN_ADJUST)
+	if (counter > DIRTY_MEASUREMENT_TIME && counter < TIME_FOR_MEAN_MEASUREMENT) {
+		angRateMeanX += angRate.x; angRateMeanY += angRate.y; angRateMeanZ += angRate.z;
+	} else if (counter == TIME_FOR_MEAN_MEASUREMENT) {
+		int divisor = counter - DIRTY_MEASUREMENT_TIME;
+		angRateMeanX /= divisor; angRateMeanY /= divisor; angRateMeanZ /= divisor;
+	}
+	if (counter > TIME_FOR_MEAN_MEASUREMENT) {
+		angRate.x -= angRateMeanX; angRate.y -= angRateMeanY; angRate.z -= angRateMeanZ;
+	}
+#endif
+
+#if defined(OUTPUT_GYRO_MEASUREMENTS)
+	PRINT("gyro,%f,%f,%f\r\n", angRate.x, angRate.y, angRate.z);
+#endif
 
 	static Acceleration cachedAcc;
 	static MagneticField cachedMagField;
@@ -261,17 +382,38 @@ status_t  AttitudeUtils::GetAttitude(Acceleration &acc, AngularRate &angRate, Ma
 
 		HAL_STATUS_SET(status, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_XL /* X Axis, low bit, gyro register */,
 			I2C_MEMADD_SIZE_8BIT /* MemAddress Size */, acc_8_t /* Data */, 6 /* Data Size */, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
-		extractXYZ(acc_8_t, cachedAcc.x, cachedAcc.y, cachedAcc.z, accSensitivity/* mdps/LSb */ * (1.0f/1000) * ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ);
+#if defined(ACC_LPF)
+		extractXYZ(acc_8_t, cachedAcc, accFilterX, accFilterY, accFilterZ, accSensitivity/* mdps/LSb */ * (1.0f/1000) * ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ);
+#else
+		extractXYZNoFilter(acc_8_t, cachedAcc, accSensitivity/* mdps/LSb */ * (1.0f/1000) * ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ);
+#endif
+#if defined(OUTPUT_ACC_MEASUREMENTS)
+		PRINT("acc,%f,%f,%f\r\n", cachedAcc.x, cachedAcc.y, cachedAcc.z);
+#endif
 	//}
 
 	if (counter % 10 == 0) { // Sample acc and mag field at 80Hz, or every 10 ms. Only works if Gyro freq is set to 952 Hz.
 		ctx = (DrvContextTypeDef *)magHandle;
 		HAL_STATUS_SET(status, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LIS3MDL_MAG_OUTX_L /* X Axis, low bit, gyro register */,
 				I2C_MEMADD_SIZE_8BIT /* MemAddress Size */, acc_8_t /* Data */, 6 /* Data Size */, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
-		extractXYZ(acc_8_t, cachedMagField.x, cachedMagField.y, cachedMagField.z, magSensitivity/* gauss/LSb */ * (1.0f/1000));
+#if defined(MAG_LPF)
+		extractXYZ(acc_8_t, cachedMagField, magFilterX, magFilterY, magFilterZ, magSensitivity/* gauss/LSb */ * (1.0f/1000));
+#else
+		extractXYZNoFilter(acc_8_t, cachedMagField, magSensitivity/* gauss/LSb */ * (1.0f/1000));
+#endif
+
+#if defined(OUTPUT_MAG_MEASUREMENTS)
+		PRINT("mag,%f,%f,%f\r\n", cachedMagField.x, cachedMagField.y, cachedMagField.z);
+#endif
 		// Emperically, zeroing out z axis mag field seems to reduce slow rotations of the attitude when the board is stationary.
 		// TODO: Don't read this in the first place if you are going to zero it out.
+#if defined(MAG_FIELD_ELLIPSOID_FIT)
+		updateMagVector(cachedMagField);
+#endif
+#if defined(ZERO_Z_AXIS_MAG_FIELD)
 		cachedMagField.z = 0.0f;
+#endif
+
 	}
 	magField = cachedMagField;
 	acc = cachedAcc;
@@ -280,9 +422,12 @@ status_t  AttitudeUtils::GetAttitude(Acceleration &acc, AngularRate &angRate, Ma
 	//MahonyAHRSupdateIMU(&q, angRate.x * mult, angRate.y * mult, angRate.z * mult, acc.x, acc.y, acc.z);
 	normalizeQ(q);
 
+#if defined(OUTPUT_ATTITUDE_QUATERNION)
 	// Print attitude quaternion for matlab etc to read over serial and display
-	PRINT("orientation,%f,%f,%f,%f\r\n", q.q0, q.q1, q.q2, q.q3);
-
+	if (counter > TIME_FOR_MEAN_MEASUREMENT) {
+		PRINT("orientation,%f,%f,%f,%f\r\n", q.q0, q.q1, q.q2, q.q3);
+	}
+#endif
 	counter++;
 	uint32_t cycleCounter = GetElapsedCycles(marker);
 	cycleCounterAvg = (cycleCounterAvg * ((float)cycleCounterCount)/(cycleCounterCount + 1));

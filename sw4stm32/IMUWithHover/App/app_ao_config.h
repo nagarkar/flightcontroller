@@ -15,6 +15,20 @@ extern "C" {
 #include "active_enum.h"
 
 #define _ACTIVE_LOG_ENABLED_
+
+// Enabled Features
+#define ACC_LPF
+#define MAG_LPF
+//#define GYRO_LPF
+#define GYRO_MEAN_ADJUST
+//#define OUTPUT_ACC_MEASUREMENTS
+//#define OUTPUT_GYRO_MEASUREMENTS
+//#define OUTPUT_MAG_MEASUREMENTS
+//#define MAG_FIELD_ELLIPSOID_FIT
+#define OUTPUT_ATTITUDE_QUATERNION
+//#define PUBLISH_ATTITUDE_MEASUREMENTS
+//#define ZERO_Z_AXIS_MAG_FIELD
+
 using namespace QP;
 
 #define SIG_LIST(m)  \
@@ -105,8 +119,7 @@ enum SignalAliases {
 
 // Higher value corresponds to higher priority, so later enum values are higher
 // priority. The maximum priority is defined in qf_port.h as QF_MAX_ACTIVE (32)
-enum
-{
+enum {
 	PRIO_UART2_ACT = 1 /* Can't start with zero; throws assertion*/,
 	PRIO_UART2_COMMANDER,
 	PRIO_BUMPER,
@@ -115,6 +128,7 @@ enum
 	PRIO_DRIVE,
 	PRIO_MAX = QF_MAX_ACTIVE
 };
+
 
 #ifdef __cplusplus
 }

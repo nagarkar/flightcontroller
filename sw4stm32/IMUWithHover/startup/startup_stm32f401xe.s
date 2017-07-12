@@ -50,6 +50,7 @@
 
 .global  g_pfnVectors
 .global  Default_Handler
+.weak Default_Fault_Handler
 
 /* start address for the initialization values of the .data section. 
 defined in linker script */
@@ -126,6 +127,16 @@ LoopFillZerobss:
 */
     .section  .text.Default_Handler,"ax",%progbits
 Default_Handler:
+  /* See: http://www.freertos.org/Debugging-Hard-Faults-On-Cortex-M-Microcontrollers.html
+  /* Load the address of the interrupt control register into r3. */
+  ldr r3, NVIC_INT_CTRL_CONST
+  /* Load the value of the interrupt control register into r2 from the
+  address held in r3. */
+  ldr r0, [r3, #0]
+  /* The interrupt number is in the least significant byte - clear all
+  other bits. */
+  uxtb r0, r0
+  bl Default_Fault_Handler;
 Infinite_Loop:
   b  Infinite_Loop
   .size  Default_Handler, .-Default_Handler

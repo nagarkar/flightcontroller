@@ -22,7 +22,7 @@
 
 // WORKING SETTINGS:
 #define sampleFreq	930.0f			// sample frequency in Hz
-#define twoKpDef	(2.0f * 0.4f)	// 2 * proportional gain
+#define twoKpDef	(2.0f * 0.6f)	// 2 * proportional gain
 #define twoKiDef	(2.0f * 0.005f)	// 2 * integral gain
 
 // EXPERIMENTAL SETTINGS:
