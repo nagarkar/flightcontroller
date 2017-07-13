@@ -337,6 +337,109 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, voi
 	return status;
 }
 
+status_t AttitudeUtils::isGyroDataReady(void *handle) {
+	u8_t value;
+
+	LSM6DS0_ACC_GYRO_ReadReg(handle, LSM6DS0_ACC_GYRO_STATUS_REG, &value, 1);
+
+	if ((value & LSM6DS0_ACC_GYRO_GDA_MASK) != LSM6DS0_ACC_GYRO_GDA_UP) {
+		return MEMS_SUCCESS;
+	}
+	return MEMS_ERROR;
+}
+
+
+status_t AttitudeUtils::StartDMATransfer(MagneticField &magField, void *handle,  void *magHandle, u8_t *buff, uint32_t length) {
+
+	HAL_StatusTypeDef status = HAL_OK;
+	DrvContextTypeDef *ctx = (DrvContextTypeDef *)magHandle;
+	if (counter % 10 == 0) { // Sample acc and mag field at 80Hz, or every 10 ms. Only works if Gyro freq is set to 952 Hz.
+		u8_t mag_raw_data[6] = {0, 0, 0, 0, 0, 0};
+		HAL_STATUS_SET(status, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LIS3MDL_MAG_OUTX_L /* X Axis, low bit, gyro register */,
+				I2C_MEMADD_SIZE_8BIT /* MemAddress Size */, mag_raw_data /* Data */, 6 /* Data Size */, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
+#if defined(MAG_LPF)
+		extractXYZ(mag_raw_data, magField, magFilterX, magFilterY, magFilterZ, magSensitivity/* gauss/LSb */ * (1.0f/1000));
+#else
+		extractXYZNoFilter(acc_8_t, magField, magSensitivity/* gauss/LSb */ * (1.0f/1000));
+#endif
+
+#if defined(OUTPUT_MAG_MEASUREMENTS)
+		PRINT("mag,%f,%f,%f\r\n", magField.x, magField.y, magField.z);
+#endif
+		// Emperically, zeroing out z axis mag field seems to reduce slow rotations of the attitude when the board is stationary.
+		// TODO: Don't read this in the first place if you are going to zero it out.
+#if defined(MAG_FIELD_ELLIPSOID_FIT)
+		updateMagVector(magField);
+#endif
+#if defined(ZERO_Z_AXIS_MAG_FIELD)
+		magField.z = 0.0f;
+#endif
+	}
+
+	ctx = (DrvContextTypeDef *)handle;
+	status = HAL_I2C_Mem_Read_DMA(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_G, I2C_MEMADD_SIZE_8BIT, buff, length);
+	if (status != HAL_OK) {
+		PRINT("Error");
+	}
+}
+
+status_t  AttitudeUtils::GetAttitude2(u8_t* gyro_acc_data, Acceleration &acc, AngularRate &angRate, MagneticField magField) {
+
+	uint32_t marker = GetPerfCycle();
+
+	HAL_StatusTypeDef status = HAL_OK;
+
+	static float angRateMeanX = 0, angRateMeanY = 0, angRateMeanZ = 0;
+#if defined(GYRO_LPF)
+	extractXYZ(gyro_acc_data, angRate, gyroFilterX, gyroFilterY, gyroFilterZ, gyroSensitivity/* mg/LSb */ * (1.0f/1000));
+#else
+	extractXYZNoFilter(gyro_acc_data, angRate, gyroSensitivity/* mg/LSb */ * (1.0f/1000));
+#endif
+
+#if defined(GYRO_MEAN_ADJUST)
+	if (counter > DIRTY_MEASUREMENT_TIME && counter < TIME_FOR_MEAN_MEASUREMENT) {
+		angRateMeanX += angRate.x; angRateMeanY += angRate.y; angRateMeanZ += angRate.z;
+	} else if (counter == TIME_FOR_MEAN_MEASUREMENT) {
+		int divisor = counter - DIRTY_MEASUREMENT_TIME;
+		angRateMeanX /= divisor; angRateMeanY /= divisor; angRateMeanZ /= divisor;
+	}
+	if (counter > TIME_FOR_MEAN_MEASUREMENT) {
+		angRate.x -= angRateMeanX; angRate.y -= angRateMeanY; angRate.z -= angRateMeanZ;
+	}
+#endif
+
+#if defined(OUTPUT_GYRO_MEASUREMENTS)
+	PRINT("gyro,%f,%f,%f\r\n", angRate.x, angRate.y, angRate.z);
+#endif
+
+#if defined(ACC_LPF)
+		extractXYZ(gyro_acc_data + 6, acc, accFilterX, accFilterY, accFilterZ, accSensitivity/* mdps/LSb */ * (1.0f/1000) * ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ);
+#else
+		extractXYZNoFilter(gyro_acc_data + 6, acc, accSensitivity/* mdps/LSb */ * (1.0f/1000) * ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ);
+#endif
+#if defined(OUTPUT_ACC_MEASUREMENTS)
+		PRINT("acc,%f,%f,%f\r\n", acc.x, acc.y, acc.z);
+#endif
+
+	float mult = 3.14159265f/180;
+	MahonyAHRSupdate(&q, angRate.x * mult, angRate.y * mult, angRate.z * mult, acc.x, acc.y, acc.z, magField.x, magField.y, magField.z);
+	normalizeQ(q);
+
+#if defined(OUTPUT_ATTITUDE_QUATERNION)
+	// Print attitude quaternion for matlab etc to read over serial and display
+	if (counter > TIME_FOR_MEAN_MEASUREMENT) {
+		PRINT("orientation,%f,%f,%f,%f\r\n", q.q0, q.q1, q.q2, q.q3);
+	}
+#endif
+	counter++;
+	uint32_t cycleCounter = GetElapsedCycles(marker);
+	cycleCounterAvg = (cycleCounterAvg * ((float)cycleCounterCount)/(cycleCounterCount + 1));
+	cycleCounterAvg += ((float)cycleCounter)/(cycleCounterCount + 1);
+	cycleCounterCount++;
+	return (status == HAL_OK) ? MEMS_SUCCESS : MEMS_ERROR;
+}
+
+
 status_t  AttitudeUtils::GetAttitude(Acceleration &acc, AngularRate &angRate, MagneticField &magField, void *handle, void *magHandle) {
 
 	uint32_t marker = GetPerfCycle();
@@ -377,19 +480,17 @@ status_t  AttitudeUtils::GetAttitude(Acceleration &acc, AngularRate &angRate, Ma
 	PRINT("gyro,%f,%f,%f\r\n", angRate.x, angRate.y, angRate.z);
 #endif
 
-	static Acceleration cachedAcc;
-	static MagneticField cachedMagField;
 	//if (counter % 10 == 0) { // Sample acc and mag field at about 100Hz, or every 10 ms. Only works if Gyro freq is set to 952 Hz.
 
 		HAL_STATUS_SET(status, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_XL /* X Axis, low bit, gyro register */,
 			I2C_MEMADD_SIZE_8BIT /* MemAddress Size */, acc_8_t /* Data */, 6 /* Data Size */, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
 #if defined(ACC_LPF)
-		extractXYZ(acc_8_t, cachedAcc, accFilterX, accFilterY, accFilterZ, accSensitivity/* mdps/LSb */ * (1.0f/1000) * ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ);
+		extractXYZ(acc_8_t, acc, accFilterX, accFilterY, accFilterZ, accSensitivity/* mdps/LSb */ * (1.0f/1000) * ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ);
 #else
-		extractXYZNoFilter(acc_8_t, cachedAcc, accSensitivity/* mdps/LSb */ * (1.0f/1000) * ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ);
+		extractXYZNoFilter(acc_8_t, acc, accSensitivity/* mdps/LSb */ * (1.0f/1000) * ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ);
 #endif
 #if defined(OUTPUT_ACC_MEASUREMENTS)
-		PRINT("acc,%f,%f,%f\r\n", cachedAcc.x, cachedAcc.y, cachedAcc.z);
+		PRINT("acc,%f,%f,%f\r\n", acc.x, acc.y, acc.z);
 #endif
 	//}
 
@@ -398,26 +499,24 @@ status_t  AttitudeUtils::GetAttitude(Acceleration &acc, AngularRate &angRate, Ma
 		HAL_STATUS_SET(status, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LIS3MDL_MAG_OUTX_L /* X Axis, low bit, gyro register */,
 				I2C_MEMADD_SIZE_8BIT /* MemAddress Size */, acc_8_t /* Data */, 6 /* Data Size */, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
 #if defined(MAG_LPF)
-		extractXYZ(acc_8_t, cachedMagField, magFilterX, magFilterY, magFilterZ, magSensitivity/* gauss/LSb */ * (1.0f/1000));
+		extractXYZ(acc_8_t, magField, magFilterX, magFilterY, magFilterZ, magSensitivity/* gauss/LSb */ * (1.0f/1000));
 #else
-		extractXYZNoFilter(acc_8_t, cachedMagField, magSensitivity/* gauss/LSb */ * (1.0f/1000));
+		extractXYZNoFilter(acc_8_t, magField, magSensitivity/* gauss/LSb */ * (1.0f/1000));
 #endif
 
 #if defined(OUTPUT_MAG_MEASUREMENTS)
-		PRINT("mag,%f,%f,%f\r\n", cachedMagField.x, cachedMagField.y, cachedMagField.z);
+		PRINT("mag,%f,%f,%f\r\n", magField.x, magField.y, magField.z);
 #endif
 		// Emperically, zeroing out z axis mag field seems to reduce slow rotations of the attitude when the board is stationary.
 		// TODO: Don't read this in the first place if you are going to zero it out.
 #if defined(MAG_FIELD_ELLIPSOID_FIT)
-		updateMagVector(cachedMagField);
+		updateMagVector(magField);
 #endif
 #if defined(ZERO_Z_AXIS_MAG_FIELD)
-		cachedMagField.z = 0.0f;
+		magField.z = 0.0f;
 #endif
 
 	}
-	magField = cachedMagField;
-	acc = cachedAcc;
 	float mult = 3.14159265358979323846f/180;
 	MahonyAHRSupdate(&q, angRate.x * mult, angRate.y * mult, angRate.z * mult, acc.x, acc.y, acc.z, magField.x, magField.y, magField.z);
 	//MahonyAHRSupdateIMU(&q, angRate.x * mult, angRate.y * mult, angRate.z * mult, acc.x, acc.y, acc.z);

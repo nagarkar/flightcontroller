@@ -43,7 +43,10 @@ private:
     static constexpr float ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ = 9.8f;
 public:
     static status_t Initialize(DrvStatusTypeDef & result, void **hhandle, void **magHandle);
+    static status_t isGyroDataReady(void *handle);
     static status_t GetAttitude(Acceleration &acc, AngularRate &angRate, MagneticField &magField, void *handle, void *magHandle);
+    static status_t GetAttitude2(u8_t* gyro_acc_data, Acceleration &acc, AngularRate &angRate, MagneticField magField);
+    static status_t StartDMATransfer(MagneticField &magField, void *handle,  void *magHandle, u8_t *buff, uint32_t length);
     static status_t ResetAccSensitivity( void *handle );
     static status_t ResetGyroSensitivity( void *handle );
     static status_t ResetMagSensitivity( void *handle );

@@ -18,23 +18,75 @@
 #include "AttitudeGuage.h"
 
 #include "x_nucleo_iks01a1_accelero.h"
+#include "active_config.h"
 #include "app_ao_config.h"
 #include "active_log.h"
 
 using namespace StdEvents;
 using namespace QP;
 
-namespace Attitude {
+extern "C" {
 
-extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+DMA_HandleTypeDef hdma_rx;
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     if (GPIO_Pin != GPIO_PIN_5) {
         return;
     }
     QF::PUBLISH(new Evt(ATTITUDE_DATA_AVAILABLE_SIG), NULL);
 }
 
+void DMA1_Stream0_IRQHandler(void) {
+    QP_QXK_ISR_ENTRY();
+    HAL_DMA_IRQHandler(&hdma_rx);
+    QP_QXK_ISR_EXIT();
+}
 
-} // Namespace
+void I2C1_ER_IRQHandler(void) {
+    HAL_I2C_ER_IRQHandler(GetI2CHandle());
+}
+
+
+void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c) {
+    QF::PUBLISH(new Evt(ATTITUDE_GYRO_DMA_COMPLETE_SIG), NULL);
+}
+
+void BSP_I2C1_MspInit(I2C_HANDLE_TYPE_DEF* i2cHandle) {
+
+    /// I2C Busy Flag Stuck Problem (I2C keeps timing out because the busy flag is always set)
+    //  Mentioned here: https://goo.gl/mQdMUu
+    //  Once this code runs, the busy flag will be reset.
+    //  Generally speaking, you can leave this in after the issue is fixed.
+    BSP_I2C_ClearBusyFlagErrata_2_14_7(i2cHandle, NUCLEO_I2C_EXPBD_SDA_PIN, NUCLEO_I2C_EXPBD_SCL_PIN);
+
+    //1- Enable peripherals and GPIO Clocks #################################
+    __HAL_RCC_DMA1_CLK_ENABLE();
+
+    //3-DMA configuration
+    hdma_rx.Instance                 = DMA1_Stream0;
+    hdma_rx.Init.Channel             = DMA_CHANNEL_1;
+    hdma_rx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
+    hdma_rx.Init.PeriphInc           = DMA_PINC_DISABLE;
+    hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
+    hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+    hdma_rx.Init.Mode                = DMA_NORMAL;
+    hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
+    hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
+    hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
+    hdma_rx.Init.MemBurst            = DMA_MBURST_SINGLE;
+    hdma_rx.Init.PeriphBurst         = DMA_PBURST_SINGLE;
+    HAL_DMA_Init(&hdma_rx);
+
+    //4-link DMA with I2C
+    __HAL_LINKDMA(GetI2CHandle(), hdmarx, hdma_rx);
+
+    //5-configure the DMA interrupt
+    HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
+}
+
+}// Extern C
 
 namespace Attitude {
 
@@ -53,18 +105,19 @@ AttitudeGuage::AttitudeGuage()
     , m_measurements(0)
     , m_previousMeasurementCount(0)
     , m_acc_handle(NULL)
-	, m_mag_handle(NULL)
+    , m_mag_handle(NULL)
+    , m_acc_gyro_data({0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 {}
 
 //${AttitudeGuage::AttitudeGuage::Init} ......................................
 status_t AttitudeGuage::Init() {
-	static int initializationAttempts = 0;
+    static int initializationAttempts = 0;
     volatile status_t status;
     DrvStatusTypeDef result = COMPONENT_OK;
     status = AttitudeUtils::Initialize(result, &m_acc_handle, &m_mag_handle);
     initializationAttempts++;
     if (initializationAttempts > MAX_INIT_ATTEMPTS_BEFORE_RESET) {
-    	BSP_SystemResetOrLoop();
+        BSP_SystemResetOrLoop();
     }
     if (status == MEMS_ERROR) {
         PRINT("ERROR in AttitudeGuage.Init()\r\n");
@@ -92,18 +145,16 @@ bool AttitudeGuage::GotNewMeasurements() {
 }
 //${AttitudeGuage::AttitudeGuage::ProcessAttitude} ...........................
 status_t AttitudeGuage::ProcessAttitude() {
-    Acceleration linearAcc;
-    AngularRate angularRate;
-    MagneticField field;
+    //status_t status = AttitudeUtils::GetAttitude(
+    //    linearAcc, angularRate, field, m_acc_handle, m_mag_handle);
+    status_t status = AttitudeUtils::GetAttitude2(m_acc_gyro_data, m_acc, m_angularRate, m_field);
 
-    status_t status = AttitudeUtils::GetAttitude(
-        linearAcc, angularRate, field, m_acc_handle, m_mag_handle);
 
     if (status == MEMS_ERROR) {
         postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
     } else {
         m_measurements++;
-        Evt *evt = new AttitudeDataEvt(linearAcc, angularRate, field);
+        Evt *evt = new AttitudeDataEvt(m_acc, m_angularRate, m_field);
         QF::PUBLISH(evt, this);
     }
     return status;
@@ -112,6 +163,10 @@ status_t AttitudeGuage::ProcessAttitude() {
 uint8_t AttitudeGuage::Start(uint8_t prio) {
     return AO::Start(prio);
 }
+//${AttitudeGuage::AttitudeGuage::StartDMATransfer} ..........................
+status_t AttitudeGuage::StartDMATransfer() {
+    return AttitudeUtils::StartDMATransfer(m_field, m_acc_handle, m_mag_handle, m_acc_gyro_data, 12);
+}
 //${AttitudeGuage::AttitudeGuage::SM} ........................................
 QP::QState AttitudeGuage::initial(AttitudeGuage * const me, QP::QEvt const * const e) {
     // ${AttitudeGuage::AttitudeGuage::SM::initial}
@@ -119,6 +174,7 @@ QP::QState AttitudeGuage::initial(AttitudeGuage * const me, QP::QEvt const * con
     me->subscribe(ATTITUDE_GUAGE_START_REQ_SIG);
     me->subscribe(ATTITUDE_DATA_AVAILABLE_SIG);
     me->subscribe(ATTITUDE_GUAGE_FAILED_SIG);
+    me->subscribe(ATTITUDE_GYRO_DMA_COMPLETE_SIG);
     return Q_TRAN(&Root);
 }
 //${AttitudeGuage::AttitudeGuage::SM::Root} ..................................
@@ -226,6 +282,12 @@ QP::QState AttitudeGuage::Started(AttitudeGuage * const me, QP::QEvt const * con
         }
         // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::ATTITUDE_DATA_AVAILABLE}
         case ATTITUDE_DATA_AVAILABLE_SIG: {
+            me->StartDMATransfer();
+            status_ = Q_HANDLED();
+            break;
+        }
+        // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::ATTITUDE_GYRO_DMA_COMPLETE}
+        case ATTITUDE_GYRO_DMA_COMPLETE_SIG: {
             me->ProcessAttitude();
             status_ = Q_HANDLED();
             break;
@@ -248,14 +310,11 @@ QP::QState AttitudeGuage::Failed(AttitudeGuage * const me, QP::QEvt const * cons
             status_t status = MEMS_ERROR;
             while(retries < MAX_RETRIES && status == MEMS_ERROR) {
                 retries++;
-                //QF_CRIT_ENTRY(0);
+                // QF_CRIT_ENTRY(0);
                 status = me->Init();
-                if (status == MEMS_ERROR) {
-                    continue;
-                }
-                status = me->ProcessAttitude();
-                //QF_CRIT_EXIT(0);
+                // QF_CRIT_EXIT(0);
                 if (status == MEMS_SUCCESS) {
+                    me->postLIFO(new Evt(ATTITUDE_DATA_AVAILABLE_SIG));
                     break;
                 }
             }
@@ -267,7 +326,7 @@ QP::QState AttitudeGuage::Failed(AttitudeGuage * const me, QP::QEvt const * cons
         }
         // ${AttitudeGuage::AttitudeGuage::SM::Root::Failed::ATTITUDE_DATA_AVAILABLE}
         case ATTITUDE_DATA_AVAILABLE_SIG: {
-            me->ProcessAttitude();
+            me->StartDMATransfer();
             status_ = Q_TRAN(&Started);
             break;
         }
@@ -280,11 +339,14 @@ QP::QState AttitudeGuage::Failed(AttitudeGuage * const me, QP::QEvt const * cons
 }
 //${AttitudeGuage::AttitudeDataEvt} ..........................................
 //${AttitudeGuage::AttitudeDataEvt::AttitudeDataEvt} .........................
-AttitudeDataEvt::AttitudeDataEvt(Acceleration acc, AngularRate angularRate, MagneticField field)
+AttitudeDataEvt::AttitudeDataEvt(
+    Acceleration acc,
+    AngularRate angularRate,
+    MagneticField field)
  : Evt(ATTITUDE_CHANGED_SIG)
     , m_acc(acc)
     , m_angularRate(angularRate)
-	, m_field(field)
+    , m_field(field)
 {}
 
 } // namespace Attitude

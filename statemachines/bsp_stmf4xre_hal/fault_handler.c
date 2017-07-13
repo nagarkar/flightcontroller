@@ -38,6 +38,7 @@ void Default_Fault_Handler(uint32_t interruptNumber) {
 	if (interruptNumber == 54) {
 		BSP_SystemResetOrLoop();
 	}
+	infiniteLoop();
 }
 
 void Hard_Fault_Handler(uint32_t stack[]) {

@@ -66,6 +66,12 @@ private:
     uint32_t m_measurements;
     enum  { CHECK_UP_INTERVAL = 1000, MAX_RETRIES = 5, MAX_INIT_ATTEMPTS_BEFORE_RESET = 5};
     uint32_t m_previousMeasurementCount;
+    u8_t m_acc_gyro_data[12];
+    Acceleration m_acc;
+    AngularRate m_angularRate;
+
+public:
+    MagneticField m_field;
 
 public:
     AttitudeGuage();
@@ -74,6 +80,9 @@ public:
     bool GotNewMeasurements();
     status_t ProcessAttitude();
     uint8_t Start(uint8_t prio);
+
+private:
+    status_t StartDMATransfer();
 
 protected:
     static QP::QState initial(AttitudeGuage * const me, QP::QEvt const * const e);
@@ -90,7 +99,10 @@ public:
     MagneticField m_field;
 
 public:
-    AttitudeDataEvt(Acceleration acc, AngularRate angularRate, MagneticField field);
+    AttitudeDataEvt(
+        Acceleration acc,
+        AngularRate angularRate,
+        MagneticField field);
 };
 
 } // namespace Attitude

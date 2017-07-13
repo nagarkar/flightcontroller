@@ -74,6 +74,124 @@ void MX_RTC_Init(void) {
   }
 }
 
+__weak void BSP_I2C1_MspInit(I2C_HANDLE_TYPE_DEF* i2cHandle) {
+	(void)0;
+}
+
+__weak void BSP_I2C3_MspInit(I2C_HANDLE_TYPE_DEF* i2cHandle) {
+	(void)0;
+}
+
+/** Follow the steps given in section 2.14.7 of the stm32Fxx errata sheet:
+	1. Disable the I2C peripheral by clearing the PE bit in I2Cx_CR1 register.
+	2. Configure the SCL and SDA I/Os as General Purpose Output Open-Drain, High level
+	(Write 1 to GPIOx_ODR).
+	3. Check SCL and SDA High level in GPIOx_IDR.
+	4. Configure the SDA I/O as General Purpose Output Open-Drain, Low level (Write 0 to
+	GPIOx_ODR).
+	5. Check SDA Low level in GPIOx_IDR.
+	6. Configure the SCL I/O as General Purpose Output Open-Drain, Low level (Write 0 to
+	GPIOx_ODR).
+	7. Check SCL Low level in GPIOx_IDR.
+	8. Configure the SCL I/O as General Purpose Output Open-Drain, High level (Write 1 to
+	GPIOx_ODR).
+	9. Check SCL High level in GPIOx_IDR.
+	10. Configure the SDA I/O as General Purpose Output Open-Drain , High level (Write 1 to
+	GPIOx_ODR).
+	11. Check SDA High level in GPIOx_IDR.
+	12. Configure the SCL and SDA I/Os as Alternate function Open-Drain.
+	13. Set SWRST bit in I2Cx_CR1 register.
+	14. Clear SWRST bit in I2Cx_CR1 register.
+	15. Enable the I2C peripheral by setting the PE bit in I2Cx_CR1 register.
+
+	This function only runs when the key symptom, hte busy flag being set, is true. It only
+	runs once.
+
+	Also see
+	**/
+void BSP_I2C_ClearBusyFlagErrata_2_14_7(I2C_HandleTypeDef *hi2c, uint32_t sda_pin, uint32_t scl_pin ) {
+
+	static uint8_t resetTried = 0;
+	static uint8_t verify = 1;
+	if (resetTried == 1) {
+		return;
+	}
+	if(__HAL_I2C_GET_FLAG(hi2c, I2C_FLAG_BUSY) != SET) {
+		return;
+	}
+	GPIO_InitTypeDef GPIO_InitStruct;
+
+	// 1
+	__HAL_I2C_DISABLE(hi2c);
+
+	// 2
+	GPIO_InitStruct.Pin = sda_pin|scl_pin;
+	HAL_GPIO_DeInit(GPIOB, sda_pin);
+	HAL_GPIO_DeInit(GPIOB, scl_pin);
+
+	__HAL_RCC_GPIOB_CLK_DISABLE();
+
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	BSP_GPIO_WRITE_ODR(GPIOB, sda_pin);
+	BSP_GPIO_WRITE_ODR(GPIOB, scl_pin);
+
+	// 3
+	if (verify && HAL_GPIO_ReadPin(GPIOB, sda_pin) == GPIO_PIN_RESET) {
+		BSP_SystemResetOrLoop();
+	}
+	if (verify && HAL_GPIO_ReadPin(GPIOB, scl_pin) == GPIO_PIN_RESET) {
+		BSP_SystemResetOrLoop();
+	}
+
+	// 4
+	GPIO_InitStruct.Pin = sda_pin;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	HAL_GPIO_TogglePin(GPIOB, sda_pin);
+
+	// 5
+	if (verify && HAL_GPIO_ReadPin(GPIOB, sda_pin) == GPIO_PIN_SET) {
+		BSP_SystemResetOrLoop();
+	}
+
+	// 6
+	GPIO_InitStruct.Pin = scl_pin;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	HAL_GPIO_TogglePin(GPIOB, scl_pin);
+
+	// 7
+	if (verify && HAL_GPIO_ReadPin(GPIOB, scl_pin) == GPIO_PIN_SET) {
+		BSP_SystemResetOrLoop();
+	}
+
+	// 8
+	GPIO_InitStruct.Pin = sda_pin;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	BSP_GPIO_WRITE_ODR(GPIOB, sda_pin);
+
+	// 9
+	if (verify && HAL_GPIO_ReadPin(GPIOB, sda_pin) == GPIO_PIN_RESET) {
+		BSP_SystemResetOrLoop();
+	}
+}
+
+
+void BSP_GPIO_WRITE_ODR(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
+{
+  /* Check the parameters */
+  assert_param(IS_GPIO_PIN(GPIO_Pin));
+
+  GPIOx->ODR |= GPIO_Pin;
+}
+
 void HAL_RTC_MspInit(RTC_HandleTypeDef* rtcHandle) {
   if(rtcHandle->Instance==RTC) {
     __HAL_RCC_RTC_ENABLE();

@@ -102,10 +102,11 @@ using namespace QP;
 	m(Signal, ATTITUDE_DATA_AVAILABLE_SIG)	\
 	m(Signal, ATTITUDE_CHANGED_SIG)	\
 	m(Signal, ATTITUDE_GUAGE_FAILED_SIG)	\
-	m(Signal, ATTITUDE_GUAGE_REINIT_SIG)			/* 8, 64 */\
+	m(Signal, ATTITUDE_GYRO_DMA_COMPLETE_SIG)	\
+	m(Signal, ATTITUDE_GUAGE_REINIT_SIG)			/* 9, 65 */\
 	\
 	m(Signal, SYSTEM_PIN_SET_INTERRUPT_SIG)	\
-	m(Signal, SYSTEM_PIN_RESET_INTERRUPT_SIG)	/* 2, 67 */\
+	m(Signal, SYSTEM_PIN_RESET_INTERRUPT_SIG)	/* 2, 68 */\
 	\
 	m(Signal, MAX_PUB_SIG)
 

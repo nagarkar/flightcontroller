@@ -175,7 +175,7 @@ g_pfnVectors:
   .word  SysTick_Handler
   
   /* External Interrupts */
-  .word     WWDG_IRQHandler                   /* Window WatchDog              */                                        
+  .word     WWDG_IRQHandler                   /* Window WatchDog              */ /* Ext Interrupt 0 */
   .word     PVD_IRQHandler                    /* PVD through EXTI Line detection */                        
   .word     TAMP_STAMP_IRQHandler             /* Tamper and TimeStamps through the EXTI line */            
   .word     RTC_WKUP_IRQHandler               /* RTC Wakeup through the EXTI line */                      
@@ -185,7 +185,7 @@ g_pfnVectors:
   .word     EXTI1_IRQHandler                  /* EXTI Line1                   */                          
   .word     EXTI2_IRQHandler                  /* EXTI Line2                   */                          
   .word     EXTI3_IRQHandler                  /* EXTI Line3                   */                          
-  .word     EXTI4_IRQHandler                  /* EXTI Line4                   */                          
+  .word     EXTI4_IRQHandler                  /* EXTI Line4                   */ /* Ext Interrupt 10 */
   .word     DMA1_Stream0_IRQHandler           /* DMA1 Stream 0                */                  
   .word     DMA1_Stream1_IRQHandler           /* DMA1 Stream 1                */                   
   .word     DMA1_Stream2_IRQHandler           /* DMA1 Stream 2                */                   
@@ -195,7 +195,7 @@ g_pfnVectors:
   .word     DMA1_Stream6_IRQHandler           /* DMA1 Stream 6                */                   
   .word     ADC_IRQHandler                    /* ADC1, ADC2 and ADC3s         */                   
   .word     0               				  /* Reserved                      */                         
-  .word     0              					  /* Reserved                     */                          
+  .word     0              					  /* Reserved                     */  /* Ext Interrupt 20 */
   .word     0                                 /* Reserved                     */                          
   .word     0                                 /* Reserved                     */                          
   .word     EXTI9_5_IRQHandler                /* External Line[9:5]s          */                          
@@ -205,7 +205,7 @@ g_pfnVectors:
   .word     TIM1_CC_IRQHandler                /* TIM1 Capture Compare         */                          
   .word     TIM2_IRQHandler                   /* TIM2                         */                   
   .word     TIM3_IRQHandler                   /* TIM3                         */                   
-  .word     TIM4_IRQHandler                   /* TIM4                         */                   
+  .word     TIM4_IRQHandler                   /* TIM4                         */   /* Ext Interrupt 30 */
   .word     I2C1_EV_IRQHandler                /* I2C1 Event                   */                          
   .word     I2C1_ER_IRQHandler                /* I2C1 Error                   */                          
   .word     I2C2_EV_IRQHandler                /* I2C2 Event                   */                          
@@ -215,7 +215,7 @@ g_pfnVectors:
   .word     USART1_IRQHandler                 /* USART1                       */                   
   .word     USART2_IRQHandler                 /* USART2                       */                   
   .word     0               				  /* Reserved                       */                   
-  .word     EXTI15_10_IRQHandler              /* External Line[15:10]s        */                          
+  .word     EXTI15_10_IRQHandler              /* External Line[15:10]s        */    /* Ext Interrupt 40 */
   .word     RTC_Alarm_IRQHandler              /* RTC Alarm (A and B) through EXTI Line */                 
   .word     OTG_FS_WKUP_IRQHandler            /* USB OTG FS Wakeup through EXTI line */                       
   .word     0                                 /* Reserved     				  */         
@@ -225,7 +225,7 @@ g_pfnVectors:
   .word     DMA1_Stream7_IRQHandler           /* DMA1 Stream7                 */                          
   .word     0                                 /* Reserved                     */                   
   .word     SDIO_IRQHandler                   /* SDIO                         */                   
-  .word     TIM5_IRQHandler                   /* TIM5                         */                   
+  .word     TIM5_IRQHandler                   /* TIM5                         */    /* Ext Interrupt 50 */
   .word     SPI3_IRQHandler                   /* SPI3                         */                   
   .word     0                                 /* Reserved                     */                   
   .word     0                                 /* Reserved                     */                   
@@ -235,7 +235,7 @@ g_pfnVectors:
   .word     DMA2_Stream1_IRQHandler           /* DMA2 Stream 1                */                   
   .word     DMA2_Stream2_IRQHandler           /* DMA2 Stream 2                */                   
   .word     DMA2_Stream3_IRQHandler           /* DMA2 Stream 3                */                   
-  .word     DMA2_Stream4_IRQHandler           /* DMA2 Stream 4                */                   
+  .word     DMA2_Stream4_IRQHandler           /* DMA2 Stream 4                */     /* Ext Interrupt 60 */
   .word     0                    			  /* Reserved                     */                   
   .word     0              					  /* Reserved                     */                     
   .word     0              					  /* Reserved                     */                          
@@ -245,7 +245,7 @@ g_pfnVectors:
   .word     OTG_FS_IRQHandler                 /* USB OTG FS                   */                   
   .word     DMA2_Stream5_IRQHandler           /* DMA2 Stream 5                */                   
   .word     DMA2_Stream6_IRQHandler           /* DMA2 Stream 6                */                   
-  .word     DMA2_Stream7_IRQHandler           /* DMA2 Stream 7                */                   
+  .word     DMA2_Stream7_IRQHandler           /* DMA2 Stream 7                */      /* Ext Interrupt 70 */
   .word     USART6_IRQHandler                 /* USART6                       */                    
   .word     I2C3_EV_IRQHandler                /* I2C3 event                   */                          
   .word     I2C3_ER_IRQHandler                /* I2C3 error                   */                          
@@ -255,7 +255,7 @@ g_pfnVectors:
   .word     0                                 /* Reserved                     */                   
   .word     0                                 /* Reserved                     */                   
   .word     0                                 /* Reserved                     */                   
-  .word     0                                 /* Reserved                     */
+  .word     0                                 /* Reserved                     */       /* Ext Interrupt 80 */
   .word     FPU_IRQHandler                    /* FPU                          */
   .word     0                                 /* Reserved                     */                   
   .word     0                                 /* Reserved                     */

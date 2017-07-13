@@ -53,11 +53,22 @@ typedef enum {
   BSP_TIMEOUT = HAL_TIMEOUT
 } BSP_STATUS;
 
+typedef UART_HandleTypeDef USART_HANDLE_TYPE_DEF;
+typedef I2C_HandleTypeDef	I2C_HANDLE_TYPE_DEF;
+
+
 // QF KERNEL AWARE STUFF //
 enum KernelUnawareISRs { // see NOTE00
     // ...
     MAX_KERNEL_UNAWARE_CMSIS_PRI  // keep always last
 };
+
+extern DMA_HandleTypeDef hdma_i2c1_rx;
+void BSP_I2C_ClearBusyFlagErrata_2_14_7(I2C_HandleTypeDef *hi2c, uint32_t sda_pin, uint32_t scl_pin);
+void BSP_GPIO_WRITE_ODR(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
+
+void BSP_I2C1_MspInit(I2C_HANDLE_TYPE_DEF* i2cHandle);
+void BSP_I2C3_MspInit(I2C_HANDLE_TYPE_DEF* i2cHandle);
 
 void BSP_Printf(char const *format, ...);
 
@@ -72,7 +83,6 @@ void BSP_Printf(char const *format, ...);
 #define BSP_UART_RECEIVE_DMA(x,y,z) HAL_UART_Receive_DMA(x, y, z)
 #define BSP_UART_DMA_STOP(x) HAL_UART_DMAStop(x)
 
-typedef UART_HandleTypeDef USART_HANDLE_TYPE_DEF;
 
 void BSP_OVERRIDE_UART2_CALLBACKS(USART_HANDLE_TYPE_DEF *uart);
 void BSP_OVERRIDE_UART_CALLBACKS(USART_HANDLE_TYPE_DEF *uart);
