@@ -106,7 +106,9 @@ AttitudeGuage::AttitudeGuage()
     , m_previousMeasurementCount(0)
     , m_acc_handle(NULL)
     , m_mag_handle(NULL)
+	, m_bar_handle(NULL)
     , m_acc_gyro_data({0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+	, m_attitude({1.0f, 0.0f, 0.0f, 0.0f})
 {}
 
 //${AttitudeGuage::AttitudeGuage::Init} ......................................
@@ -114,7 +116,7 @@ status_t AttitudeGuage::Init() {
     static int initializationAttempts = 0;
     volatile status_t status;
     DrvStatusTypeDef result = COMPONENT_OK;
-    status = AttitudeUtils::Initialize(result, &m_acc_handle, &m_mag_handle);
+    status = AttitudeUtils::Initialize(result, &m_acc_handle, &m_mag_handle, &m_bar_handle);
     initializationAttempts++;
     if (initializationAttempts > MAX_INIT_ATTEMPTS_BEFORE_RESET) {
         BSP_SystemResetOrLoop();
@@ -147,8 +149,7 @@ bool AttitudeGuage::GotNewMeasurements() {
 status_t AttitudeGuage::ProcessAttitude() {
     //status_t status = AttitudeUtils::GetAttitude(
     //    linearAcc, angularRate, field, m_acc_handle, m_mag_handle);
-    status_t status = AttitudeUtils::GetAttitude2(m_acc_gyro_data, m_acc, m_angularRate, m_field);
-
+    status_t status = AttitudeUtils::GetAttitude2(m_acc_gyro_data, m_acc, m_angularRate, m_field, m_altitude, &m_attitude);
 
     if (status == MEMS_ERROR) {
         postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
@@ -165,7 +166,7 @@ uint8_t AttitudeGuage::Start(uint8_t prio) {
 }
 //${AttitudeGuage::AttitudeGuage::StartDMATransfer} ..........................
 status_t AttitudeGuage::StartDMATransfer() {
-    return AttitudeUtils::StartDMATransfer(m_field, m_acc_handle, m_mag_handle, m_acc_gyro_data, 12);
+    return AttitudeUtils::StartDMATransfer(m_field, m_altitude, m_acc_handle, m_mag_handle, m_bar_handle, m_acc_gyro_data, 12);
 }
 //${AttitudeGuage::AttitudeGuage::SM} ........................................
 QP::QState AttitudeGuage::initial(AttitudeGuage * const me, QP::QEvt const * const e) {

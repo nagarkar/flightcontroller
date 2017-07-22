@@ -55,6 +55,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/statemachines/Uart}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/statemachines/UartCMD}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/IMUWithHover/dsp/CMSIS/CMSIS/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/hardware/iks01a1/drivers/BSP/Components/lps25hb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/IMUWithHover/${ProjName}/hardware/iks01a1/drivers/BSP/Components/lps22hb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/IMUWithHover/${ProjName}/hardware/iks01a1/drivers/BSP/Components/lps22hb}&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.179763403" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="USE_HAL_DRIVER"/>
@@ -103,6 +106,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/statemachines/Uart}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/statemachines/UartCMD}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/IMUWithHover/dsp/CMSIS/CMSIS/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/hardware/iks01a1/drivers/BSP/Components/lps25hb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/IMUWithHover/${ProjName}/hardware/iks01a1/drivers/BSP/Components/lps22hb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/IMUWithHover/${ProjName}/hardware/iks01a1/drivers/BSP/Components/lps22hb}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1603952201" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="USE_HAL_DRIVER"/>
@@ -136,7 +142,7 @@
 							</tool>
 							<tool command="g++" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GLDErrorParser" id="fr.ac6.managedbuild.tool.gnu.cross.cpp.linker.1088706272" name="MCU G++ Linker" superClass="fr.ac6.managedbuild.tool.gnu.cross.cpp.linker">
 								<option id="fr.ac6.managedbuild.tool.gnu.cross.cpp.linker.script.109665079" name="Linker Script (-T)" superClass="fr.ac6.managedbuild.tool.gnu.cross.cpp.linker.script" value="../STM32F401RETx_FLASH.ld" valueType="string"/>
-								<option id="gnu.cpp.link.option.flags.1908565120" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-specs=nosys.specs -specs=nano.specs -u _printf_float -specs=rdimon.specs -lc -lrdimon" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.1908565120" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-specs=nosys.specs -specs=nano.specs -specs=rdimon.specs -lc -lrdimon  -u _printf_float" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1624954486" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -168,6 +174,8 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="dsp/CMSIS/CMSIS/DSP_Lib/Source/MatrixFunctions"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="dsp/ahrs"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="hardware/iks01a1/drivers/BSP/Components/lis3mdl"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="hardware/iks01a1/drivers/BSP/Components/lps22hb"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="hardware/iks01a1/drivers/BSP/Components/lps25hb"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="hardware/iks01a1/drivers/BSP/Components/lsm6ds0"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="hardware/iks01a1/drivers/BSP/Components/lsm6ds3"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="hardware/iks01a1/drivers/BSP/STM32F4xx-Nucleo"/>
@@ -226,6 +234,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/statemachines/Uart}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/statemachines/UartCMD}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/IMUWithHover/dsp/CMSIS/CMSIS/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/hardware/iks01a1/drivers/BSP/Components/lps25hb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/IMUWithHover/${ProjName}/hardware/iks01a1/drivers/BSP/Components/lps22hb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/IMUWithHover/${ProjName}/hardware/iks01a1/drivers/BSP/Components/lps22hb}&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.179763403" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__weak=__attribute__((weak))"/>
@@ -255,6 +266,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/statemachines/Uart}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/statemachines/UartCMD}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/IMUWithHover/dsp/CMSIS/CMSIS/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/hardware/iks01a1/drivers/BSP/Components/lps25hb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/IMUWithHover/${ProjName}/hardware/iks01a1/drivers/BSP/Components/lps22hb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/IMUWithHover/${ProjName}/hardware/iks01a1/drivers/BSP/Components/lps22hb}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1135069365" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__weak=__attribute__((weak))"/>
@@ -296,6 +310,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/statemachines/Uart}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/statemachines/UartCMD}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/IMUWithHover/dsp/CMSIS/CMSIS/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/hardware/iks01a1/drivers/BSP/Components/lps25hb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/IMUWithHover/${ProjName}/hardware/iks01a1/drivers/BSP/Components/lps22hb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/IMUWithHover/${ProjName}/hardware/iks01a1/drivers/BSP/Components/lps22hb}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.2067829073" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.assembler.input.423134008" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler.input"/>

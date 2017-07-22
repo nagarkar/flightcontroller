@@ -15,8 +15,12 @@
 #include "LSM6DS0_ACC_GYRO_driver.h"
 #include "LSM6DS0_ACC_GYRO_driver_HL.h"
 
+#include "LPS25HB_Driver.h"
+#include "LPS25HB_Driver_HL.h"
+
 #include "x_nucleo_iks01a1_accelero.h"
 #include "x_nucleo_iks01a1_gyro.h"
+#include "x_nucleo_iks01a1_pressure.h"
 
 #include "x_nucleo_iks01a1_magneto.h"
 #include "LIS3MDL_MAG_driver.h"
@@ -29,6 +33,7 @@
 
 static uint16_t numTaps19 = NUM_TAPS_19;
 
+// Matlab: fir2(18, [0, 2*50/952, 2*50/952, 1], [1 1 0 0])
 static float32_t FILTER_COEFF_LPF_50HZ[NUM_TAPS_19] = {
 	0.0006,    0.0021,    0.0063,    0.0149,	0.0288,		0.0471,    0.0673,    0.0858,	 0.0988,
 	0.1035,
@@ -55,7 +60,6 @@ int AttitudeUtils::counter = 0;
 float AttitudeUtils::accSensitivity = -1.0f;
 float AttitudeUtils::gyroSensitivity = -1.0f;
 float AttitudeUtils::magSensitivity = -1.0f;
-Q_cxyz AttitudeUtils::q = {1.0f, 0.0f, 0.0f, 0.0f};
 
 #define STATUS_T_SET(status, fn)  status =  ((fn) == MEMS_ERROR) ? MEMS_ERROR: status
 #define HAL_STATUS_SET(status, fn)  status = (status == HAL_OK) ? (fn) : status;
@@ -231,7 +235,7 @@ status_t AttitudeUtils::ResetMagSensitivity( void *handle ) {
 	return MEMS_SUCCESS;
 }
 
-status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, void **hmagHandle) {
+status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, void **hmagHandle, void **hbarHandle) {
 
 	/*Configure GPIO pin : PB5 for interrupts from LSM6DS0 */
 	GPIO_InitTypeDef GPIO_InitStruct;
@@ -246,11 +250,10 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, voi
 
 	cycleCounterAvg = 0;
 	cycleCounterCount = 0;
-	static uint8_t isInitialized = 0, isMagInitialized = 0;
-
-	//QF_CRIT_ENTRY(0);
+	static uint8_t isInitialized = 0, isMagInitialized = 0, isBarInitialized = 0;
 
 	volatile status_t status = MEMS_SUCCESS;
+
 
 	if (isInitialized == 1) {
 		result = BSP_ACCELERO_DeInit(hhandle);
@@ -264,10 +267,8 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, voi
 		if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) != GPIO_PIN_RESET) {
 			LSM6DS0_ACC_GYRO_W_ResetSW(handle, LSM6DS0_ACC_GYRO_SW_RESET_YES);
 		}
-	}
-	if (result != COMPONENT_OK) {
-		//QF_CRIT_EXIT(0);
-		return Initialize(result, hhandle, hmagHandle);
+	} else {
+		return Initialize(result, hhandle, hmagHandle, hbarHandle);
 	}
 
 	if (isMagInitialized == 1) {
@@ -281,8 +282,19 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, voi
 		result = BSP_MAGNETO_Sensor_Enable(magHandle);
 	}
 	if (result != COMPONENT_OK) {
-		//QF_CRIT_EXIT(0);
-		return Initialize(result, hhandle, hmagHandle);
+		return Initialize(result, hhandle, hmagHandle, hbarHandle);
+	}
+
+	if (isBarInitialized == 1) {
+		result = BSP_PRESSURE_DeInit(hbarHandle);
+		isBarInitialized = 0;
+	}
+	result = BSP_PRESSURE_Init(LPS25HB_P_0, hbarHandle);
+	if (result == COMPONENT_OK) {
+		isBarInitialized = 1;
+		result = BSP_PRESSURE_Sensor_Enable(*hbarHandle);
+	} else {
+		return Initialize(result, hhandle, hmagHandle, hbarHandle);
 	}
 
 	// CTRL_REG1_G Register
@@ -320,7 +332,8 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, voi
 
 	STATUS_T_SET(status, LIS3MDL_MAG_W_OutputDataRate(magHandle, LIS3MDL_MAG_DO_80Hz)); // About 1/10th the gyro/acc rate.
 
-	//QF_CRIT_EXIT(0);
+	//LPS25HB_Error_et err = LPS25HB_Set_Odr(*hbarHandle, LPS25HB_ODR_25HZ);
+	//status = (err == LPS25HB_ERROR || status == MEMS_ERROR)? MEMS_ERROR : MEMS_SUCCESS;
 
 	arm_fir_init_f32(&accFilterX, numTaps19, &FILTER_COEFF_LPF_50HZ[0], &FILTER_STATE_ACC_X[0], 1);
 	arm_fir_init_f32(&accFilterY, numTaps19, &FILTER_COEFF_LPF_50HZ[0], &FILTER_STATE_ACC_Y[0], 1);
@@ -349,8 +362,48 @@ status_t AttitudeUtils::isGyroDataReady(void *handle) {
 }
 
 
-status_t AttitudeUtils::StartDMATransfer(MagneticField &magField, void *handle,  void *magHandle, u8_t *buff, uint32_t length) {
+status_t AttitudeUtils::StartDMATransfer(MagneticField &magField, Altitude &altitude,
+		void *handle,  void *magHandle, void *barHandle, u8_t *buff, uint32_t length) {
 
+	HAL_StatusTypeDef status = HAL_OK;
+	HAL_STATUS_SET(status, AttitudeUtils::ReadMagneticField(magHandle, magField));
+	HAL_STATUS_SET(status, AttitudeUtils::ReadAltitude(barHandle, altitude));
+
+	DrvContextTypeDef *ctx = (DrvContextTypeDef *)handle;
+	HAL_StatusTypeDef dmastatus = HAL_BUSY;
+
+	// TODO Best Practice: Remove static variables inside functions (they are shared across functions).
+	int dmaTransferCounter = 0;
+	while (dmastatus == HAL_BUSY) {
+		dmastatus = HAL_I2C_Mem_Read_DMA(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_G, I2C_MEMADD_SIZE_8BIT, buff, length);
+		dmaTransferCounter ++;
+	}
+	if (dmastatus != HAL_OK) {
+		PRINT("Error in StartDMATransfer; HAL_I2C_Mem_Read_DMA returned busy");
+	}
+
+	HAL_STATUS_SET(status, dmastatus);
+	return status == HAL_OK ? MEMS_SUCCESS: MEMS_ERROR;
+}
+
+HAL_StatusTypeDef AttitudeUtils::ReadAltitude(void *barHandle, Altitude &altitude) {
+	HAL_StatusTypeDef status = HAL_OK;
+	if (counter % 250 != 0) {
+		return status;
+	}
+	int32_t pressure;
+	LPS25HB_Error_et result = LPS25HB_Get_Pressure(barHandle, &pressure);
+	if (result == LPS25HB_OK) {
+		float fpressure = pressure;
+		//=(1-(hpa or mbar/1013.25)^0.190284)*145366.45/3.280839895 meters
+		altitude = (1 - pow(fpressure / 101325, 0.190284)) * 44308;
+	} else {
+		status = HAL_ERROR;
+	}
+	return status;
+}
+
+HAL_StatusTypeDef AttitudeUtils::ReadMagneticField(void *magHandle, MagneticField &magField) {
 	HAL_StatusTypeDef status = HAL_OK;
 	DrvContextTypeDef *ctx = (DrvContextTypeDef *)magHandle;
 	if (counter % 10 == 0) { // Sample acc and mag field at 80Hz, or every 10 ms. Only works if Gyro freq is set to 952 Hz.
@@ -360,7 +413,7 @@ status_t AttitudeUtils::StartDMATransfer(MagneticField &magField, void *handle, 
 #if defined(MAG_LPF)
 		extractXYZ(mag_raw_data, magField, magFilterX, magFilterY, magFilterZ, magSensitivity/* gauss/LSb */ * (1.0f/1000));
 #else
-		extractXYZNoFilter(acc_8_t, magField, magSensitivity/* gauss/LSb */ * (1.0f/1000));
+		extractXYZNoFilter(mag_raw_data, magField, magSensitivity/* gauss/LSb */ * (1.0f/1000));
 #endif
 
 #if defined(OUTPUT_MAG_MEASUREMENTS)
@@ -375,15 +428,11 @@ status_t AttitudeUtils::StartDMATransfer(MagneticField &magField, void *handle, 
 		magField.z = 0.0f;
 #endif
 	}
+	return status;
 
-	ctx = (DrvContextTypeDef *)handle;
-	status = HAL_I2C_Mem_Read_DMA(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_G, I2C_MEMADD_SIZE_8BIT, buff, length);
-	if (status != HAL_OK) {
-		PRINT("Error");
-	}
 }
-
-status_t  AttitudeUtils::GetAttitude2(u8_t* gyro_acc_data, Acceleration &acc, AngularRate &angRate, MagneticField magField) {
+status_t  AttitudeUtils::GetAttitude2(u8_t* gyro_acc_data, Acceleration &acc, AngularRate &angRate,
+	MagneticField magField, Altitude altitude, Q_cxyz *attitude) {
 
 	uint32_t marker = GetPerfCycle();
 
@@ -422,110 +471,18 @@ status_t  AttitudeUtils::GetAttitude2(u8_t* gyro_acc_data, Acceleration &acc, An
 #endif
 
 	float mult = 3.14159265f/180;
-	MahonyAHRSupdate(&q, angRate.x * mult, angRate.y * mult, angRate.z * mult, acc.x, acc.y, acc.z, magField.x, magField.y, magField.z);
-	normalizeQ(q);
+	MahonyAHRSupdate(attitude, angRate.x * mult, angRate.y * mult, angRate.z * mult, acc.x, acc.y, acc.z, magField.x, magField.y, magField.z);
+	normalizeQ(*attitude);
 
 #if defined(OUTPUT_ATTITUDE_QUATERNION)
 	// Print attitude quaternion for matlab etc to read over serial and display
 	if (counter > TIME_FOR_MEAN_MEASUREMENT) {
-		PRINT("orientation,%f,%f,%f,%f\r\n", q.q0, q.q1, q.q2, q.q3);
-	}
-#endif
-	counter++;
-	uint32_t cycleCounter = GetElapsedCycles(marker);
-	cycleCounterAvg = (cycleCounterAvg * ((float)cycleCounterCount)/(cycleCounterCount + 1));
-	cycleCounterAvg += ((float)cycleCounter)/(cycleCounterCount + 1);
-	cycleCounterCount++;
-	return (status == HAL_OK) ? MEMS_SUCCESS : MEMS_ERROR;
-}
-
-
-status_t  AttitudeUtils::GetAttitude(Acceleration &acc, AngularRate &angRate, MagneticField &magField, void *handle, void *magHandle) {
-
-	uint32_t marker = GetPerfCycle();
-	u8_t value;
-
-	LSM6DS0_ACC_GYRO_ReadReg(handle, LSM6DS0_ACC_GYRO_STATUS_REG, &value, 1);
-
-	if ((value & LSM6DS0_ACC_GYRO_GDA_MASK) != LSM6DS0_ACC_GYRO_GDA_UP) {
-		return MEMS_SUCCESS;
-	}
-
-	DrvContextTypeDef *ctx = (DrvContextTypeDef *)handle;
-	HAL_StatusTypeDef status = HAL_OK;
-
-	u8_t acc_8_t[6] = {0, 0, 0, 0, 0, 0};
-	static float angRateMeanX = 0, angRateMeanY = 0, angRateMeanZ = 0;
-	HAL_STATUS_SET(status, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_G /* X Axis, low bit, gyro register */,
-		I2C_MEMADD_SIZE_8BIT /* MemAddress Size */, acc_8_t /* Data */, 6 /* Data Size */, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
-#if defined(GYRO_LPF)
-	extractXYZ(acc_8_t, angRate, gyroFilterX, gyroFilterY, gyroFilterZ, gyroSensitivity/* mg/LSb */ * (1.0f/1000));
-#else
-	extractXYZNoFilter(acc_8_t, angRate, gyroSensitivity/* mg/LSb */ * (1.0f/1000));
-#endif
-
-#if defined(GYRO_MEAN_ADJUST)
-	if (counter > DIRTY_MEASUREMENT_TIME && counter < TIME_FOR_MEAN_MEASUREMENT) {
-		angRateMeanX += angRate.x; angRateMeanY += angRate.y; angRateMeanZ += angRate.z;
-	} else if (counter == TIME_FOR_MEAN_MEASUREMENT) {
-		int divisor = counter - DIRTY_MEASUREMENT_TIME;
-		angRateMeanX /= divisor; angRateMeanY /= divisor; angRateMeanZ /= divisor;
-	}
-	if (counter > TIME_FOR_MEAN_MEASUREMENT) {
-		angRate.x -= angRateMeanX; angRate.y -= angRateMeanY; angRate.z -= angRateMeanZ;
-	}
-#endif
-
-#if defined(OUTPUT_GYRO_MEASUREMENTS)
-	PRINT("gyro,%f,%f,%f\r\n", angRate.x, angRate.y, angRate.z);
-#endif
-
-	//if (counter % 10 == 0) { // Sample acc and mag field at about 100Hz, or every 10 ms. Only works if Gyro freq is set to 952 Hz.
-
-		HAL_STATUS_SET(status, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LSM6DS0_ACC_GYRO_OUT_X_L_XL /* X Axis, low bit, gyro register */,
-			I2C_MEMADD_SIZE_8BIT /* MemAddress Size */, acc_8_t /* Data */, 6 /* Data Size */, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
-#if defined(ACC_LPF)
-		extractXYZ(acc_8_t, acc, accFilterX, accFilterY, accFilterZ, accSensitivity/* mdps/LSb */ * (1.0f/1000) * ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ);
-#else
-		extractXYZNoFilter(acc_8_t, acc, accSensitivity/* mdps/LSb */ * (1.0f/1000) * ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ);
-#endif
-#if defined(OUTPUT_ACC_MEASUREMENTS)
-		PRINT("acc,%f,%f,%f\r\n", acc.x, acc.y, acc.z);
-#endif
-	//}
-
-	if (counter % 10 == 0) { // Sample acc and mag field at 80Hz, or every 10 ms. Only works if Gyro freq is set to 952 Hz.
-		ctx = (DrvContextTypeDef *)magHandle;
-		HAL_STATUS_SET(status, HAL_I2C_Mem_Read(GetI2CHandle(), ctx->address, LIS3MDL_MAG_OUTX_L /* X Axis, low bit, gyro register */,
-				I2C_MEMADD_SIZE_8BIT /* MemAddress Size */, acc_8_t /* Data */, 6 /* Data Size */, NUCLEO_I2C_EXPBD_TIMEOUT_MAX));
-#if defined(MAG_LPF)
-		extractXYZ(acc_8_t, magField, magFilterX, magFilterY, magFilterZ, magSensitivity/* gauss/LSb */ * (1.0f/1000));
-#else
-		extractXYZNoFilter(acc_8_t, magField, magSensitivity/* gauss/LSb */ * (1.0f/1000));
-#endif
-
-#if defined(OUTPUT_MAG_MEASUREMENTS)
-		PRINT("mag,%f,%f,%f\r\n", magField.x, magField.y, magField.z);
-#endif
-		// Emperically, zeroing out z axis mag field seems to reduce slow rotations of the attitude when the board is stationary.
-		// TODO: Don't read this in the first place if you are going to zero it out.
-#if defined(MAG_FIELD_ELLIPSOID_FIT)
-		updateMagVector(magField);
-#endif
-#if defined(ZERO_Z_AXIS_MAG_FIELD)
-		magField.z = 0.0f;
-#endif
-
-	}
-	float mult = 3.14159265358979323846f/180;
-	MahonyAHRSupdate(&q, angRate.x * mult, angRate.y * mult, angRate.z * mult, acc.x, acc.y, acc.z, magField.x, magField.y, magField.z);
-	//MahonyAHRSupdateIMU(&q, angRate.x * mult, angRate.y * mult, angRate.z * mult, acc.x, acc.y, acc.z);
-	normalizeQ(q);
-
-#if defined(OUTPUT_ATTITUDE_QUATERNION)
-	// Print attitude quaternion for matlab etc to read over serial and display
-	if (counter > TIME_FOR_MEAN_MEASUREMENT) {
-		PRINT("orientation,%f,%f,%f,%f\r\n", q.q0, q.q1, q.q2, q.q3);
+		PRINT("orientation,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\r\n",
+			attitude->q0, attitude->q1, attitude->q2, attitude->q3,
+			acc.x, 		acc.y, 		acc.z,
+			angRate.x, 	angRate.y, 	angRate.z,
+			magField.x, magField.y, magField.z,
+			altitude);
 	}
 #endif
 	counter++;

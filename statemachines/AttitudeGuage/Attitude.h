@@ -38,6 +38,17 @@ typedef AttitudeDim AngularPos; /* XYZ angles in degrees */
 
 typedef AttitudeDim MagneticField; /* XYZ gauss*/
 
+typedef struct {
+	float r = 0.0f;
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+} Quaternion;
+
+typedef Quaternion QAttitude;	/* Normalized rotation representing attitude */
+
+typedef float Altitude;
+
 typedef AttitudeDim MagneticStrength;
 
 struct SixAxisAttitude {

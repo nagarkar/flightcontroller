@@ -9,11 +9,11 @@
   <item name="backups">0</item>
  </group>
  <group name="windows">
-  <item id="AttitudeGuage::AttitudeGuage::SM">0,0,1056,704,*</item>
-  <item id="AttitudeGuage::AttitudeGuage::AttitudeGuage.h">82,394,908,300</item>
-  <item id="AttitudeGuage::AttitudeGuage::AttitudeGuage.cpp">82,0,908,300</item>
-  <item id="AttitudeGuage::AttitudeGuage::Attitude.h">0,0,908,300</item>
-  <item id="AttitudeGuage::AttitudeGuage::AttitudeUtils.h">81,137,908,300</item>
+  <item id="AttitudeGuage::AttitudeGuage::SM">-896,0,1056,704</item>
+  <item id="AttitudeGuage::AttitudeGuage::AttitudeGuage.h">160,0,830,300</item>
+  <item id="AttitudeGuage::AttitudeGuage::AttitudeGuage.cpp">160,300,830,300</item>
+  <item id="AttitudeGuage::AttitudeGuage::Attitude.h">250,414,830,300</item>
+  <item id="AttitudeGuage::AttitudeGuage::AttitudeUtils.h">0,0,369,714,*</item>
  </group>
  <group name="search">
   <item name="options">2032128</item>
