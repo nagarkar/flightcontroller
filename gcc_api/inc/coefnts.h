@@ -10,22 +10,45 @@
 
 #include "arm_math.h"
 
+#define 	DIM				3
+#define		VECT_WIDTH		4
 
-//struct coeffProperties {
-//	float m_T;
-//	float m_S;
-//	float m_waypoints;
-//	float m_ncoeff;
-//	float m_subscripts;
-//	float m_velocity;
-//	float m_lhs_v;
-//	float m_rhs_v;
-//	int eqn_index;
-//	float m_all_coeffs;
-//	float m_all_paths;
-//	float t;
-//};
+#define 	I		0
+#define 	J		1
+#define 	K		2
 
-void initCoeff(float arrayWayPointRaw, uint8_t matWayPointRows, uint8_t matWayPointColumns);
+#define MATRIX_DIM_WAYPOINTS_ROW	5
+#define MATRIX_DIM_WAYPOINTS_COL	3
+
+#define TRUE	1
+#define FALSE	0
+
+#define EPSILON 	0.00000001F
+
+#define ZERO	0
+
+typedef struct coeffProperties {
+	float32_t mT[VECT_WIDTH];
+	float32_t mS[VECT_WIDTH];
+
+	arm_matrix_instance_f32 mWaypoints;
+	float32_t mWaypointsBuffr[15];
+
+	uint16_t mNcoeff;
+
+	unsigned char *mSubscripts[DIM];
+
+	float32_t mVelocity;
+
+	float32_t mLhsV;
+	float32_t mRhsV;
+
+	uint16_t eqnIndex;
+	float32_t mAllCoeffs;
+	float32_t mAllPaths;
+	float32_t t;
+} coefficientsStruct;
+
+void initCoeff(float32_t *waypointsRaw, uint8_t ncoeff, unsigned char *subscripts, float32_t *const_vel);
 
 #endif /* COEFNTS_H_ */
