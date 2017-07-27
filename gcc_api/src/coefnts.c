@@ -2,7 +2,7 @@
 #include <math.h>
 #include <float.h>
 
-static coefficientsStruct coeffStruct;
+coefficientsStruct coeffStruct;
 
 static float32_t normFloat32(float32_t *arry, uint16_t n) {
 	float32_t dotResult = 0.00;
@@ -76,15 +76,15 @@ static uint8_t nearlyEqual(float32_t a, float32_t b, float32_t epsilon) {
 	}
 }
 
- void initCoeff(float32_t *waypointsRaw, uint8_t ncoeff, unsigned char *subscripts, float32_t *constVel) {
+ void initCoeff(float32_t *waypointsRaw, uint8_t nCoeff, unsigned char *subscripts, const uint8_t nSubscripts, float32_t *constVel) {
 
-	coeffStruct.mNcoeff = ncoeff;
+	coeffStruct.mNcoeff = nCoeff;
 	coeffStruct.mVelocity = 2;
+	coeffStruct.mSubscripts = subscripts;
 
 	uint32_t srcRows, srcColumns;   /* Temporary variables */
 
 	float32_t firstWayPoints[DIM];
-
 
 	float32_t matWayPointsBuffer[15];
 	arm_matrix_instance_f32 matWayPoint;				// Waypoint matrix
@@ -113,8 +113,12 @@ static uint8_t nearlyEqual(float32_t a, float32_t b, float32_t epsilon) {
 
 	//---- Create waypoints matrix, coeffStruct.mWaypoints is wquivalent to obj.m_waypoints in matlab
 	arm_mat_init_f32(&matWayPoint, srcRows, srcColumns, matWayPointsBuffer);
-	arm_mat_init_f32(&coeffStruct.mWaypoints, srcRows, srcColumns, coeffStruct.mWaypointsBuffr);
-	arm_mat_trans_f32(&matWayPoint, &coeffStruct.mWaypoints);
+
+	// Copy the same matrix
+	arm_copy_f32(matWayPointsBuffer, &coeffStruct.mWaypointsBuffr, (srcRows * srcColumns));
+	arm_mat_init_f32(&coeffStruct.mWaypoints, srcRows, srcColumns, &coeffStruct.mWaypointsBuffr);
+
+	//arm_mat_trans_f32(&matWayPoint, &coeffStruct.mWaypoints); // Transpose might not required as in matlab
 
 
 	// ----------------- Calculate Difference ---------------------
@@ -192,10 +196,46 @@ static uint8_t nearlyEqual(float32_t a, float32_t b, float32_t epsilon) {
 	arm_mult_f32(wpDiffNorms, constVelTmp, coeffStruct.mT, sizeOfVels);
 
 	for(uint8_t i = 0; i < 4; i++) {
-	 int8_t j = i;
-	 while(j >= 0) {
-		 coeffStruct.mS[i] += coeffStruct.mT[j];
-		 j--;
-	 }
+		int8_t j = i;
+		while(j >= 0) {
+			coeffStruct.mS[i] += coeffStruct.mT[j];
+			j--;
+		}
+	}
+
+	// Initialize obj.m_all_coeffs
+	srcRows = nSubscripts;
+	srcColumns = coeffStruct.mNcoeff;
+	float32_t mAllCoeffBuffr[srcRows * srcColumns];
+
+	arm_fill_f32(0.0, mAllCoeffBuffr, (srcRows * srcColumns));
+	coeffStruct.mAllCoeffsBuffr = mAllCoeffBuffr;
+	arm_mat_init_f32(&coeffStruct.mAllCoeffs, srcRows, srcColumns, coeffStruct.mAllCoeffsBuffr);
+
+
+	// Create a column matrix for obj.m_all_paths
+	srcRows = 8;
+	srcColumns = 1;
+	float32_t mAllPathsBuffr[srcRows * srcColumns];
+
+	arm_fill_f32(0.0, mAllPathsBuffr, (srcRows * srcColumns));
+	coeffStruct.mAllPathsBuffr = mAllPathsBuffr;
+	arm_mat_init_f32(&coeffStruct.mAllPaths, srcRows, srcColumns, coeffStruct.mAllPathsBuffr);
+
+	coeffStruct.t = 't';
+	return;
+}
+
+
+void getWayPoint(float32_t *wayPoint, uint8_t index) {
+	// index starts with 0
+	if(index <= 3) {
+		index *= 3;
+		arm_copy_f32(&(coeffStruct.mWaypointsBuffr[index]), wayPoint, DIM);
+//		arm_copy_f32((coeffStruct.mWaypointsBuffr + index), wayPoint, DIM);
+		return;
+	} else {
+		return;
 	}
 }
+
