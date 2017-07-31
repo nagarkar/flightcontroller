@@ -13,27 +13,6 @@ void printMemoryManagementErrorMsg(uint32_t CFSRValue);
 void stackDump(uint32_t stack[]);
 void infiniteLoop(void);
 
-
-void WWDG_IRQHandler( void ) {
-	infiniteLoop();
-}
-
-void MemManage_Handler( void ) {
-	infiniteLoop();
-}
-
-void BusFault_Handler( void ) {
-	infiniteLoop();
-}
-
-void UsageFault_Handler( void ) {
-	infiniteLoop();
-}
-
-void DebugMon_Handler( void ) {
-	infiniteLoop();
-}
-
 void Default_Fault_Handler(uint32_t interruptNumber) {
 	if (interruptNumber == 54) {
 		BSP_SystemResetOrLoop();

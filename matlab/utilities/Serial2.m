@@ -15,9 +15,10 @@ ax.XLabel.String = 'X';
 
 % Close any open serial terminals and open a new one
 CloseSerial
+%s = serial('COM4', 'BaudRate', 460800);
 s = serial('COM4', 'BaudRate', 115200);
 s.InputBufferSize = 48000;
-s.ReadAsyncMode = 'continuous';
+%s.ReadAsyncMode = 'continuous';
 fopen(s);
 
 counter = -1;
@@ -31,13 +32,16 @@ while(1 == 1)
             res = regexp(c, ',','split');
             res = str2double(res);
             qnew = res(:,2:end);
-            if length(qnew) ~= 4
+            if length(qnew) < 4
                 continue;
             end
-            axang = SpinCalc('QtoEV', [qnew(1,2:end) qnew(1)], 0.001, 1);
-            Mnew = makehgtform('axisrotate', axang(1:3), axang(4)*pi/180);
-            set(t,'Matrix', Mnew);
-            M = Mnew;
+            try 
+                axang = SpinCalc('QtoEV', [qnew(1,2:4) qnew(1)], 0.001, 1);
+                Mnew = makehgtform('axisrotate', axang(1:3), axang(4)*pi/180);
+                set(t,'Matrix', Mnew);
+                M = Mnew;
+            catch e
+            end
             q = qnew;
             drawnow limitrate % display updates
         end

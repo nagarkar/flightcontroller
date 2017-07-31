@@ -49,6 +49,8 @@ typedef Quaternion QAttitude;	/* Normalized rotation representing attitude */
 
 typedef float Altitude;
 
+typedef int16_t Temperature;
+
 typedef AttitudeDim MagneticStrength;
 
 struct SixAxisAttitude {

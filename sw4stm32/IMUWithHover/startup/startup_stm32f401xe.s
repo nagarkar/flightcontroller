@@ -138,7 +138,7 @@ Default_Handler:
   uxtb r0, r0
   bl Default_Fault_Handler;
 Infinite_Loop:
-  b  Infinite_Loop
+  //b  Infinite_Loop
   .size  Default_Handler, .-Default_Handler
 
 .align 4

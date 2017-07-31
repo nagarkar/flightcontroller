@@ -109,6 +109,9 @@ AttitudeGuage::AttitudeGuage()
 	, m_bar_handle(NULL)
     , m_acc_gyro_data({0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 	, m_attitude({1.0f, 0.0f, 0.0f, 0.0f})
+	, m_altitude(0.0f)
+	, m_faltitude(0.0f)
+	, m_temp(23)
 {}
 
 //${AttitudeGuage::AttitudeGuage::Init} ......................................
@@ -149,7 +152,7 @@ bool AttitudeGuage::GotNewMeasurements() {
 status_t AttitudeGuage::ProcessAttitude() {
     //status_t status = AttitudeUtils::GetAttitude(
     //    linearAcc, angularRate, field, m_acc_handle, m_mag_handle);
-    status_t status = AttitudeUtils::GetAttitude2(m_acc_gyro_data, m_acc, m_angularRate, m_field, m_altitude, &m_attitude);
+    status_t status = AttitudeUtils::GetAttitude2(m_acc_gyro_data, m_acc, m_angularRate, m_field, m_altitude, m_faltitude, m_temp, &m_attitude);
 
     if (status == MEMS_ERROR) {
         postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
@@ -166,7 +169,7 @@ uint8_t AttitudeGuage::Start(uint8_t prio) {
 }
 //${AttitudeGuage::AttitudeGuage::StartDMATransfer} ..........................
 status_t AttitudeGuage::StartDMATransfer() {
-    return AttitudeUtils::StartDMATransfer(m_field, m_altitude, m_acc_handle, m_mag_handle, m_bar_handle, m_acc_gyro_data, 12);
+    return AttitudeUtils::StartDMATransfer(m_field, m_altitude, m_temp, m_acc_handle, m_mag_handle, m_bar_handle, m_acc_gyro_data, 12);
 }
 //${AttitudeGuage::AttitudeGuage::SM} ........................................
 QP::QState AttitudeGuage::initial(AttitudeGuage * const me, QP::QEvt const * const e) {
@@ -266,7 +269,7 @@ QP::QState AttitudeGuage::Started(AttitudeGuage * const me, QP::QEvt const * con
         }
         // ${AttitudeGuage::AttitudeGuage::SM::Root::Started::ATTITUDE_GUAGE_INTERVAL_TIMER}
         case ATTITUDE_GUAGE_INTERVAL_TIMER_SIG: {
-            LOG_EVENT(e);
+            //LOG_EVENT(e);
             if(!me->GotNewMeasurements()) {
                 me->postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
             } else {

@@ -8,10 +8,10 @@ extern "C" {
 //----------------------------------------------------------------------------------------------------
 // Variable declaration
 typedef struct {
-		float q0;
-		float q1;
-		float q2;
-		float q3;
+		float c;
+		float x;
+		float y;
+		float z;
 } Q_cxyz;
 
 

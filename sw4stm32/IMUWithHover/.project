@@ -27,6 +27,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>CMSIS</name>
+			<type>2</type>
+			<location>E:/repositories/CMSIS_5/CMSIS</location>
+		</link>
+		<link>
 			<name>dsp</name>
 			<type>2</type>
 			<location>E:/repositories/flightcontroller/dsp</location>

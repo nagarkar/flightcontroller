@@ -41,10 +41,10 @@ volatile float beta = betaDef;								// 2 * proportional gain (Kp)
 // AHRS algorithm update
 
 void MadgwickAHRSupdate(Q_cxyz * q, float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz) {
-	float q0 = q->q0;
-	float q1 = q->q1;
-	float q2 = q->q2;
-	float q3 = q->q3;
+	float q0 = q->c;
+	float q1 = q->x;
+	float q2 = q->y;
+	float q3 = q->z;
 
 	float recipNorm;
 	float s0, s1, s2, s3;
@@ -141,20 +141,20 @@ void MadgwickAHRSupdate(Q_cxyz * q, float gx, float gy, float gz, float ax, floa
 	q3 *= recipNorm;
 
 	// Copy back to structure passed in.
-	q->q0 = q0;
-	q->q1 = q1;
-	q->q2 = q2;
-	q->q3 = q3;
+	q->c = q0;
+	q->x = q1;
+	q->y = q2;
+	q->z = q3;
 }
 
 //---------------------------------------------------------------------------------------------------
 // IMU algorithm update
 
 void MadgwickAHRSupdateIMU(Q_cxyz * q, float gx, float gy, float gz, float ax, float ay, float az) {
-	float q0 = q->q0;
-	float q1 = q->q1;
-	float q2 = q->q2;
-	float q3 = q->q3;
+	float q0 = q->c;
+	float q1 = q->x;
+	float q2 = q->y;
+	float q3 = q->z;
 
 	float recipNorm;
 	float s0, s1, s2, s3;
@@ -223,10 +223,10 @@ void MadgwickAHRSupdateIMU(Q_cxyz * q, float gx, float gy, float gz, float ax, f
 	q3 *= recipNorm;
 
 	// Copy back to structure passed in.
-	q->q0 = q0;
-	q->q1 = q1;
-	q->q2 = q2;
-	q->q3 = q3;
+	q->c = q0;
+	q->x = q1;
+	q->y = q2;
+	q->z = q3;
 }
 
 

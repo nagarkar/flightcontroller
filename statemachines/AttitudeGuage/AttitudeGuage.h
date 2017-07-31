@@ -72,6 +72,8 @@ private:
     AngularRate m_angularRate;
     MagneticField m_field;
     Altitude m_altitude;
+    Altitude m_faltitude;
+    Temperature m_temp;
     Q_cxyz m_attitude;
 
 public:

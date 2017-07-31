@@ -6,14 +6,20 @@
   <class name="AttitudeGuage" superclass="StdEvents::AO">
    <attribute name="m_acc_handle" type="void *" visibility="0x02" properties="0x00"/>
    <attribute name="m_mag_handle" type="void *" visibility="0x02" properties="0x00"/>
+   <attribute name="m_bar_handle" type="void *" visibility="0x02" properties="0x00"/>
    <attribute name="m_gyroRate" type="float" visibility="0x02" properties="0x00"/>
    <attribute name="m_measurements" type="uint32_t" visibility="0x02" properties="0x00"/>
+   <attribute name="m_measurementsAltitude" type="uint32_t" visibility="0x02" properties="0x00"/>
    <attribute name="{ CHECK_UP_INTERVAL = 1000, MAX_RETRIES = 5, MAX_INIT_ATTEMPTS_BEFORE_RESET = 5}" type="enum " visibility="0x02" properties="0x00"/>
    <attribute name="m_previousMeasurementCount" type="uint32_t" visibility="0x02" properties="0x00"/>
+   <attribute name="m_previousAltitudeMeasurementCount" type="uint32_t" visibility="0x02" properties="0x00"/>
    <attribute name="m_acc_gyro_data[12]" type="u8_t" visibility="0x02" properties="0x00"/>
    <attribute name="m_acc" type="Acceleration" visibility="0x02" properties="0x00"/>
    <attribute name="m_angularRate" type="AngularRate" visibility="0x02" properties="0x00"/>
-   <attribute name="m_field" type="MagneticField" visibility="0x00" properties="0x00"/>
+   <attribute name="m_field" type="MagneticField" visibility="0x02" properties="0x00"/>
+   <attribute name="m_altitude" type="Altitude" visibility="0x02" properties="0x00"/>
+   <attribute name="m_attitude" type="Q_cxyz" visibility="0x02" properties="0x00"/>
+   <attribute name="default_acc_gyro_data[12]" type="u8_t" visibility="0x00" properties="0x00"/>
    <operation name="AttitudeGuage" type="" visibility="0x00" properties="0x00">
     <code>  : AO(ATTITUDE_GUAGE_INTERVAL_TIMER_SIG,
         (QStateHandler)&amp;initial,
@@ -23,31 +29,44 @@
     , m_previousMeasurementCount(0)
     , m_acc_handle(NULL)
     , m_mag_handle(NULL)
-    , m_acc_gyro_data({0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})</code>
+    , m_bar_handle(NULL)
+    , m_acc_gyro_data({0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+    , default_acc_gyro_data({0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+    , m_attitude({1.0f, 0.0f, 0.0f, 0.0f})</code>
    </operation>
    <operation name="Init" type="status_t" visibility="0x00" properties="0x00">
     <documentation>docs</documentation>
     <code>static int initializationAttempts = 0;
 volatile status_t status;
 DrvStatusTypeDef result = COMPONENT_OK;
-status = AttitudeUtils::Initialize(result, &amp;m_acc_handle, &amp;m_mag_handle);
+status = AttitudeUtils::Initialize(result, &amp;m_acc_handle, &amp;m_mag_handle, &amp;m_bar_handle);
 initializationAttempts++;
 if (initializationAttempts &gt; MAX_INIT_ATTEMPTS_BEFORE_RESET) {
     BSP_SystemResetOrLoop();
 }
 if (status == MEMS_ERROR) {
     PRINT(&quot;ERROR in AttitudeGuage.Init()\r\n&quot;);
-    ErrorEvt *evt = new ErrorEvt(ATTITUDE_GUAGE_FAILED_SIG, 0, ERROR_HARDWARE);
+    ErrorEvt *evt = new ErrorEvt(ATTITUDE_COLLECTION_FAILED_SIG, INITIALIZATION_FAILED, ERROR_HARDWARE);
     postLIFO(evt);
 }
 return status;</code>
    </operation>
-   <operation name="UpdateGyroRate" type="void" visibility="0x00" properties="0x00">
-    <code>static uint32_t numDelays = 0;
-numDelays++;
-int totalMillis = numDelays * CHECK_UP_INTERVAL;
-// TODO: Deal with overflow
-m_gyroRate = (1000.0 * m_measurements)/totalMillis; // Hz</code>
+   <operation name="InitBarometer" type="status_t" visibility="0x00" properties="0x00">
+    <documentation>docs</documentation>
+    <code>static int barometerInitializationAttempts = 0;
+volatile status_t status;
+DrvStatusTypeDef result = COMPONENT_OK;
+status = AttitudeUtils::InitializeBarometer(result, &amp;m_bar_handle);
+barometerInitializationAttempts++;
+if (barometerInitializationAttempts &gt; MAX_INIT_ATTEMPTS_BEFORE_RESET) {
+    BSP_SystemResetOrLoop();
+}
+if (status == MEMS_ERROR) {
+    PRINT(&quot;ERROR in AttitudeGuage.Init()\r\n&quot;);
+    ErrorEvt *evt = new ErrorEvt(BAR_COLLECTION_FAILED_SIG, INITIALIZATION_FAILED, ERROR_HARDWARE);
+    postLIFO(evt);
+}
+return status;</code>
    </operation>
    <operation name="GotNewMeasurements" type="bool" visibility="0x00" properties="0x00">
     <code>if (m_previousMeasurementCount == m_measurements) {
@@ -57,14 +76,25 @@ m_gyroRate = (1000.0 * m_measurements)/totalMillis; // Hz</code>
     return true;
 }</code>
    </operation>
+   <operation name="GotNewAltitudeMeasurements" type="bool" visibility="0x00" properties="0x00">
+    <code>if (m_previousAltitudeMeasurementCount == m_measurementsAltitude) {
+    return false;
+} else {
+    m_previousAltitudeMeasurementCount = m_measurementsAltitude;
+    return true;
+}</code>
+   </operation>
    <operation name="ProcessAttitude" type="status_t" visibility="0x00" properties="0x00">
     <code>//status_t status = AttitudeUtils::GetAttitude(
 //    linearAcc, angularRate, field, m_acc_handle, m_mag_handle);
-status_t status = AttitudeUtils::GetAttitude2(m_acc_gyro_data, m_acc, m_angularRate, m_field);
-
+if (memcmp(m_acc_gyro_data, default_acc_gyro_data, sizeof(default_acc_gyro_data)) == 0){
+  return MEMS_SUCCESS;
+}
+status_t status = AttitudeUtils::GetAttitude2(m_acc_gyro_data, m_acc, m_angularRate, m_field, m_altitude, &amp;m_attitude);
 
 if (status == MEMS_ERROR) {
-    postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
+    ErrorEvt *evt = new ErrorEvt(ATTITUDE_COLLECTION_FAILED_SIG, PROCESSING_ALTITUDE_FAILED, ERROR_HARDWARE);
+    postLIFO(evt);
 } else {
     m_measurements++;
     Evt *evt = new AttitudeDataEvt(m_acc, m_angularRate, m_field);
@@ -72,66 +102,63 @@ if (status == MEMS_ERROR) {
 }
 return status;</code>
    </operation>
+   <operation name="ProcessAltitude" type="status_t" visibility="0x00" properties="0x00">
+    <code>status_t status = AttitudeUtils::ReadAltitude(m_bar_handle, m_altitude);
+if (status == MEMS_ERROR) { // Doesn't matter if we don't get altitude as long as there are no gyro measurements.
+    ErrorEvt *evt = new ErrorEvt(BAR_COLLECTION_FAILED_SIG, PROCESSING_ALTITUDE_FAILED, ERROR_HARDWARE);
+    postLIFO(evt);
+} else {
+    m_measurementsAltitude++;
+    // TODO: Publish a message with altitude.
+}
+return status;</code>
+   </operation>
    <operation name="Start" type="uint8_t" visibility="0x00" properties="0x00">
     <parameter name="prio" type="uint8_t"/>
     <code>return AO::Start(prio);</code>
    </operation>
+   <operation name="UpdateGyroRate" type="void" visibility="0x00" properties="0x00">
+    <code>static uint32_t numDelays = 0;
+numDelays++;
+int totalMillis = numDelays * CHECK_UP_INTERVAL;
+// TODO: Deal with overflow
+m_gyroRate = (1000.0 * m_measurements)/totalMillis; // Hz</code>
+   </operation>
    <operation name="StartDMATransfer" type="status_t" visibility="0x02" properties="0x00">
-    <code>m_acc_gyro_data = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-return AttitudeUtils::StartDMATransfer(m_field, m_acc_handle, m_mag_handle, m_acc_gyro_data, 12);</code>
+    <code>uint32_t dmaLength = sizeof(default_acc_gyro_data);
+memcpy(m_acc_gyro_data, default_acc_gyro_data, dmaLength);
+return AttitudeUtils::StartDMATransfer(m_field, m_altitude, m_acc_handle, m_mag_handle, m_bar_handle, m_acc_gyro_data, 12);</code>
    </operation>
    <statechart>
     <initial target="../1">
      <action brief="SubscribeEvents">me-&gt;subscribe(ATTITUDE_GUAGE_STOP_REQ_SIG);
 me-&gt;subscribe(ATTITUDE_GUAGE_START_REQ_SIG);
 me-&gt;subscribe(ATTITUDE_DATA_AVAILABLE_SIG);
-me-&gt;subscribe(ATTITUDE_GUAGE_FAILED_SIG);
-me-&gt;subscribe(ATTITUDE_GYRO_DMA_COMPLETE_SIG);</action>
-     <initial_glyph conn="3,3,5,0,10,2">
+me-&gt;subscribe(ATTITUDE_COLLECTION_FAILED_SIG);
+me-&gt;subscribe(ATTITUDE_GYRO_DMA_COMPLETE_SIG);
+me-&gt;subscribe(BAR_DATA_AVAILABLE_SIG);
+me-&gt;subscribe(BAR_COLLECTION_FAILED_SIG);</action>
+     <initial_glyph conn="3,3,5,0,11,2">
       <action box="0,-2,15,2"/>
      </initial_glyph>
     </initial>
     <state name="Root">
      <documentation>Documentation</documentation>
-     <initial target="../1">
-      <initial_glyph conn="11,9,5,0,4,2">
+     <initial target="../4">
+      <initial_glyph conn="33,8,5,0,-20,1">
        <action box="0,-2,10,2"/>
       </initial_glyph>
      </initial>
-     <state name="Stopped">
-      <entry>LOG_EVENT(e);</entry>
-      <tran trig="ATTITUDE_GUAGE_START_REQ" target="../../2">
-       <action brief="^CFM">LOG_EVENT(e);
-me-&gt;PublishConfirmation(
-    EVT_CAST(*e),
-    ATTITUDE_GUAGE_START_CFM_SIG);</action>
-       <tran_glyph conn="17,18,2,0,4,-6,4,6,3">
-        <action box="-4,5,29,2"/>
-       </tran_glyph>
-      </tran>
-      <tran trig="ATTITUDE_GUAGE_STOP_REQ">
-       <action brief="^CFM">LOG_EVENT(e);
-me-&gt;PublishConfirmation(
-    EVT_CAST(*e),
-    ATTITUDE_GUAGE_STOP_CFM_SIG);</action>
-       <tran_glyph conn="7,15,3,-1,30">
-        <action box="4,-2,32,3"/>
-       </tran_glyph>
-      </tran>
-      <state_glyph node="7,11,45,7">
-       <entry box="1,2,6,2"/>
-      </state_glyph>
-     </state>
      <state name="Started">
       <entry brief="ArmX">LOG_EVENT(e);
 me-&gt;m_timer.armX(CHECK_UP_INTERVAL, CHECK_UP_INTERVAL);</entry>
       <exit brief="DisarmX">me-&gt;m_timer.disarm();</exit>
-      <tran trig="ATTITUDE_GUAGE_STOP_REQ" target="../../1">
+      <tran trig="ATTITUDE_GUAGE_STOP_REQ" target="../../4">
        <action brief="^CFM">LOG_EVENT(e);
 me-&gt;PublishConfirmation(
     EVT_CAST(*e),
     ATTITUDE_GUAGE_STOP_CFM_SIG);</action>
-       <tran_glyph conn="47,29,0,2,-4,13,-4,-13,-3">
+       <tran_glyph conn="48,29,0,2,-4,13,-4,-16,-4">
         <action box="-5,-7,26,3"/>
        </tran_glyph>
       </tran>
@@ -140,53 +167,72 @@ me-&gt;PublishConfirmation(
 me-&gt;PublishConfirmation(
     EVT_CAST(*e),
     ATTITUDE_GUAGE_START_CFM_SIG);</action>
-       <tran_glyph conn="8,48,3,-1,38">
+       <tran_glyph conn="9,43,3,-1,39">
         <action box="0,-2,30,2"/>
        </tran_glyph>
       </tran>
       <tran trig="ATTITUDE_GUAGE_INTERVAL_TIMER">
-       <action brief="CheckIfValid, ^FAILED">LOG_EVENT(e);
-if(!me-&gt;GotNewMeasurements()) {
-    me-&gt;postLIFO(new Evt(ATTITUDE_GUAGE_FAILED_SIG));
+       <action brief="CheckIfValid, ^FAILED">if(!me-&gt;GotNewMeasurements()) {
+    ErrorEvt *evt = new ErrorEvt(ATTITUDE_COLLECTION_FAILED_SIG, NO_NEW_MEASUREMENTS_DETECTED, ERROR_HARDWARE);
+    me-&gt;postLIFO(evt);
 } else {
     me-&gt;UpdateGyroRate();
     PRINT(&quot;GYRO Rate: %f\r\n&quot;, me-&gt;m_gyroRate);
+    if(!me-&gt;GotNewAltitudeMeasurements()) {
+        ErrorEvt *evt = new ErrorEvt(BAR_COLLECTION_FAILED_SIG, NO_NEW_MEASUREMENTS_DETECTED, ERROR_HARDWARE);
+        me-&gt;postLIFO(evt);
+    }
+    // TODO: Measure Altitude Rate, same as Gyro me-&gt;UpdateAltitudeRate();
+    // PRINT(&quot;Altitude Rate: %f\r\n&quot;, me-&gt;m_altitudeRate);
 }</action>
-       <tran_glyph conn="8,43,3,-1,38">
+       <tran_glyph conn="9,38,3,-1,39">
         <action box="1,-2,31,4"/>
        </tran_glyph>
       </tran>
-      <tran trig="ATTITUDE_GUAGE_FAILED" target="../../3">
-       <tran_glyph conn="49,33,1,0,22,4">
+      <tran trig="ATTITUDE_COLLECTION_FAILED" target="../../2">
+       <action>ErrorEvt *err = (ErrorEvt *)e;
+PRINTE(err);</action>
+       <tran_glyph conn="50,33,1,0,31,2">
         <action box="0,-2,24,2"/>
        </tran_glyph>
       </tran>
       <tran trig="ATTITUDE_DATA_AVAILABLE">
        <action>me-&gt;StartDMATransfer();</action>
-       <tran_glyph conn="44,59,2,-1,-3,-29">
+       <tran_glyph conn="50,52,1,-1,-37">
         <action box="-27,-2,25,2"/>
        </tran_glyph>
       </tran>
       <tran trig="ATTITUDE_GYRO_DMA_COMPLETE">
        <action>me-&gt;ProcessAttitude();</action>
-       <tran_glyph conn="8,52,3,-1,30,1">
+       <tran_glyph conn="9,47,3,-1,39">
         <action box="1,0,27,2"/>
        </tran_glyph>
       </tran>
-      <state_glyph node="8,29,41,30">
+      <tran trig="BAR_DATA_AVAILABLE">
+       <action>me-&gt;ProcessAltitude();</action>
+       <tran_glyph conn="50,56,1,-1,-37">
+        <action box="-27,-2,25,2"/>
+       </tran_glyph>
+      </tran>
+      <tran trig="BAR_COLLECTION_FAILED" target="../../3">
+       <action>ErrorEvt *err = (ErrorEvt *)e;
+PRINTE(err);</action>
+       <tran_glyph conn="50,50,1,3,26">
+        <action box="0,-2,26,2"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="9,29,41,31">
        <entry box="1,2,17,2"/>
        <exit box="1,4,12,2"/>
       </state_glyph>
      </state>
-     <state name="Failed">
+     <state name="AttitudeFailed">
       <entry brief="Retry">LOG_EVENT(e);
 uint8_t retries = 0;
 status_t status = MEMS_ERROR;
 while(retries &lt; MAX_RETRIES &amp;&amp; status == MEMS_ERROR) {
     retries++;
-    // QF_CRIT_ENTRY(0);
     status = me-&gt;Init();
-    // QF_CRIT_EXIT(0);
     if (status == MEMS_SUCCESS) {
         me-&gt;postLIFO(new Evt(ATTITUDE_DATA_AVAILABLE_SIG));
         break;
@@ -195,17 +241,66 @@ while(retries &lt; MAX_RETRIES &amp;&amp; status == MEMS_ERROR) {
 if (status == MEMS_ERROR &amp;&amp; retries == MAX_RETRIES) {
     PRINT(&quot;Exhaused Retries\r\n&quot;);
 }</entry>
-      <tran trig="ATTITUDE_DATA_AVAILABLE" target="../../2">
+      <tran trig="ATTITUDE_DATA_AVAILABLE" target="../../1">
        <action>me-&gt;StartDMATransfer();</action>
-       <tran_glyph conn="70,43,2,1,5,-21">
-        <action box="-13,8,25,2"/>
+       <tran_glyph conn="80,42,2,1,2,-30">
+        <action box="-30,-1,25,2"/>
        </tran_glyph>
       </tran>
-      <state_glyph node="61,37,19,6">
+      <state_glyph node="76,35,14,7">
        <entry box="1,2,6,2"/>
       </state_glyph>
      </state>
-     <state_glyph node="1,5,91,55"/>
+     <state name="BarometerFailed">
+      <entry brief="Retry">LOG_EVENT(e);
+uint8_t retries = 0;
+status_t status = MEMS_ERROR;
+while(retries &lt; MAX_RETRIES &amp;&amp; status == MEMS_ERROR) {
+    retries++;
+    status = me-&gt;InitBarometer();
+    if (status == MEMS_SUCCESS) {
+        me-&gt;postLIFO(new Evt(BAR_DATA_AVAILABLE_SIG));                    
+        break;
+    }
+}
+if (status == MEMS_ERROR &amp;&amp; retries == MAX_RETRIES) {
+    PRINT(&quot;Exhaused Retries\r\n&quot;);
+}</entry>
+      <tran trig="BAR_DATA_AVAILABLE" target="../../1">
+       <action>me-&gt;ProcessAltitude();</action>
+       <tran_glyph conn="86,56,2,1,2,-36">
+        <action box="-30,-1,25,2"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="76,49,15,7">
+       <entry box="1,2,6,2"/>
+      </state_glyph>
+     </state>
+     <state name="Stopped">
+      <entry>LOG_EVENT(e);</entry>
+      <tran trig="ATTITUDE_GUAGE_START_REQ" target="../../1">
+       <action brief="^CFM">LOG_EVENT(e);
+me-&gt;PublishConfirmation(
+    EVT_CAST(*e),
+    ATTITUDE_GUAGE_START_CFM_SIG);</action>
+       <tran_glyph conn="15,17,2,0,4,-6,4,9,4">
+        <action box="-4,5,29,2"/>
+       </tran_glyph>
+      </tran>
+      <tran trig="ATTITUDE_GUAGE_STOP_REQ">
+       <action brief="^CFM">LOG_EVENT(e);
+me-&gt;PublishConfirmation(
+    EVT_CAST(*e),
+    ATTITUDE_GUAGE_STOP_CFM_SIG);</action>
+       <tran_glyph conn="5,14,3,-1,30">
+        <action box="4,-2,32,3"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="5,9,45,8">
+       <entry box="1,2,6,2"/>
+      </state_glyph>
+     </state>
+     <state_glyph node="2,5,91,57"/>
     </state>
     <state_diagram size="98,64"/>
    </statechart>
@@ -276,69 +371,6 @@ $declare(AttitudeGuage)
 using namespace StdEvents;
 using namespace QP;
 
-extern &quot;C&quot; {
-
-DMA_HandleTypeDef hdma_rx;
-
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-    if (GPIO_Pin != GPIO_PIN_5) {
-        return;
-    }
-    QF::PUBLISH(new Evt(ATTITUDE_DATA_AVAILABLE_SIG), NULL);
-}
-
-void DMA1_Stream0_IRQHandler(void) {
-    QP_QXK_ISR_ENTRY();
-    HAL_DMA_IRQHandler(&amp;hdma_rx);
-    QP_QXK_ISR_EXIT();
-}
-
-void I2C1_ER_IRQHandler(void) {
-    HAL_I2C_ER_IRQHandler(GetI2CHandle());
-}
-
-
-void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c) {
-    QF::PUBLISH(new Evt(ATTITUDE_GYRO_DMA_COMPLETE_SIG), NULL);
-}
-
-void BSP_I2C1_MspInit(I2C_HANDLE_TYPE_DEF* i2cHandle) {
-
-    /// I2C Busy Flag Stuck Problem (I2C keeps timing out because the busy flag is always set)
-    //  Mentioned here: https://goo.gl/mQdMUu
-    //  Once this code runs, the busy flag will be reset.
-    //  Generally speaking, you can leave this in after the issue is fixed.
-    BSP_I2C_ClearBusyFlagErrata_2_14_7(i2cHandle, NUCLEO_I2C_EXPBD_SDA_PIN, NUCLEO_I2C_EXPBD_SCL_PIN);
-
-    //1- Enable peripherals and GPIO Clocks #################################
-    __HAL_RCC_DMA1_CLK_ENABLE();
-
-    //3-DMA configuration
-    hdma_rx.Instance                 = DMA1_Stream0;
-    hdma_rx.Init.Channel             = DMA_CHANNEL_1;
-    hdma_rx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
-    hdma_rx.Init.PeriphInc           = DMA_PINC_DISABLE;
-    hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
-    hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-    hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-    hdma_rx.Init.Mode                = DMA_NORMAL;
-    hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
-    hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
-    hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
-    hdma_rx.Init.MemBurst            = DMA_MBURST_SINGLE;
-    hdma_rx.Init.PeriphBurst         = DMA_PBURST_SINGLE;
-    HAL_DMA_Init(&amp;hdma_rx);
-
-    //4-link DMA with I2C
-    __HAL_LINKDMA(GetI2CHandle(), hdmarx, hdma_rx);
-
-    //5-configure the DMA interrupt
-    HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
-}
-
-}// Extern C
-
 $define(AttitudeGuage)</text>
    </file>
    <file name="Attitude.h">
@@ -365,7 +397,7 @@ typedef AttitudeDim AngularPos; /* XYZ angles in degrees */
 
 typedef AttitudeDim MagneticField; /* XYZ gauss*/
 
-typedef AttitudeDim MagneticStrength;
+typedef float Altitude;
 
 struct SixAxisAttitude {
     AngularRate  angularRate;
@@ -375,7 +407,7 @@ struct SixAxisAttitude {
 struct NineAxisAttitude {
     AngularRate  angularRate;
     Acceleration linearAcc;
-    MagneticStrength magneticStrength;
+    MagneticField magneticStrength;
 };
 
 #ifdef __cplusplus
@@ -393,6 +425,7 @@ struct NineAxisAttitude {
 extern &quot;C&quot; {
 #endif
 
+#include &quot;stm32f4xx_hal.h&quot;
 #include &quot;Attitude.h&quot;
 #include &quot;component.h&quot;
 #include &quot;LSM6DS0_ACC_GYRO_driver.h&quot;
@@ -412,12 +445,17 @@ private:
     static Q_cxyz q;
     static AngularPos orientation;
     static constexpr float ACCELERATION_DUE_TO_GRAVITY_METERS_PER_SEC_SQ = 9.8f;
+    static HAL_StatusTypeDef ReadMagneticField(void *magHandle, MagneticField &amp;magField);
 public:
-    static status_t Initialize(DrvStatusTypeDef &amp; result, void **hhandle, void **magHandle);
+    static status_t Initialize(DrvStatusTypeDef &amp; result, void **hhandle, void **magHandle, void **barHandle);
+    static status_t InitializeBarometer(DrvStatusTypeDef &amp; result, void **barHandle);
+
     static status_t isGyroDataReady(void *handle);
-    static status_t GetAttitude(Acceleration &amp;acc, AngularRate &amp;angRate, MagneticField &amp;magField, void *handle, void *magHandle);
-    static status_t GetAttitude2(u8_t* gyro_acc_data, Acceleration &amp;acc, AngularRate &amp;angRate, MagneticField magField);
-    static status_t StartDMATransfer(MagneticField &amp;magField, void *handle,  void *magHandle, u8_t *buff, uint32_t length);
+    static status_t GetAttitude2(u8_t* gyro_acc_data, Acceleration &amp;acc, AngularRate &amp;angRate, MagneticField magField, Altitude altitude, Q_cxyz *attitude);
+    static status_t StartDMATransfer(MagneticField &amp;magField, Altitude &amp;altitude, void *handle,  void *magHandle, void *barHandle, u8_t *buff, uint32_t length);
+
+    static status_t ReadAltitude(void *barHandle, Altitude &amp;altitude);
+
     static status_t ResetAccSensitivity( void *handle );
     static status_t ResetGyroSensitivity( void *handle );
     static status_t ResetMagSensitivity( void *handle );
@@ -429,8 +467,7 @@ public:
 }
 #endif
 
-#endif // _AO_ATTITUDE_UTILS_H
-</text>
+#endif // _AO_ATTITUDE_UTILS_H</text>
    </file>
   </directory>
  </package>

@@ -60,6 +60,7 @@ int AttitudeUtils::counter = 0;
 float AttitudeUtils::accSensitivity = -1.0f;
 float AttitudeUtils::gyroSensitivity = -1.0f;
 float AttitudeUtils::magSensitivity = -1.0f;
+AltitudeEstimator AttitudeUtils::altitudeEstimator;
 
 #define STATUS_T_SET(status, fn)  status =  ((fn) == MEMS_ERROR) ? MEMS_ERROR: status
 #define HAL_STATUS_SET(status, fn)  status = (status == HAL_OK) ? (fn) : status;
@@ -92,11 +93,11 @@ static void normalizeQ(Q_cxyz &q);
 static void updateMagVector(MagneticField &magField);
 
 static void normalizeQ(Q_cxyz &q) {
-	float norm = q.q0*q.q0 + q.q1*q.q1 + q.q2*q.q2 + q.q3*q.q3;
-	q.q0 = q.q0/sqrtf(norm);
-	q.q1 = q.q1/sqrtf(norm);
-	q.q2 = q.q2/sqrtf(norm);
-	q.q3 = q.q3/sqrtf(norm);
+	float norm = q.c*q.c + q.x*q.x + q.y*q.y + q.z*q.z;
+	q.c = q.c/sqrtf(norm);
+	q.x = q.x/sqrtf(norm);
+	q.y = q.y/sqrtf(norm);
+	q.z = q.z/sqrtf(norm);
 }
 
 static void updateMagVector(MagneticField &magField) {
@@ -292,6 +293,18 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, voi
 	result = BSP_PRESSURE_Init(LPS25HB_P_0, hbarHandle);
 	if (result == COMPONENT_OK) {
 		isBarInitialized = 1;
+		LPS25HB_ConfigTypeDef_st config;
+		config.AutoZero = LPS25HB_ENABLE;
+		config.BDU = LPS25HB_BDU_NO_UPDATE;
+		config.OutputDataRate = LPS25HB_ODR_1HZ;
+		config.PressResolution =LPS25HB_AVGP_512;
+		config.TempResolution = LPS25HB_AVGT_64;
+		config.Reset_AZ = LPS25HB_ENABLE;
+		if(LPS25HB_Set_GenericConfig(*hbarHandle, &config)) { status == MEMS_ERROR; };
+		/*if(LPS25HB_SwReset(*hbarHandle)) 							{status = MEMS_ERROR;}
+		if(LPS25HB_Set_Odr(*hbarHandle, LPS25HB_ODR_25HZ)) 			{status = MEMS_ERROR;}
+		if(LPS25HB_Set_Bdu(*hbarHandle, LPS25HB_BDU_NO_UPDATE)) 	{status = MEMS_ERROR;}
+		if(LPS25HB_Set_AutoZeroFunction(*hbarHandle, LPS25HB_SET)) 	{status = MEMS_ERROR;}*/
 		result = BSP_PRESSURE_Sensor_Enable(*hbarHandle);
 	} else {
 		return Initialize(result, hhandle, hmagHandle, hbarHandle);
@@ -332,9 +345,6 @@ status_t AttitudeUtils::Initialize(DrvStatusTypeDef &result, void **hhandle, voi
 
 	STATUS_T_SET(status, LIS3MDL_MAG_W_OutputDataRate(magHandle, LIS3MDL_MAG_DO_80Hz)); // About 1/10th the gyro/acc rate.
 
-	//LPS25HB_Error_et err = LPS25HB_Set_Odr(*hbarHandle, LPS25HB_ODR_25HZ);
-	//status = (err == LPS25HB_ERROR || status == MEMS_ERROR)? MEMS_ERROR : MEMS_SUCCESS;
-
 	arm_fir_init_f32(&accFilterX, numTaps19, &FILTER_COEFF_LPF_50HZ[0], &FILTER_STATE_ACC_X[0], 1);
 	arm_fir_init_f32(&accFilterY, numTaps19, &FILTER_COEFF_LPF_50HZ[0], &FILTER_STATE_ACC_Y[0], 1);
 	arm_fir_init_f32(&accFilterZ, numTaps19, &FILTER_COEFF_LPF_50HZ[0], &FILTER_STATE_ACC_Z[0], 1);
@@ -362,12 +372,12 @@ status_t AttitudeUtils::isGyroDataReady(void *handle) {
 }
 
 
-status_t AttitudeUtils::StartDMATransfer(MagneticField &magField, Altitude &altitude,
+status_t AttitudeUtils::StartDMATransfer(MagneticField &magField, Altitude &altitude, Temperature &temperature,
 		void *handle,  void *magHandle, void *barHandle, u8_t *buff, uint32_t length) {
 
 	HAL_StatusTypeDef status = HAL_OK;
 	HAL_STATUS_SET(status, AttitudeUtils::ReadMagneticField(magHandle, magField));
-	HAL_STATUS_SET(status, AttitudeUtils::ReadAltitude(barHandle, altitude));
+	HAL_STATUS_SET(status, AttitudeUtils::ReadAltitude(barHandle, altitude, temperature));
 
 	DrvContextTypeDef *ctx = (DrvContextTypeDef *)handle;
 	HAL_StatusTypeDef dmastatus = HAL_BUSY;
@@ -386,20 +396,36 @@ status_t AttitudeUtils::StartDMATransfer(MagneticField &magField, Altitude &alti
 	return status == HAL_OK ? MEMS_SUCCESS: MEMS_ERROR;
 }
 
-HAL_StatusTypeDef AttitudeUtils::ReadAltitude(void *barHandle, Altitude &altitude) {
+HAL_StatusTypeDef AttitudeUtils::ReadAltitude(void *barHandle, Altitude &altitude, Temperature &temp) {
 	HAL_StatusTypeDef status = HAL_OK;
-	if (counter % 250 != 0) {
+	if (counter % 25 != 0) {
 		return status;
 	}
+
+	LPS25HB_DataStatus_st dataStatus;
+	if (LPS25HB_Get_DataStatus(barHandle, &dataStatus)) { status = HAL_ERROR; };
+	if(dataStatus.PressDataAvailable != true) {
+		return status;
+	}
+	
 	int32_t pressure;
 	LPS25HB_Error_et result = LPS25HB_Get_Pressure(barHandle, &pressure);
 	if (result == LPS25HB_OK) {
 		float fpressure = pressure;
 		//=(1-(hpa or mbar/1013.25)^0.190284)*145366.45/3.280839895 meters
-		altitude = (1 - pow(fpressure / 101325, 0.190284)) * 44308;
+		fpressure = fpressure/(100 * 1013.25);
+		fpressure = powf(fpressure, 0.190284);
+		fpressure = (1 - fpressure) * 44308;
+		altitude = fpressure;
+		//altitude = (1 - pow(fpressure / (100* 1013.25), 0.190284)) * 44308;
 	} else {
 		status = HAL_ERROR;
 	}
+
+	int16_t _temp = 0;
+	if(LPS25HB_Get_Temperature(barHandle, &_temp)) { status = HAL_ERROR; }
+	temp = _temp;
+
 	return status;
 }
 
@@ -432,9 +458,11 @@ HAL_StatusTypeDef AttitudeUtils::ReadMagneticField(void *magHandle, MagneticFiel
 
 }
 status_t  AttitudeUtils::GetAttitude2(u8_t* gyro_acc_data, Acceleration &acc, AngularRate &angRate,
-	MagneticField magField, Altitude altitude, Q_cxyz *attitude) {
+	MagneticField magField, Altitude altitude, Altitude &faltitude, Temperature temp, Q_cxyz *attitude) {
 
 	uint32_t marker = GetPerfCycle();
+	volatile uint32_t elapsed;
+	volatile uint32_t kfstart;
 
 	HAL_StatusTypeDef status = HAL_OK;
 
@@ -471,18 +499,37 @@ status_t  AttitudeUtils::GetAttitude2(u8_t* gyro_acc_data, Acceleration &acc, An
 #endif
 
 	float mult = 3.14159265f/180;
+	kfstart = GetPerfCycle();
 	MahonyAHRSupdate(attitude, angRate.x * mult, angRate.y * mult, angRate.z * mult, acc.x, acc.y, acc.z, magField.x, magField.y, magField.z);
 	normalizeQ(*attitude);
+	elapsed = GetElapsedCycles(kfstart);
+
+	kfstart = GetPerfCycle();
+	/**
+	    faltitude	altitude		Implies
+		0				!0			First altitude measurement is available. Set initial state, set faltitude = initial measurement
+		!0				N/A			run filter.
+	 */
+	if (counter <= TIME_FOR_MEAN_MEASUREMENT) {
+		faltitude = altitudeEstimator.altitudeState.X_v.pData[0] = altitude;
+		altitudeEstimator.altitudeState.X_v.pData[3] = acc.z;
+	} else if (faltitude != 0) {
+		faltitude = KalmanAltitudeEstimate(acc, *attitude, altitude);
+	}
+	elapsed = GetElapsedCycles(kfstart);
 
 #if defined(OUTPUT_ATTITUDE_QUATERNION)
 	// Print attitude quaternion for matlab etc to read over serial and display
-	if (counter > TIME_FOR_MEAN_MEASUREMENT) {
-		PRINT("orientation,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\r\n",
-			attitude->q0, attitude->q1, attitude->q2, attitude->q3,
-			acc.x, 		acc.y, 		acc.z,
-			angRate.x, 	angRate.y, 	angRate.z,
-			magField.x, magField.y, magField.z,
-			altitude);
+	if (counter > TIME_FOR_MEAN_MEASUREMENT && counter % 5 == 0) {
+		PRINT("o,%f,%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%f,%f,%d\r\n",
+			attitude->c, attitude->x, attitude->y, attitude->z,			// 4 fields: Attitude
+			acc.x, 		acc.y, 		acc.z,								// 3 fields: Lin Acc
+			//angRate.x, 	angRate.y, 	angRate.z,						// 3 fields: Ang Vel
+			0, 			0, 			0,									// 3 fields: Ang Vel
+			//magField.x, magField.y, magField.z,						// 3 fields: Mag Field
+			0, 			0, 			0,									// 3 fields: Mag Field
+			altitude, faltitude,										// 2 fields: Measured Barometer Altitude, Filtered Altitude
+			counter);													// 1 field: Timestamp
 	}
 #endif
 	counter++;
@@ -491,5 +538,50 @@ status_t  AttitudeUtils::GetAttitude2(u8_t* gyro_acc_data, Acceleration &acc, An
 	cycleCounterAvg += ((float)cycleCounter)/(cycleCounterCount + 1);
 	cycleCounterCount++;
 	return (status == HAL_OK) ? MEMS_SUCCESS : MEMS_ERROR;
+}
+
+/**
+ * Implementation of the following formula, with y.w = 0
+ *
+ 	x =  x.x * y.w + x.y * y.z - x.z * y.y + x.w * y.x;
+	y = -x.x * y.z + x.y * y.w + x.z * y.x + q1.w * y.y;
+	z =  q1.x * q2.y - q1.y * q2.x + q1.z * q2.w + q1.w * q2.z;
+	w = -q1.x * q2.x - q1.y * q2.y - q1.z * q2.z + q1.w * q2.w;
+ */
+static void qmul(Q_cxyz &q1, arm_matrix_instance_f32 *vector) {
+	float q2x = vector->pData[0];
+	float q2y = vector->pData[1];
+	float q2z = vector->pData[2];
+
+    float x =  q1.x * 0 	 + q1.y * q2z - q1.z * q2y + q1.c * q2x;
+    float y = -q1.x * q2z  + q1.y * 0   + q1.z * q2x + q1.c * q2y;
+    float z =  q1.x * q2y  - q1.y * q2x + q1.z * 0   + q1.c * q2z;
+    //w = -q1.x * q2x  - q1.y * q2y - q1.z * q2z + q1.c * 1;
+
+    vector->pData[0] = x;
+    vector->pData[1] = y;
+    vector->pData[2] = z;
+}
+
+static Q_cxyz qconj(Q_cxyz &q) {
+	Q_cxyz result;
+	result.x = -q.x;
+	result.y = -q.y;
+	result.z = -q.z;
+	result.c = +q.c;
+	return result;
+}
+
+Altitude & AttitudeUtils::KalmanAltitudeEstimate(Acceleration &acc, Q_cxyz &attitude, Altitude &altitude) {
+
+	if (counter % ALTITUDE_KALMAN_SAMPLING_FACTOR == 0 ) {
+		Q_cxyz invQ = qconj(attitude);
+		float Z_v_def[3] = {acc.x, acc.y, acc.z};
+		arm_matrix_instance_f32 Z_v = {3, 1, Z_v_def};
+		qmul(invQ, &Z_v);
+		altitudeEstimator.filter(altitude, Z_v.pData[2]);
+		//altitudeEstimator.printSys();
+	}
+	return altitudeEstimator.altitudeState.X_v.pData[0];
 }
 }// namespace
