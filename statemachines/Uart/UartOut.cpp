@@ -178,19 +178,19 @@ QP::QState UartOut::Inactive(UartOut * const me, QP::QEvt const * const e) {
     switch (e->sig) {
         // ${Uart::UartOut::SM::Root::Started::Inactive}
         case Q_ENTRY_SIG: {
-            LOG_EVENT_NOQP(e);
+            //LOG_EVENT_NOQP(e);
             status_ = Q_HANDLED();
             break;
         }
         // ${Uart::UartOut::SM::Root::Started::Inactive}
         case Q_EXIT_SIG: {
-            LOG_EVENT_NOQP(e);
+            //LOG_EVENT_NOQP(e);
             status_ = Q_HANDLED();
             break;
         }
         // ${Uart::UartOut::SM::Root::Started::Inactive::UART_OUT_WRITE_REQ}
         case UART_OUT_WRITE_REQ_SIG: {
-            LOG_EVENT_NOQP(e);
+            //LOG_EVENT_NOQP(e);
             me->PublishConfirmation(
                 EVT_CAST(*e),
                 UART_OUT_WRITE_CFM_SIG);
