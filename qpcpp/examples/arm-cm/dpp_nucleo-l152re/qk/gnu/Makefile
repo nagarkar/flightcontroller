@@ -28,7 +28,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# http://www.state-machine.com
+# https://state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
 # examples of invoking this Makefile:
@@ -47,9 +47,6 @@
 # is included in the Qtools collection for Windows, see:
 #    http://sourceforge.net/projects/qpc/files/Qtools/
 #
-
-# GNU ARM Compiler options: https://goo.gl/BsnmFY 
-# Cortext M4 GCC float behavior: https://goo.gl/UPXtNl
 
 #-----------------------------------------------------------------------------
 # project name
@@ -72,7 +69,9 @@ QP_PORT_DIR := $(QPCPP)/ports/arm-cm/qk/gnu
 VPATH = \
 	.. \
 	../.. \
-	$(QPCPP)/source \
+	$(QPCPP)/src/qf \
+	$(QPCPP)/src/qk \
+	$(QPCPP)/src/qs \
 	$(QP_PORT_DIR) \
 	$(QPCPP)/3rd_party/nucleo-l152re \
 	$(QPCPP)/3rd_party/nucleo-l152re/gnu
@@ -81,7 +80,7 @@ VPATH = \
 INCLUDES  = \
 	-I../.. \
 	-I$(QPCPP)/include \
-	-I$(QPCPP)/source \
+	-I$(QPCPP)/src \
 	-I$(QP_PORT_DIR) \
 	-I$(QPCPP)/3rd_party/CMSIS/Include \
 	-I$(QPCPP)/3rd_party/nucleo-l152re
@@ -95,15 +94,15 @@ ASM_SRCS :=
 
 # C source files
 C_SRCS := \
-#	system_stm32l1xx.c \
+	system_stm32l1xx.c \
 	startup_stm32l1xx.c
 
 # C++ source files
 CPP_SRCS :=	 \
-#	bsp.cpp \
-#	main.cpp \
-#	philo.cpp \
-#	table.cpp
+	bsp.cpp \
+	main.cpp \
+	philo.cpp \
+	table.cpp
 
 OUTPUT    := $(PROJECT)
 LD_SCRIPT := $(PROJECT).ld
@@ -144,17 +143,17 @@ DEFINES   :=
 # ARM_FPU:   [ | vfp]
 # FLOAT_ABI: [ | soft | softfp | hard]
 #
-ARM_CPU   := -mcpu=cortex-m4
-ARM_ARCH  := 7   # NOTE: must match the ARM_CPU! See https://goo.gl/VvMXIk
-ARM_FPU   := -mfpu=fpv4-sp-d16
-FLOAT_ABI := -mfloat-abi=hard
+ARM_CPU   := -mcpu=cortex-m3
+ARM_ARCH  := 7   # NOTE: must match the ARM_CPU!
+ARM_FPU   :=
+FLOAT_ABI :=
 
 #-----------------------------------------------------------------------------
 # GNU-ARM toolset (NOTE: You need to adjust to your machine)
 # see http://gnutoolchains.com/arm-eabi/
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM = E:/software/ac6/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.13.2.201703061525/tools/compiler
+GNU_ARM := $(QTOOLS)/gnu_arm-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...
@@ -162,11 +161,11 @@ ifeq ("$(wildcard $(GNU_ARM))","")
 $(error GNU_ARM toolset not found. Please adjust the Makefile)
 endif
 
-CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
-CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
-AS    := $(GNU_ARM)/bin/arm-none-eabi-as
-LINK  := $(GNU_ARM)/bin/arm-none-eabi-g++
-BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
+CC    := $(GNU_ARM)/bin/arm-eabi-gcc
+CPP   := $(GNU_ARM)/bin/arm-eabi-g++
+AS    := $(GNU_ARM)/bin/arm-eabi-as
+LINK  := $(GNU_ARM)/bin/arm-eabi-g++
+BIN   := $(GNU_ARM)/bin/arm-eabi-objcopy
 
 ##############################################################################
 # Typically, you should not need to change anything below this line
@@ -234,11 +233,11 @@ ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
 CFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections \
-	-O $(INCLUDES) $(DEFINES) \
+	-O $(INCLUDES) $(DEFINES)
 
 CPPFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
-	-O $(INCLUDES) $(DEFINES) \
+	-O $(INCLUDES) $(DEFINES)
 
 endif # ......................................................................
 

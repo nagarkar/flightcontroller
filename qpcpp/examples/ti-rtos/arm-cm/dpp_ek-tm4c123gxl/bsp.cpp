@@ -1,7 +1,7 @@
 ///***************************************************************************
 // Product: DPP example, EK-TM4C123GXL board, TI-RTOS kernel (SYS/BIOS)
-// Last updated for version 5.7.3
-// Last updated on  2016-10-06
+// Last updated for version 5.9.5
+// Last updated on  2017-07-20
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -28,7 +28,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 // Contact information:
-// http://www.state-machine.com
+// https://state-machine.com
 // mailto:info@state-machine.com
 //****************************************************************************
 #include "qpcpp.h"
@@ -39,6 +39,8 @@
 #include "ti/sysbios/knl/Clock.h" // the Clock driver (TI)
 #include "ti/drivers/GPIO.h"      // GPIO driver (TI)
 // add other drivers if necessary...
+
+Q_DEFINE_THIS_FILE
 
 // TI-RTOS callback functions ================================================
 extern "C" {
@@ -99,8 +101,6 @@ void myIdleFunc() {
 
 // namespace DPP *************************************************************
 namespace DPP {
-
-Q_DEFINE_THIS_FILE
 
 // Local-scope objects -------------------------------------------------------
 static uint32_t l_rnd; // random seed

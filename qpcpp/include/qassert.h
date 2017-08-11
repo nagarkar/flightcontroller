@@ -3,8 +3,8 @@
 * @brief Customizable and memory-efficient assertions for embedded systems
 * @cond
 ******************************************************************************
-* Last updated for version 5.6.0
-* Last updated on  2015-12-18
+* Last updated for version 5.9.5
+* Last updated on  2017-07-19
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -31,7 +31,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 * Contact information:
-* http://www.state-machine.com
+* https://state-machine.com
 * mailto:info@state-machine.com
 ******************************************************************************
 * @endcond
@@ -59,6 +59,12 @@
     #define Q_ALLEGE_ID(id_, test_)     ((void)(test_))
     #define Q_ERROR()                   ((void)0)
     #define Q_ERROR_ID(id_)             ((void)0)
+    #define Q_REQUIRE(test_)            ((void)0)
+    #define Q_REQUIRE_ID(id_, test_)    ((void)0)
+    #define Q_ENSURE(test_)             ((void)0)
+    #define Q_ENSURE_ID(id_, test_)     ((void)0)
+    #define Q_INVARIANT(test_)          ((void)0)
+    #define Q_INVARIANT_ID(id_, test_)  ((void)0)
 
 #else  /* Q_NASSERT not defined--assertion checking enabled */
 

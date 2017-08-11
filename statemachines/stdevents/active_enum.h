@@ -47,6 +47,7 @@ extern "C" {
     }
 
 #define getStringFromEnumValue(typeName, value) typeName##Array[##value]
+#define getStringFromSym(typeName, sym) typeName##Array[sym]
 #define getEnumValueFromString(typeName, name)    get##typeName##FromString(##name)
 
 

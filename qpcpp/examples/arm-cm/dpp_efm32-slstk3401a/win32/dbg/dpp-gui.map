@@ -487,7 +487,7 @@ LOAD c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/crtend.o
                 0x00000470                . = SIZEOF_HEADERS
                 0x00001000                . = ALIGN (__section_alignment__)
 
-.text           0x00401000    0x16600
+.text           0x00401000    0x16800
  *(.init)
  *(.text)
  .text          0x00401000      0x2bc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
@@ -1011,435 +1011,435 @@ LOAD c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/crtend.o
                 0x00413704       0x24 ../../../../ports/win32/dbg/libqp.a(qf_act.o)
                 0x00413704                QP::QF::bzero(void*, unsigned short)
  .text$_ZN2QP2QF5newX_Etti
-                0x00413728       0xbc ../../../../ports/win32/dbg/libqp.a(qf_dyn.o)
+                0x00413728       0xcc ../../../../ports/win32/dbg/libqp.a(qf_dyn.o)
                 0x00413728                QP::QF::newX_(unsigned short, unsigned short, int)
  .text$_ZN2QP2QF6psInitEPNS_5QPSetEi
-                0x004137e4       0x2c ../../../../ports/win32/dbg/libqp.a(qf_ps.o)
-                0x004137e4                QP::QF::psInit(QP::QPSet*, int)
+                0x004137f4       0x2c ../../../../ports/win32/dbg/libqp.a(qf_ps.o)
+                0x004137f4                QP::QF::psInit(QP::QPSet*, int)
  .text$_ZN2QP2QF6tickX_Eh
-                0x00413810       0xf4 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
-                0x00413810                QP::QF::tickX_(unsigned char)
+                0x00413820       0xf4 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
+                0x00413820                QP::QF::tickX_(unsigned char)
  .text$_ZN2QP2QF7newRef_EPKNS_4QEvtES3_
-                0x00413904       0x44 ../../../../ports/win32/dbg/libqp.a(qf_dyn.o)
-                0x00413904                QP::QF::newRef_(QP::QEvt const*, QP::QEvt const*)
+                0x00413914       0x44 ../../../../ports/win32/dbg/libqp.a(qf_dyn.o)
+                0x00413914                QP::QF::newRef_(QP::QEvt const*, QP::QEvt const*)
  .text$_ZN2QP2QF7remove_EPNS_7QActiveE
-                0x00413948       0x5c ../../../../ports/win32/dbg/libqp.a(qf_act.o)
-                0x00413948                QP::QF::remove_(QP::QActive*)
+                0x00413958       0x5c ../../../../ports/win32/dbg/libqp.a(qf_act.o)
+                0x00413958                QP::QF::remove_(QP::QActive*)
  .text$_ZN2QP2QF7thread_EPNS_7QActiveE
-                0x004139a4       0x54 ../../../../ports/win32/dbg/libqp.a(qf_port.o)
-                0x004139a4                QP::QF::thread_(QP::QActive*)
+                0x004139b4       0x54 ../../../../ports/win32/dbg/libqp.a(qf_port.o)
+                0x004139b4                QP::QF::thread_(QP::QActive*)
  .text$_ZN2QP2QF8poolInitEPvjt
-                0x004139f8       0xa8 ../../../../ports/win32/dbg/libqp.a(qf_dyn.o)
-                0x004139f8                QP::QF::poolInit(void*, unsigned int, unsigned short)
+                0x00413a08       0xa8 ../../../../ports/win32/dbg/libqp.a(qf_dyn.o)
+                0x00413a08                QP::QF::poolInit(void*, unsigned int, unsigned short)
  .text$_ZN2QP2QF8publish_EPKNS_4QEvtE
-                0x00413aa0      0x134 ../../../../ports/win32/dbg/libqp.a(qf_ps.o)
-                0x00413aa0                QP::QF::publish_(QP::QEvt const*)
+                0x00413ab0      0x1d8 ../../../../ports/win32/dbg/libqp.a(qf_ps.o)
+                0x00413ab0                QP::QF::publish_(QP::QEvt const*)
  .text$_ZN2QP2QF9onCleanupEv
-                0x00413bd4        0x8 dbg/bsp.o
-                0x00413bd4                QP::QF::onCleanup()
+                0x00413c88        0x8 dbg/bsp.o
+                0x00413c88                QP::QF::onCleanup()
  .text$_ZN2QP2QF9onStartupEv
-                0x00413bdc       0x14 dbg/bsp.o
-                0x00413bdc                QP::QF::onStartup()
+                0x00413c90       0x14 dbg/bsp.o
+                0x00413c90                QP::QF::onStartup()
  .text$_ZN2QP4QHsm10childStateEPFhPvPKNS_4QEvtEE
-                0x00413bf0       0x60 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
-                0x00413bf0                QP::QHsm::childState(unsigned char (*)(void*, QP::QEvt const*))
+                0x00413ca4       0x60 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
+                0x00413ca4                QP::QHsm::childState(unsigned char (*)(void*, QP::QEvt const*))
  .text$_ZN2QP4QHsm3topEPvPKNS_4QEvtE
-                0x00413c50        0x8 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
-                0x00413c50                QP::QHsm::top(void*, QP::QEvt const*)
+                0x00413d04        0x8 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
+                0x00413d04                QP::QHsm::top(void*, QP::QEvt const*)
  .text$_ZN2QP4QHsm4initEPKNS_4QEvtE
-                0x00413c58       0xf4 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
-                0x00413c58                QP::QHsm::init(QP::QEvt const*)
+                0x00413d0c       0xf4 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
+                0x00413d0c                QP::QHsm::init(QP::QEvt const*)
  .text$_ZN2QP4QHsm4initEv
-                0x00413d4c       0x1c dbg/philo.o
-                0x00413d4c                QP::QHsm::init()
+                0x00413e00       0x1c dbg/philo.o
+                0x00413e00                QP::QHsm::init()
  .text$_ZN2QP4QHsm4isInEPFhPvPKNS_4QEvtEE
-                0x00413d68       0x58 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
-                0x00413d68                QP::QHsm::isIn(unsigned char (*)(void*, QP::QEvt const*))
+                0x00413e1c       0x58 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
+                0x00413e1c                QP::QHsm::isIn(unsigned char (*)(void*, QP::QEvt const*))
  .text$_ZN2QP4QHsm8dispatchEPKNS_4QEvtE
-                0x00413dc0      0x174 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
-                0x00413dc0                QP::QHsm::dispatch(QP::QEvt const*)
+                0x00413e74      0x170 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
+                0x00413e74                QP::QHsm::dispatch(QP::QEvt const*)
  .text$_ZN2QP4QHsm8hsm_tranERA6_PFhPvPKNS_4QEvtEE
-                0x00413f34      0x1ac ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
-                0x00413f34                QP::QHsm::hsm_tran(unsigned char (* (&) [6])(void*, QP::QEvt const*))
+                0x00413fe4      0x1ac ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
+                0x00413fe4                QP::QHsm::hsm_tran(unsigned char (* (&) [6])(void*, QP::QEvt const*))
  .text$_ZN2QP4QHsmC2EPFhPvPKNS_4QEvtEE
-                0x004140e0       0x1c ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
-                0x004140e0                QP::QHsm::QHsm(unsigned char (*)(void*, QP::QEvt const*))
-                0x004140e0                QP::QHsm::QHsm(unsigned char (*)(void*, QP::QEvt const*))
+                0x00414190       0x1c ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
+                0x00414190                QP::QHsm::QHsm(unsigned char (*)(void*, QP::QEvt const*))
+                0x00414190                QP::QHsm::QHsm(unsigned char (*)(void*, QP::QEvt const*))
  .text$_ZN2QP4QHsmD0Ev
-                0x004140fc       0x20 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
-                0x004140fc                QP::QHsm::~QHsm()
+                0x004141ac       0x20 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
+                0x004141ac                QP::QHsm::~QHsm()
  .text$_ZN2QP4QHsmD2Ev
-                0x0041411c       0x10 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
-                0x0041411c                QP::QHsm::~QHsm()
-                0x0041411c                QP::QHsm::~QHsm()
+                0x004141cc       0x10 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
+                0x004141cc                QP::QHsm::~QHsm()
+                0x004141cc                QP::QHsm::~QHsm()
  .text$_ZN2QP6QMPool3getEt
-                0x0041412c       0xb0 ../../../../ports/win32/dbg/libqp.a(qf_mem.o)
-                0x0041412c                QP::QMPool::get(unsigned short)
+                0x004141dc       0xb0 ../../../../ports/win32/dbg/libqp.a(qf_mem.o)
+                0x004141dc                QP::QMPool::get(unsigned short)
  .text$_ZN2QP6QMPool3putEPv
-                0x004141dc       0x54 ../../../../ports/win32/dbg/libqp.a(qf_mem.o)
-                0x004141dc                QP::QMPool::put(void*)
+                0x0041428c       0x54 ../../../../ports/win32/dbg/libqp.a(qf_mem.o)
+                0x0041428c                QP::QMPool::put(void*)
  .text$_ZN2QP6QMPool4initEPvjt
-                0x00414230       0xe4 ../../../../ports/win32/dbg/libqp.a(qf_mem.o)
-                0x00414230                QP::QMPool::init(void*, unsigned int, unsigned short)
+                0x004142e0       0xe4 ../../../../ports/win32/dbg/libqp.a(qf_mem.o)
+                0x004142e0                QP::QMPool::init(void*, unsigned int, unsigned short)
  .text$_ZN2QP6QMPoolC2Ev
-                0x00414314       0x38 ../../../../ports/win32/dbg/libqp.a(qf_mem.o)
-                0x00414314                QP::QMPool::QMPool()
-                0x00414314                QP::QMPool::QMPool()
+                0x004143c4       0x38 ../../../../ports/win32/dbg/libqp.a(qf_mem.o)
+                0x004143c4                QP::QMPool::QMPool()
+                0x004143c4                QP::QMPool::QMPool()
  .text$_ZN2QP7QActive4get_Ev
-                0x0041434c       0x9c ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
-                0x0041434c                QP::QActive::get_()
+                0x004143fc       0x9c ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
+                0x004143fc                QP::QActive::get_()
  .text$_ZN2QP7QActive4stopEv
-                0x004143e8       0x10 ../../../../ports/win32/dbg/libqp.a(qf_port.o)
-                0x004143e8                QP::QActive::stop()
+                0x00414498       0x10 ../../../../ports/win32/dbg/libqp.a(qf_port.o)
+                0x00414498                QP::QActive::stop()
  .text$_ZN2QP7QActive5post_EPKNS_4QEvtEt
-                0x004143f8       0xc4 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
-                0x004143f8                QP::QActive::post_(QP::QEvt const*, unsigned short)
+                0x004144a8       0xf4 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
+                0x004144a8                QP::QActive::post_(QP::QEvt const*, unsigned short)
  .text$_ZN2QP7QActive5startEhPPKNS_4QEvtEtPvt
-                0x004144bc       0x44 dbg/philo.o
-                0x004144bc                QP::QActive::start(unsigned char, QP::QEvt const**, unsigned short, void*, unsigned short)
+                0x0041459c       0x44 dbg/philo.o
+                0x0041459c                QP::QActive::start(unsigned char, QP::QEvt const**, unsigned short, void*, unsigned short)
  .text$_ZN2QP7QActive5startEhPPKNS_4QEvtEtPvtS3_
-                0x00414500      0x114 ../../../../ports/win32/dbg/libqp.a(qf_port.o)
-                0x00414500                QP::QActive::start(unsigned char, QP::QEvt const**, unsigned short, void*, unsigned short, QP::QEvt const*)
+                0x004145e0      0x114 ../../../../ports/win32/dbg/libqp.a(qf_port.o)
+                0x004145e0                QP::QActive::start(unsigned char, QP::QEvt const**, unsigned short, void*, unsigned short, QP::QEvt const*)
  .text$_ZN2QP7QActive8postLIFOEPKNS_4QEvtE
-                0x00414614       0x90 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
-                0x00414614                QP::QActive::postLIFO(QP::QEvt const*)
+                0x004146f4       0xb0 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
+                0x004146f4                QP::QActive::postLIFO(QP::QEvt const*)
  .text$_ZN2QP7QActiveC2EPFhPvPKNS_4QEvtEE
-                0x004146a4       0x64 ../../../../ports/win32/dbg/libqp.a(qf_qact.o)
-                0x004146a4                QP::QActive::QActive(unsigned char (*)(void*, QP::QEvt const*))
-                0x004146a4                QP::QActive::QActive(unsigned char (*)(void*, QP::QEvt const*))
+                0x004147a4       0x64 ../../../../ports/win32/dbg/libqp.a(qf_qact.o)
+                0x004147a4                QP::QActive::QActive(unsigned char (*)(void*, QP::QEvt const*))
+                0x004147a4                QP::QActive::QActive(unsigned char (*)(void*, QP::QEvt const*))
  .text$_ZN2QP7QActiveD0Ev
-                0x00414708       0x28 ../../../../ports/win32/dbg/libqp.a(qf_port.o)
-                0x00414708                QP::QActive::~QActive()
+                0x00414808       0x28 ../../../../ports/win32/dbg/libqp.a(qf_port.o)
+                0x00414808                QP::QActive::~QActive()
  .text$_ZN2QP7QActiveD1Ev
-                0x00414730       0x1c ../../../../ports/win32/dbg/libqp.a(qf_port.o)
-                0x00414730                QP::QActive::~QActive()
+                0x00414830       0x1c ../../../../ports/win32/dbg/libqp.a(qf_port.o)
+                0x00414830                QP::QActive::~QActive()
  .text$_ZN2QP7QEQueue3getEv
-                0x0041474c       0x70 ../../../../ports/win32/dbg/libqp.a(qf_qeq.o)
-                0x0041474c                QP::QEQueue::get()
+                0x0041484c       0x70 ../../../../ports/win32/dbg/libqp.a(qf_qeq.o)
+                0x0041484c                QP::QEQueue::get()
  .text$_ZN2QP7QEQueue4initEPPKNS_4QEvtEt
-                0x004147bc       0x34 ../../../../ports/win32/dbg/libqp.a(qf_qeq.o)
-                0x004147bc                QP::QEQueue::init(QP::QEvt const**, unsigned short)
+                0x004148bc       0x40 ../../../../ports/win32/dbg/libqp.a(qf_qeq.o)
+                0x004148bc                QP::QEQueue::init(QP::QEvt const**, unsigned short)
  .text$_ZN2QP7QEQueue4postEPKNS_4QEvtEt
-                0x004147f0       0xb0 ../../../../ports/win32/dbg/libqp.a(qf_qeq.o)
-                0x004147f0                QP::QEQueue::post(QP::QEvt const*, unsigned short)
+                0x004148fc       0xb4 ../../../../ports/win32/dbg/libqp.a(qf_qeq.o)
+                0x004148fc                QP::QEQueue::post(QP::QEvt const*, unsigned short)
  .text$_ZN2QP7QEQueue8postLIFOEPKNS_4QEvtE
-                0x004148a0       0x7c ../../../../ports/win32/dbg/libqp.a(qf_qeq.o)
-                0x004148a0                QP::QEQueue::postLIFO(QP::QEvt const*)
+                0x004149b0       0x7c ../../../../ports/win32/dbg/libqp.a(qf_qeq.o)
+                0x004149b0                QP::QEQueue::postLIFO(QP::QEvt const*)
  .text$_ZN2QP7QEQueueC2Ev
-                0x0041491c       0x38 ../../../../ports/win32/dbg/libqp.a(qf_qeq.o)
-                0x0041491c                QP::QEQueue::QEQueue()
-                0x0041491c                QP::QEQueue::QEQueue()
+                0x00414a2c       0x38 ../../../../ports/win32/dbg/libqp.a(qf_qeq.o)
+                0x00414a2c                QP::QEQueue::QEQueue()
+                0x00414a2c                QP::QEQueue::QEQueue()
  .text$_ZN2QP7QTicker4initEPKNS_4QEvtE
-                0x00414954        0x8 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
-                0x00414954                QP::QTicker::init(QP::QEvt const*)
+                0x00414a64       0x10 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
+                0x00414a64                QP::QTicker::init(QP::QEvt const*)
  .text$_ZN2QP7QTicker4initEv
-                0x0041495c       0x1c ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
-                0x0041495c                QP::QTicker::init()
+                0x00414a74       0x1c ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
+                0x00414a74                QP::QTicker::init()
  .text$_ZN2QP7QTicker5post_EPKNS_4QEvtEt
-                0x00414978       0x44 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
-                0x00414978                QP::QTicker::post_(QP::QEvt const*, unsigned short)
+                0x00414a90       0x68 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
+                0x00414a90                QP::QTicker::post_(QP::QEvt const*, unsigned short)
  .text$_ZN2QP7QTicker8dispatchEPKNS_4QEvtE
-                0x004149bc       0x18 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
-                0x004149bc                QP::QTicker::dispatch(QP::QEvt const*)
+                0x00414af8       0x3c ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
+                0x00414af8                QP::QTicker::dispatch(QP::QEvt const*)
  .text$_ZN2QP7QTicker8postLIFOEPKNS_4QEvtE
-                0x004149d4       0x1c ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
-                0x004149d4                QP::QTicker::postLIFO(QP::QEvt const*)
+                0x00414b34       0x1c ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
+                0x00414b34                QP::QTicker::postLIFO(QP::QEvt const*)
  .text$_ZN2QP7QTickerC2Eh
-                0x004149f0       0x30 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
-                0x004149f0                QP::QTicker::QTicker(unsigned char)
-                0x004149f0                QP::QTicker::QTicker(unsigned char)
+                0x00414b50       0x38 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
+                0x00414b50                QP::QTicker::QTicker(unsigned char)
+                0x00414b50                QP::QTicker::QTicker(unsigned char)
  .text$_ZN2QP7QTickerD0Ev
-                0x00414a20       0x28 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
-                0x00414a20                QP::QTicker::~QTicker()
+                0x00414b88       0x28 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
+                0x00414b88                QP::QTicker::~QTicker()
  .text$_ZN2QP7QTickerD1Ev
-                0x00414a48       0x1c ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
-                0x00414a48                QP::QTicker::~QTicker()
+                0x00414bb0       0x1c ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
+                0x00414bb0                QP::QTicker::~QTicker()
  .text$_ZN2QP8QTimeEvt4armXEjj
-                0x00414a64       0x90 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
-                0x00414a64                QP::QTimeEvt::armX(unsigned int, unsigned int)
+                0x00414bcc       0x90 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
+                0x00414bcc                QP::QTimeEvt::armX(unsigned int, unsigned int)
  .text$_ZN2QP8QTimeEvt5rearmEj
-                0x00414af4       0xa0 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
-                0x00414af4                QP::QTimeEvt::rearm(unsigned int)
+                0x00414c5c       0xa0 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
+                0x00414c5c                QP::QTimeEvt::rearm(unsigned int)
  .text$_ZN2QP8QTimeEvt6disarmEv
-                0x00414b94       0x30 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
-                0x00414b94                QP::QTimeEvt::disarm()
+                0x00414cfc       0x30 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
+                0x00414cfc                QP::QTimeEvt::disarm()
  .text$_ZN2QP8QTimeEvtC2EPNS_7QActiveEih
-                0x00414bc4       0x64 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
-                0x00414bc4                QP::QTimeEvt::QTimeEvt(QP::QActive*, int, unsigned char)
-                0x00414bc4                QP::QTimeEvt::QTimeEvt(QP::QActive*, int, unsigned char)
+                0x00414d2c       0x64 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
+                0x00414d2c                QP::QTimeEvt::QTimeEvt(QP::QActive*, int, unsigned char)
+                0x00414d2c                QP::QTimeEvt::QTimeEvt(QP::QActive*, int, unsigned char)
  .text$_ZN2QP8QTimeEvtC2Ev
-                0x00414c28       0x34 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
-                0x00414c28                QP::QTimeEvt::QTimeEvt()
-                0x00414c28                QP::QTimeEvt::QTimeEvt()
+                0x00414d90       0x34 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
+                0x00414d90                QP::QTimeEvt::QTimeEvt()
+                0x00414d90                QP::QTimeEvt::QTimeEvt()
  .text$_ZN2QPL9ao_threadEPv
-                0x00414c5c       0x1c ../../../../ports/win32/dbg/libqp.a(qf_port.o)
+                0x00414dc4       0x1c ../../../../ports/win32/dbg/libqp.a(qf_port.o)
  .text$_ZN3DPP3BSP10randomSeedEj
-                0x00414c78       0x10 dbg/bsp.o
-                0x00414c78                DPP::BSP::randomSeed(unsigned int)
+                0x00414de0       0x10 dbg/bsp.o
+                0x00414de0                DPP::BSP::randomSeed(unsigned int)
  .text$_ZN3DPP3BSP13displayPausedEh
-                0x00414c88       0x58 dbg/bsp.o
-                0x00414c88                DPP::BSP::displayPaused(unsigned char)
+                0x00414df0       0x58 dbg/bsp.o
+                0x00414df0                DPP::BSP::displayPaused(unsigned char)
  .text$_ZN3DPP3BSP15displayPhilStatEhPKc
-                0x00414ce0       0x84 dbg/bsp.o
-                0x00414ce0                DPP::BSP::displayPhilStat(unsigned char, char const*)
+                0x00414e48       0x84 dbg/bsp.o
+                0x00414e48                DPP::BSP::displayPhilStat(unsigned char, char const*)
  .text$_ZN3DPP3BSP4initEv
-                0x00414d64        0x8 dbg/bsp.o
-                0x00414d64                DPP::BSP::init()
+                0x00414ecc        0x8 dbg/bsp.o
+                0x00414ecc                DPP::BSP::init()
  .text$_ZN3DPP3BSP6randomEv
-                0x00414d6c       0x30 dbg/bsp.o
-                0x00414d6c                DPP::BSP::random()
+                0x00414ed4       0x30 dbg/bsp.o
+                0x00414ed4                DPP::BSP::random()
  .text$_ZN3DPP3BSP9terminateEs
-                0x00414d9c       0x44 dbg/bsp.o
-                0x00414d9c                DPP::BSP::terminate(short)
+                0x00414f04       0x44 dbg/bsp.o
+                0x00414f04                DPP::BSP::terminate(short)
  .text$_ZN3DPP5Philo6eatingEPS0_PKN2QP4QEvtE
-                0x00414de0      0x114 dbg/philo.o
-                0x00414de0                DPP::Philo::eating(DPP::Philo*, QP::QEvt const*)
+                0x00414f48      0x114 dbg/philo.o
+                0x00414f48                DPP::Philo::eating(DPP::Philo*, QP::QEvt const*)
  .text$_ZN3DPP5Philo6hungryEPS0_PKN2QP4QEvtE
-                0x00414ef4      0x124 dbg/philo.o
-                0x00414ef4                DPP::Philo::hungry(DPP::Philo*, QP::QEvt const*)
+                0x0041505c      0x124 dbg/philo.o
+                0x0041505c                DPP::Philo::hungry(DPP::Philo*, QP::QEvt const*)
  .text$_ZN3DPP5Philo7initialEPS0_PKN2QP4QEvtE
-                0x00415018       0x4c dbg/philo.o
-                0x00415018                DPP::Philo::initial(DPP::Philo*, QP::QEvt const*)
+                0x00415180       0x4c dbg/philo.o
+                0x00415180                DPP::Philo::initial(DPP::Philo*, QP::QEvt const*)
  .text$_ZN3DPP5Philo8thinkingEPS0_PKN2QP4QEvtE
-                0x00415064       0xc4 dbg/philo.o
-                0x00415064                DPP::Philo::thinking(DPP::Philo*, QP::QEvt const*)
+                0x004151cc       0xc4 dbg/philo.o
+                0x004151cc                DPP::Philo::thinking(DPP::Philo*, QP::QEvt const*)
  .text$_ZN3DPP5PhiloC2Ev
-                0x00415128       0x64 dbg/philo.o
-                0x00415128                DPP::Philo::Philo()
-                0x00415128                DPP::Philo::Philo()
+                0x00415290       0x64 dbg/philo.o
+                0x00415290                DPP::Philo::Philo()
+                0x00415290                DPP::Philo::Philo()
  .text$_ZN3DPP5PhiloD0Ev
-                0x0041518c       0x28 dbg/philo.o
-                0x0041518c                DPP::Philo::~Philo()
+                0x004152f4       0x28 dbg/philo.o
+                0x004152f4                DPP::Philo::~Philo()
  .text$_ZN3DPP5PhiloD1Ev
-                0x004151b4       0x1c dbg/philo.o
-                0x004151b4                DPP::Philo::~Philo()
+                0x0041531c       0x1c dbg/philo.o
+                0x0041531c                DPP::Philo::~Philo()
  .text$_ZN3DPP5Table6activeEPS0_PKN2QP4QEvtE
-                0x004151d0       0x44 dbg/table.o
-                0x004151d0                DPP::Table::active(DPP::Table*, QP::QEvt const*)
+                0x00415338       0x44 dbg/table.o
+                0x00415338                DPP::Table::active(DPP::Table*, QP::QEvt const*)
  .text$_ZN3DPP5Table6pausedEPS0_PKN2QP4QEvtE
-                0x00415214      0x138 dbg/table.o
-                0x00415214                DPP::Table::paused(DPP::Table*, QP::QEvt const*)
+                0x0041537c      0x138 dbg/table.o
+                0x0041537c                DPP::Table::paused(DPP::Table*, QP::QEvt const*)
  .text$_ZN3DPP5Table7initialEPS0_PKN2QP4QEvtE
-                0x0041534c       0x80 dbg/table.o
-                0x0041534c                DPP::Table::initial(DPP::Table*, QP::QEvt const*)
+                0x004154b4       0x80 dbg/table.o
+                0x004154b4                DPP::Table::initial(DPP::Table*, QP::QEvt const*)
  .text$_ZN3DPP5Table7servingEPS0_PKN2QP4QEvtE
-                0x004153cc      0x300 dbg/table.o
-                0x004153cc                DPP::Table::serving(DPP::Table*, QP::QEvt const*)
+                0x00415534      0x300 dbg/table.o
+                0x00415534                DPP::Table::serving(DPP::Table*, QP::QEvt const*)
  .text$_ZN3DPP5TableC2Ev
-                0x004156cc       0x50 dbg/table.o
-                0x004156cc                DPP::Table::Table()
-                0x004156cc                DPP::Table::Table()
+                0x00415834       0x50 dbg/table.o
+                0x00415834                DPP::Table::Table()
+                0x00415834                DPP::Table::Table()
  .text$_ZN3DPP5TableD0Ev
-                0x0041571c       0x28 dbg/table.o
-                0x0041571c                DPP::Table::~Table()
+                0x00415884       0x28 dbg/table.o
+                0x00415884                DPP::Table::~Table()
  .text$_ZN3DPP5TableD1Ev
-                0x00415744       0x1c dbg/table.o
-                0x00415744                DPP::Table::~Table()
+                0x004158ac       0x1c dbg/table.o
+                0x004158ac                DPP::Table::~Table()
  .text$_ZN3DPPL7WndProcEP6HWND__jjl
-                0x00415760      0x374 dbg/bsp.o
+                0x004158c8      0x374 dbg/bsp.o
  .text$_ZN9__gnu_cxx24__concurrence_lock_errorD0Ev
-                0x00415ad4       0x28 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x00415ad4                __gnu_cxx::__concurrence_lock_error::~__concurrence_lock_error()
+                0x00415c3c       0x28 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x00415c3c                __gnu_cxx::__concurrence_lock_error::~__concurrence_lock_error()
  .text$_ZN9__gnu_cxx24__concurrence_lock_errorD1Ev
-                0x00415afc       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x00415afc                __gnu_cxx::__concurrence_lock_error::~__concurrence_lock_error()
+                0x00415c64       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x00415c64                __gnu_cxx::__concurrence_lock_error::~__concurrence_lock_error()
  .text$_ZN9__gnu_cxx26__concurrence_unlock_errorD0Ev
-                0x00415b14       0x28 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x00415b14                __gnu_cxx::__concurrence_unlock_error::~__concurrence_unlock_error()
+                0x00415c7c       0x28 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x00415c7c                __gnu_cxx::__concurrence_unlock_error::~__concurrence_unlock_error()
  .text$_ZN9__gnu_cxx26__concurrence_unlock_errorD1Ev
-                0x00415b3c       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x00415b3c                __gnu_cxx::__concurrence_unlock_error::~__concurrence_unlock_error()
+                0x00415ca4       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x00415ca4                __gnu_cxx::__concurrence_unlock_error::~__concurrence_unlock_error()
  .text$_ZN9__gnu_cxx27__verbose_terminate_handlerEv
-                0x00415b54      0x1b8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(vterminate.o)
-                0x00415b54                __gnu_cxx::__verbose_terminate_handler()
+                0x00415cbc      0x1b8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(vterminate.o)
+                0x00415cbc                __gnu_cxx::__verbose_terminate_handler()
  .text$_ZNK10__cxxabiv117__class_type_info10__do_catchEPKSt9type_infoPPvj
-                0x00415d0c       0x60 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
-                0x00415d0c                __cxxabiv1::__class_type_info::__do_catch(std::type_info const*, void**, unsigned int) const
+                0x00415e74       0x60 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
+                0x00415e74                __cxxabiv1::__class_type_info::__do_catch(std::type_info const*, void**, unsigned int) const
  .text$_ZNK10__cxxabiv117__class_type_info11__do_upcastEPKS0_PKvRNS0_15__upcast_resultE
-                0x00415d6c       0x44 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
-                0x00415d6c                __cxxabiv1::__class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__upcast_result&) const
+                0x00415ed4       0x44 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
+                0x00415ed4                __cxxabiv1::__class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__upcast_result&) const
  .text$_ZNK10__cxxabiv117__class_type_info11__do_upcastEPKS0_PPv
-                0x00415db0       0x68 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
-                0x00415db0                __cxxabiv1::__class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void**) const
+                0x00415f18       0x68 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
+                0x00415f18                __cxxabiv1::__class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void**) const
  .text$_ZNK10__cxxabiv117__class_type_info12__do_dyncastEiNS0_10__sub_kindEPKS0_PKvS3_S5_RNS0_16__dyncast_resultE
-                0x00415e18       0x60 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
-                0x00415e18                __cxxabiv1::__class_type_info::__do_dyncast(int, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const
+                0x00415f80       0x60 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
+                0x00415f80                __cxxabiv1::__class_type_info::__do_dyncast(int, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const
  .text$_ZNK10__cxxabiv117__class_type_info20__do_find_public_srcEiPKvPKS0_S2_
-                0x00415e78       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
-                0x00415e78                __cxxabiv1::__class_type_info::__do_find_public_src(int, void const*, __cxxabiv1::__class_type_info const*, void const*) const
+                0x00415fe0       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
+                0x00415fe0                __cxxabiv1::__class_type_info::__do_find_public_src(int, void const*, __cxxabiv1::__class_type_info const*, void const*) const
  .text$_ZNK10__cxxabiv120__si_class_type_info11__do_upcastEPKNS_17__class_type_infoEPKvRNS1_15__upcast_resultE
-                0x00415e90       0x60 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
-                0x00415e90                __cxxabiv1::__si_class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__upcast_result&) const
+                0x00415ff8       0x60 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
+                0x00415ff8                __cxxabiv1::__si_class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__upcast_result&) const
  .text$_ZNK10__cxxabiv120__si_class_type_info12__do_dyncastEiNS_17__class_type_info10__sub_kindEPKS1_PKvS4_S6_RNS1_16__dyncast_resultE
-                0x00415ef0       0xe0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
-                0x00415ef0                __cxxabiv1::__si_class_type_info::__do_dyncast(int, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const
+                0x00416058       0xe0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
+                0x00416058                __cxxabiv1::__si_class_type_info::__do_dyncast(int, __cxxabiv1::__class_type_info::__sub_kind, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info const*, void const*, __cxxabiv1::__class_type_info::__dyncast_result&) const
  .text$_ZNK10__cxxabiv120__si_class_type_info20__do_find_public_srcEiPKvPKNS_17__class_type_infoES2_
-                0x00415fd0       0x68 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
-                0x00415fd0                __cxxabiv1::__si_class_type_info::__do_find_public_src(int, void const*, __cxxabiv1::__class_type_info const*, void const*) const
+                0x00416138       0x68 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
+                0x00416138                __cxxabiv1::__si_class_type_info::__do_find_public_src(int, void const*, __cxxabiv1::__class_type_info const*, void const*) const
  .text$_ZNK2QP7QActive11unsubscribeEi
-                0x00416038       0x8c ../../../../ports/win32/dbg/libqp.a(qf_ps.o)
-                0x00416038                QP::QActive::unsubscribe(int) const
+                0x004161a0       0x8c ../../../../ports/win32/dbg/libqp.a(qf_ps.o)
+                0x004161a0                QP::QActive::unsubscribe(int) const
  .text$_ZNK2QP7QActive14unsubscribeAllEv
-                0x004160c4       0xc8 ../../../../ports/win32/dbg/libqp.a(qf_ps.o)
-                0x004160c4                QP::QActive::unsubscribeAll() const
+                0x0041622c       0xc8 ../../../../ports/win32/dbg/libqp.a(qf_ps.o)
+                0x0041622c                QP::QActive::unsubscribeAll() const
  .text$_ZNK2QP7QActive9subscribeEi
-                0x0041618c       0x8c ../../../../ports/win32/dbg/libqp.a(qf_ps.o)
-                0x0041618c                QP::QActive::subscribe(int) const
+                0x004162f4       0x8c ../../../../ports/win32/dbg/libqp.a(qf_ps.o)
+                0x004162f4                QP::QActive::subscribe(int) const
  .text$_ZNK2QP8QTimeEvt3ctrEv
-                0x00416218       0x20 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
-                0x00416218                QP::QTimeEvt::ctr() const
+                0x00416380       0x20 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
+                0x00416380                QP::QTimeEvt::ctr() const
  .text$_ZNK9__gnu_cxx24__concurrence_lock_error4whatEv
-                0x00416238        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x00416238                __gnu_cxx::__concurrence_lock_error::what() const
+                0x004163a0        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x004163a0                __gnu_cxx::__concurrence_lock_error::what() const
  .text$_ZNK9__gnu_cxx26__concurrence_unlock_error4whatEv
-                0x00416244        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x00416244                __gnu_cxx::__concurrence_unlock_error::what() const
+                0x004163ac        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x004163ac                __gnu_cxx::__concurrence_unlock_error::what() const
  .text$_ZNKSt13bad_exception4whatEv
-                0x00416250        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
-                0x00416250                std::bad_exception::what() const
+                0x004163b8        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
+                0x004163b8                std::bad_exception::what() const
  .text$_ZNKSt9exception4whatEv
-                0x0041625c        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
-                0x0041625c                std::exception::what() const
+                0x004163c4        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
+                0x004163c4                std::exception::what() const
  .text$_ZNKSt9type_info10__do_catchEPKS_PPvj
-                0x00416268       0x58 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
-                0x00416268                std::type_info::__do_catch(std::type_info const*, void**, unsigned int) const
+                0x004163d0       0x58 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
+                0x004163d0                std::type_info::__do_catch(std::type_info const*, void**, unsigned int) const
  .text$_ZNKSt9type_info11__do_upcastEPKN10__cxxabiv117__class_type_infoEPPv
-                0x004162c0        0x8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
-                0x004162c0                std::type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void**) const
+                0x00416428        0x8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
+                0x00416428                std::type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void**) const
  .text$_ZNKSt9type_info14__is_pointer_pEv
-                0x004162c8        0x8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
-                0x004162c8                std::type_info::__is_pointer_p() const
+                0x00416430        0x8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
+                0x00416430                std::type_info::__is_pointer_p() const
  .text$_ZNKSt9type_info15__is_function_pEv
-                0x004162d0        0x8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
-                0x004162d0                std::type_info::__is_function_p() const
+                0x00416438        0x8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
+                0x00416438                std::type_info::__is_function_p() const
  .text$_ZNKSt9type_infoeqERKS_
-                0x004162d8       0x58 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
-                0x004162d8                std::type_info::operator==(std::type_info const&) const
+                0x00416440       0x58 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
+                0x00416440                std::type_info::operator==(std::type_info const&) const
  .text$_ZNSt13bad_exceptionD0Ev
-                0x00416330       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
-                0x00416330                std::bad_exception::~bad_exception()
+                0x00416498       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
+                0x00416498                std::bad_exception::~bad_exception()
  .text$_ZNSt13bad_exceptionD2Ev
-                0x00416348       0x10 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
-                0x00416348                std::bad_exception::~bad_exception()
-                0x00416348                std::bad_exception::~bad_exception()
+                0x004164b0       0x10 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
+                0x004164b0                std::bad_exception::~bad_exception()
+                0x004164b0                std::bad_exception::~bad_exception()
  .text$_ZNSt9exceptionD0Ev
-                0x00416358       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
-                0x00416358                std::exception::~exception()
+                0x004164c0       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
+                0x004164c0                std::exception::~exception()
  .text$_ZNSt9exceptionD2Ev
-                0x00416370       0x10 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
-                0x00416370                std::exception::~exception()
-                0x00416370                std::exception::~exception()
+                0x004164d8       0x10 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
+                0x004164d8                std::exception::~exception()
+                0x004164d8                std::exception::~exception()
  .text$_ZNSt9type_infoD0Ev
-                0x00416380       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
-                0x00416380                std::type_info::~type_info()
+                0x004164e8       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
+                0x004164e8                std::type_info::~type_info()
  .text$_ZNSt9type_infoD2Ev
-                0x00416398       0x10 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
-                0x00416398                std::type_info::~type_info()
-                0x00416398                std::type_info::~type_info()
+                0x00416500       0x10 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
+                0x00416500                std::type_info::~type_info()
+                0x00416500                std::type_info::~type_info()
  .text$_ZSt10unexpectedv
-                0x004163a8       0x24 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_terminate.o)
-                0x004163a8                std::unexpected()
+                0x00416510       0x24 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_terminate.o)
+                0x00416510                std::unexpected()
  .text$_ZSt13set_terminatePFvvE
-                0x004163cc       0x14 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_terminate.o)
-                0x004163cc                std::set_terminate(void (*)())
+                0x00416534       0x14 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_terminate.o)
+                0x00416534                std::set_terminate(void (*)())
  .text$_ZSt14set_unexpectedPFvvE
-                0x004163e0       0x14 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_terminate.o)
-                0x004163e0                std::set_unexpected(void (*)())
+                0x00416548       0x14 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_terminate.o)
+                0x00416548                std::set_unexpected(void (*)())
  .text$_ZSt18uncaught_exceptionv
-                0x004163f4       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_catch.o)
-                0x004163f4                std::uncaught_exception()
+                0x0041655c       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_catch.o)
+                0x0041655c                std::uncaught_exception()
  .text$_ZSt9terminatev
-                0x0041640c       0x1c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_terminate.o)
-                0x0041640c                std::terminate()
- .text$_ZdlPv   0x00416428       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(del_op.o)
-                0x00416428                operator delete(void*)
+                0x00416574       0x1c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_terminate.o)
+                0x00416574                std::terminate()
+ .text$_ZdlPv   0x00416590       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(del_op.o)
+                0x00416590                operator delete(void*)
  .text$__cxa_allocate_dependent_exception
-                0x00416440      0x114 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x00416440                __cxa_allocate_dependent_exception
+                0x004165a8      0x114 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x004165a8                __cxa_allocate_dependent_exception
  .text$__cxa_allocate_exception
-                0x00416554      0x120 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x00416554                __cxa_allocate_exception
+                0x004166bc      0x120 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x004166bc                __cxa_allocate_exception
  .text$__cxa_begin_catch
-                0x00416674       0x6c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_catch.o)
-                0x00416674                __cxa_begin_catch
+                0x004167dc       0x6c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_catch.o)
+                0x004167dc                __cxa_begin_catch
  .text$__cxa_call_terminate
-                0x004166e0       0x44 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_call.o)
-                0x004166e0                __cxa_call_terminate
+                0x00416848       0x44 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_call.o)
+                0x00416848                __cxa_call_terminate
  .text$__cxa_call_unexpected
-                0x00416724       0xdc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
-                0x00416724                __cxa_call_unexpected
+                0x0041688c       0xdc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
+                0x0041688c                __cxa_call_unexpected
  .text$__cxa_current_exception_type
-                0x00416800       0x24 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_type.o)
-                0x00416800                __cxa_current_exception_type
+                0x00416968       0x24 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_type.o)
+                0x00416968                __cxa_current_exception_type
  .text$__cxa_end_catch
-                0x00416824       0x84 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_catch.o)
-                0x00416824                __cxa_end_catch
+                0x0041698c       0x84 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_catch.o)
+                0x0041698c                __cxa_end_catch
  .text$__cxa_free_dependent_exception
-                0x004168a8      0x10c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x004168a8                __cxa_free_dependent_exception
+                0x00416a10      0x10c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x00416a10                __cxa_free_dependent_exception
  .text$__cxa_free_exception
-                0x004169b4      0x100 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x004169b4                __cxa_free_exception
+                0x00416b1c      0x100 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x00416b1c                __cxa_free_exception
  .text$__cxa_get_exception_ptr
-                0x00416ab4        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_catch.o)
-                0x00416ab4                __cxa_get_exception_ptr
+                0x00416c1c        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_catch.o)
+                0x00416c1c                __cxa_get_exception_ptr
  .text$__cxa_get_globals
-                0x00416ac0       0x14 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_globals.o)
-                0x00416ac0                __cxa_get_globals
+                0x00416c28       0x14 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_globals.o)
+                0x00416c28                __cxa_get_globals
  .text$__cxa_get_globals_fast
-                0x00416ad4       0x14 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_globals.o)
-                0x00416ad4                __cxa_get_globals_fast
+                0x00416c3c       0x14 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_globals.o)
+                0x00416c3c                __cxa_get_globals_fast
  .text$__cxa_pure_virtual
-                0x00416ae8       0x28 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(pure.o)
-                0x00416ae8                __cxa_pure_virtual
+                0x00416c50       0x28 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(pure.o)
+                0x00416c50                __cxa_pure_virtual
  .text$__cxa_rethrow
-                0x00416b10       0x58 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_throw.o)
-                0x00416b10                __cxa_rethrow
+                0x00416c78       0x58 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_throw.o)
+                0x00416c78                __cxa_rethrow
  .text$__cxa_throw
-                0x00416b68       0x60 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_throw.o)
-                0x00416b68                __cxa_throw
+                0x00416cd0       0x60 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_throw.o)
+                0x00416cd0                __cxa_throw
  .text$__gxx_personality_v0
-                0x00416bc8      0x7ec c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
-                0x00416bc8                __gxx_personality_v0
- .text$__tcf_0  0x004173b4       0x24 dbg/philo.o
- .text$__tcf_0  0x004173d8       0x20 dbg/table.o
+                0x00416d30      0x7ec c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
+                0x00416d30                __gxx_personality_v0
+ .text$__tcf_0  0x0041751c       0x24 dbg/philo.o
+ .text$__tcf_0  0x00417540       0x20 dbg/table.o
  *(.text.*)
  *(.glue_7t)
  *(.glue_7)
-                0x004173f8                ___CTOR_LIST__ = .
-                0x004173f8                __CTOR_LIST__ = .
-                0x004173f8        0x4 LONG 0xffffffff
+                0x00417560                ___CTOR_LIST__ = .
+                0x00417560                __CTOR_LIST__ = .
+                0x00417560        0x4 LONG 0xffffffff
  *(.ctors)
- .ctors         0x004173fc        0x4 dbg/philo.o
- .ctors         0x00417400        0x4 dbg/table.o
- .ctors         0x00417404        0x4 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
- .ctors         0x00417408        0x4 ../../../../ports/win32/dbg/libqp.a(qf_dyn.o)
- .ctors         0x0041740c        0x4 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+ .ctors         0x00417564        0x4 dbg/philo.o
+ .ctors         0x00417568        0x4 dbg/table.o
+ .ctors         0x0041756c        0x4 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
+ .ctors         0x00417570        0x4 ../../../../ports/win32/dbg/libqp.a(qf_dyn.o)
+ .ctors         0x00417574        0x4 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
  *(.ctor)
  *(SORT(.ctors.*))
- .ctors.65535   0x00417410        0x4 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/crtend.o
-                0x00417414        0x4 LONG 0x0
-                0x00417418                ___DTOR_LIST__ = .
-                0x00417418                __DTOR_LIST__ = .
-                0x00417418        0x4 LONG 0xffffffff
+ .ctors.65535   0x00417578        0x4 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/crtend.o
+                0x0041757c        0x4 LONG 0x0
+                0x00417580                ___DTOR_LIST__ = .
+                0x00417580                __DTOR_LIST__ = .
+                0x00417580        0x4 LONG 0xffffffff
  *(.dtors)
  *(.dtor)
  *(SORT(.dtors.*))
-                0x0041741c        0x4 LONG 0x0
+                0x00417584        0x4 LONG 0x0
  *(.fini)
  *(.gcc_exc)
-                0x00417420                PROVIDE (etext, .)
+                0x00417588                PROVIDE (etext, .)
  *(.gcc_except_table)
  .gcc_except_table
-                0x00417420       0x30 dbg/philo.o
+                0x00417588       0x30 dbg/philo.o
  .gcc_except_table
-                0x00417450       0x34 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
+                0x004175b8       0x34 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
  .gcc_except_table
-                0x00417484       0x48 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_terminate.o)
+                0x004175ec       0x48 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_terminate.o)
  .gcc_except_table
-                0x004174cc       0x78 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x00417634       0x78 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
  .gcc_except_table
-                0x00417544       0x20 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(vterminate.o)
+                0x004176ac       0x20 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(vterminate.o)
 
 .data           0x00418000     0x5800
                 0x00418000                __data_start__ = .
@@ -1726,179 +1726,182 @@ LOAD c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/crtend.o
                 0x0041f9c0                __tens_D2A
  *(SORT(.rdata$*))
  .rdata$_ZL14Q_this_module_
-                0x0041faa0       0x10 dbg/philo.o
+                0x0041faa0        0x8 dbg/bsp.o
  .rdata$_ZL14Q_this_module_
-                0x0041fab0       0x10 dbg/table.o
+                0x0041faa8       0x10 dbg/philo.o
+ .rdata$_ZL14Q_this_module_
+                0x0041fab8       0x10 dbg/table.o
  .rdata$_ZN2QP10BUILD_DATEE
-                0x0041fac0        0xc dbg/qstamp.o
-                0x0041fac0                QP::BUILD_DATE
+                0x0041fac8        0xc dbg/qstamp.o
+                0x0041fac8                QP::BUILD_DATE
  .rdata$_ZN2QP10BUILD_TIMEE
-                0x0041facc        0xc dbg/qstamp.o
-                0x0041facc                QP::BUILD_TIME
+                0x0041fad4        0xc dbg/qstamp.o
+                0x0041fad4                QP::BUILD_TIME
+ .rdata$_ZN2QP11QF_log2LkupE
+                0x0041fae0      0x100 ../../../../ports/win32/dbg/libqp.a(qf_act.o)
+                0x0041fae0                QP::QF_log2Lkup
  .rdata$_ZN2QPL14Q_this_module_E
-                0x0041fad8        0x8 ../../../../ports/win32/dbg/libqp.a(qf_port.o)
+                0x0041fbe0        0x8 ../../../../ports/win32/dbg/libqp.a(qf_port.o)
  .rdata$_ZN2QPL14Q_this_module_E
-                0x0041fae0        0x8 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
+                0x0041fbe8        0x8 ../../../../ports/win32/dbg/libqp.a(qf_time.o)
  .rdata$_ZN2QPL14Q_this_module_E
-                0x0041fae8        0x8 ../../../../ports/win32/dbg/libqp.a(qf_ps.o)
+                0x0041fbf0        0x8 ../../../../ports/win32/dbg/libqp.a(qf_ps.o)
  .rdata$_ZN2QPL14Q_this_module_E
-                0x0041faf0        0x8 ../../../../ports/win32/dbg/libqp.a(qf_dyn.o)
+                0x0041fbf8        0x8 ../../../../ports/win32/dbg/libqp.a(qf_dyn.o)
  .rdata$_ZN2QPL14Q_this_module_E
-                0x0041faf8        0x8 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
+                0x0041fc00        0x8 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
  .rdata$_ZN2QPL14Q_this_module_E
-                0x0041fb00        0x8 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
+                0x0041fc08        0x8 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
  .rdata$_ZN2QPL14Q_this_module_E
-                0x0041fb08        0x8 ../../../../ports/win32/dbg/libqp.a(qf_act.o)
+                0x0041fc10        0x8 ../../../../ports/win32/dbg/libqp.a(qf_act.o)
  .rdata$_ZN2QPL14Q_this_module_E
-                0x0041fb10        0x8 ../../../../ports/win32/dbg/libqp.a(qf_qeq.o)
+                0x0041fc18        0x8 ../../../../ports/win32/dbg/libqp.a(qf_qeq.o)
  .rdata$_ZN2QPL14Q_this_module_E
-                0x0041fb18        0x8 ../../../../ports/win32/dbg/libqp.a(qf_mem.o)
+                0x0041fc20        0x8 ../../../../ports/win32/dbg/libqp.a(qf_mem.o)
  .rdata$_ZN2QPL16QEP_reservedEvt_E
-                0x0041fb20       0x10 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
+                0x0041fc28       0x10 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
  .rdata$_ZN3DPP8AO_PhiloE
-                0x0041fb30       0x14 dbg/philo.o
-                0x0041fb30                DPP::AO_Philo
+                0x0041fc38       0x14 dbg/philo.o
+                0x0041fc38                DPP::AO_Philo
  .rdata$_ZN3DPP8AO_TableE
-                0x0041fb44        0x4 dbg/table.o
-                0x0041fb44                DPP::AO_Table
- .rdata$_ZN3DPPL14Q_this_module_E
-                0x0041fb48        0x8 dbg/bsp.o
+                0x0041fc4c        0x4 dbg/table.o
+                0x0041fc4c                DPP::AO_Table
  .rdata$_ZTIN10__cxxabiv115__forced_unwindE
-                0x0041fb50        0x8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
-                0x0041fb50                typeinfo for __cxxabiv1::__forced_unwind
+                0x0041fc50        0x8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
+                0x0041fc50                typeinfo for __cxxabiv1::__forced_unwind
  .rdata$_ZTIN10__cxxabiv117__class_type_infoE
-                0x0041fb58        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
-                0x0041fb58                typeinfo for __cxxabiv1::__class_type_info
+                0x0041fc58        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
+                0x0041fc58                typeinfo for __cxxabiv1::__class_type_info
  .rdata$_ZTIN10__cxxabiv119__foreign_exceptionE
-                0x0041fb64        0x8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
-                0x0041fb64                typeinfo for __cxxabiv1::__foreign_exception
+                0x0041fc64        0x8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
+                0x0041fc64                typeinfo for __cxxabiv1::__foreign_exception
  .rdata$_ZTIN10__cxxabiv120__si_class_type_infoE
-                0x0041fb6c        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
-                0x0041fb6c                typeinfo for __cxxabiv1::__si_class_type_info
+                0x0041fc6c        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
+                0x0041fc6c                typeinfo for __cxxabiv1::__si_class_type_info
  .rdata$_ZTIN2QP4QHsmE
-                0x0041fb78        0x8 dbg/philo.o
-                0x0041fb78                typeinfo for QP::QHsm
+                0x0041fc78        0x8 dbg/philo.o
+                0x0041fc78                typeinfo for QP::QHsm
  .rdata$_ZTIN2QP7QActiveE
-                0x0041fb80        0xc dbg/philo.o
-                0x0041fb80                typeinfo for QP::QActive
+                0x0041fc80        0xc dbg/philo.o
+                0x0041fc80                typeinfo for QP::QActive
  .rdata$_ZTIN3DPP5PhiloE
-                0x0041fb8c        0xc dbg/philo.o
-                0x0041fb8c                typeinfo for DPP::Philo
+                0x0041fc8c        0xc dbg/philo.o
+                0x0041fc8c                typeinfo for DPP::Philo
  .rdata$_ZTIN3DPP5TableE
-                0x0041fb98        0xc dbg/table.o
-                0x0041fb98                typeinfo for DPP::Table
+                0x0041fc98        0xc dbg/table.o
+                0x0041fc98                typeinfo for DPP::Table
  .rdata$_ZTIN9__gnu_cxx24__concurrence_lock_errorE
-                0x0041fba4        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x0041fba4                typeinfo for __gnu_cxx::__concurrence_lock_error
+                0x0041fca4        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x0041fca4                typeinfo for __gnu_cxx::__concurrence_lock_error
  .rdata$_ZTIN9__gnu_cxx26__concurrence_unlock_errorE
-                0x0041fbb0        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x0041fbb0                typeinfo for __gnu_cxx::__concurrence_unlock_error
+                0x0041fcb0        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x0041fcb0                typeinfo for __gnu_cxx::__concurrence_unlock_error
  .rdata$_ZTISt13bad_exception
-                0x0041fbbc        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
-                0x0041fbbc                typeinfo for std::bad_exception
+                0x0041fcbc        0xc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
+                0x0041fcbc                typeinfo for std::bad_exception
  .rdata$_ZTISt9exception
-                0x0041fbc8        0x8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
-                0x0041fbc8                typeinfo for std::exception
+                0x0041fcc8        0x8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
+                0x0041fcc8                typeinfo for std::exception
  .rdata$_ZTISt9type_info
-                0x0041fbd0        0x8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
-                0x0041fbd0                typeinfo for std::type_info
- *fill*         0x0041fbd8        0x8 00
+                0x0041fcd0        0x8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
+                0x0041fcd0                typeinfo for std::type_info
+ *fill*         0x0041fcd8        0x8 00
  .rdata$_ZTSN10__cxxabiv115__forced_unwindE
-                0x0041fbe0       0x20 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
-                0x0041fbe0                typeinfo name for __cxxabiv1::__forced_unwind
+                0x0041fce0       0x20 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
+                0x0041fce0                typeinfo name for __cxxabiv1::__forced_unwind
  .rdata$_ZTSN10__cxxabiv117__class_type_infoE
-                0x0041fc00       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
-                0x0041fc00                typeinfo name for __cxxabiv1::__class_type_info
+                0x0041fd00       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
+                0x0041fd00                typeinfo name for __cxxabiv1::__class_type_info
  .rdata$_ZTSN10__cxxabiv119__foreign_exceptionE
-                0x0041fc40       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
-                0x0041fc40                typeinfo name for __cxxabiv1::__foreign_exception
+                0x0041fd40       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
+                0x0041fd40                typeinfo name for __cxxabiv1::__foreign_exception
  .rdata$_ZTSN10__cxxabiv120__si_class_type_infoE
-                0x0041fc80       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
-                0x0041fc80                typeinfo name for __cxxabiv1::__si_class_type_info
+                0x0041fd80       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
+                0x0041fd80                typeinfo name for __cxxabiv1::__si_class_type_info
  .rdata$_ZTSN2QP4QHsmE
-                0x0041fcc0        0xc dbg/philo.o
-                0x0041fcc0                typeinfo name for QP::QHsm
+                0x0041fdc0        0xc dbg/philo.o
+                0x0041fdc0                typeinfo name for QP::QHsm
  .rdata$_ZTSN2QP7QActiveE
-                0x0041fccc       0x10 dbg/philo.o
-                0x0041fccc                typeinfo name for QP::QActive
+                0x0041fdcc       0x10 dbg/philo.o
+                0x0041fdcc                typeinfo name for QP::QActive
  .rdata$_ZTSN3DPP5PhiloE
-                0x0041fcdc       0x10 dbg/philo.o
-                0x0041fcdc                typeinfo name for DPP::Philo
+                0x0041fddc       0x10 dbg/philo.o
+                0x0041fddc                typeinfo name for DPP::Philo
  .rdata$_ZTSN3DPP5TableE
-                0x0041fcec       0x10 dbg/table.o
-                0x0041fcec                typeinfo name for DPP::Table
- *fill*         0x0041fcfc        0x4 00
+                0x0041fdec       0x10 dbg/table.o
+                0x0041fdec                typeinfo name for DPP::Table
+ *fill*         0x0041fdfc        0x4 00
  .rdata$_ZTSN9__gnu_cxx24__concurrence_lock_errorE
-                0x0041fd00       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x0041fd00                typeinfo name for __gnu_cxx::__concurrence_lock_error
+                0x0041fe00       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x0041fe00                typeinfo name for __gnu_cxx::__concurrence_lock_error
  .rdata$_ZTSN9__gnu_cxx26__concurrence_unlock_errorE
-                0x0041fd40       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x0041fd40                typeinfo name for __gnu_cxx::__concurrence_unlock_error
+                0x0041fe40       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x0041fe40                typeinfo name for __gnu_cxx::__concurrence_unlock_error
  .rdata$_ZTSSt13bad_exception
-                0x0041fd80       0x14 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
-                0x0041fd80                typeinfo name for std::bad_exception
+                0x0041fe80       0x14 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
+                0x0041fe80                typeinfo name for std::bad_exception
  .rdata$_ZTSSt9exception
-                0x0041fd94       0x10 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
-                0x0041fd94                typeinfo name for std::exception
+                0x0041fe94       0x10 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_personality.o)
+                0x0041fe94                typeinfo name for std::exception
  .rdata$_ZTSSt9type_info
-                0x0041fda4       0x10 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
-                0x0041fda4                typeinfo name for std::type_info
- *fill*         0x0041fdb4        0x4 00
+                0x0041fea4       0x10 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
+                0x0041fea4                typeinfo name for std::type_info
+ *fill*         0x0041feb4        0x4 00
  .rdata$_ZTVN10__cxxabiv115__forced_unwindE
-                0x0041fdb8       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
-                0x0041fdb8                vtable for __cxxabiv1::__forced_unwind
- *fill*         0x0041fdd0       0x10 00
+                0x0041feb8       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
+                0x0041feb8                vtable for __cxxabiv1::__forced_unwind
+ *fill*         0x0041fed0       0x10 00
  .rdata$_ZTVN10__cxxabiv117__class_type_infoE
-                0x0041fde0       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
-                0x0041fde0                vtable for __cxxabiv1::__class_type_info
+                0x0041fee0       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
+                0x0041fee0                vtable for __cxxabiv1::__class_type_info
  .rdata$_ZTVN10__cxxabiv119__foreign_exceptionE
-                0x0041fe20       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
-                0x0041fe20                vtable for __cxxabiv1::__foreign_exception
- *fill*         0x0041fe38        0x8 00
+                0x0041ff20       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
+                0x0041ff20                vtable for __cxxabiv1::__foreign_exception
+ *fill*         0x0041ff38        0x8 00
  .rdata$_ZTVN10__cxxabiv120__si_class_type_infoE
-                0x0041fe40       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
-                0x0041fe40                vtable for __cxxabiv1::__si_class_type_info
+                0x0041ff40       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
+                0x0041ff40                vtable for __cxxabiv1::__si_class_type_info
  .rdata$_ZTVN2QP4QHsmE
-                0x0041fe80       0x20 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
-                0x0041fe80                vtable for QP::QHsm
+                0x0041ff80       0x20 ../../../../ports/win32/dbg/libqp.a(qep_hsm.o)
+                0x0041ff80                vtable for QP::QHsm
  .rdata$_ZTVN2QP7QActiveE
-                0x0041fea0       0x40 ../../../../ports/win32/dbg/libqp.a(qf_port.o)
-                0x0041fea0                vtable for QP::QActive
+                0x0041ffa0       0x40 ../../../../ports/win32/dbg/libqp.a(qf_port.o)
+                0x0041ffa0                vtable for QP::QActive
  .rdata$_ZTVN2QP7QTickerE
-                0x0041fee0       0x40 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
-                0x0041fee0                vtable for QP::QTicker
+                0x0041ffe0       0x40 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
+                0x0041ffe0                vtable for QP::QTicker
  .rdata$_ZTVN3DPP5PhiloE
-                0x0041ff20       0x40 dbg/philo.o
-                0x0041ff20                vtable for DPP::Philo
+                0x00420020       0x40 dbg/philo.o
+                0x00420020                vtable for DPP::Philo
  .rdata$_ZTVN3DPP5TableE
-                0x0041ff60       0x40 dbg/table.o
-                0x0041ff60                vtable for DPP::Table
+                0x00420060       0x40 dbg/table.o
+                0x00420060                vtable for DPP::Table
  .rdata$_ZTVN9__gnu_cxx24__concurrence_lock_errorE
-                0x0041ffa0       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x0041ffa0                vtable for __gnu_cxx::__concurrence_lock_error
+                0x004200a0       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x004200a0                vtable for __gnu_cxx::__concurrence_lock_error
  .rdata$_ZTVN9__gnu_cxx26__concurrence_unlock_errorE
-                0x0041ffb8       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-                0x0041ffb8                vtable for __gnu_cxx::__concurrence_unlock_error
+                0x004200b8       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
+                0x004200b8                vtable for __gnu_cxx::__concurrence_unlock_error
  .rdata$_ZTVSt13bad_exception
-                0x0041ffd0       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
-                0x0041ffd0                vtable for std::bad_exception
+                0x004200d0       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
+                0x004200d0                vtable for std::bad_exception
  .rdata$_ZTVSt9exception
-                0x0041ffe8       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
-                0x0041ffe8                vtable for std::exception
+                0x004200e8       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
+                0x004200e8                vtable for std::exception
  .rdata$_ZTVSt9type_info
-                0x00420000       0x20 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
-                0x00420000                vtable for std::type_info
+                0x00420100       0x20 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(tinfo.o)
+                0x00420100                vtable for std::type_info
  .rdata$_ZZN2QP7QTicker5post_EPKNS_4QEvtEtE7tickEvt
-                0x00420020        0x4 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
+                0x00420120        0x4 ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
  .rdata$_ZZN3DPPL7WndProcEP6HWND__jjlE2pe
-                0x00420024        0x4 dbg/bsp.o
+                0x00420124        0x4 dbg/bsp.o
  .rdata$_ZZN3DPPL7WndProcEP6HWND__jjlE2se
-                0x00420028        0x4 dbg/bsp.o
-                0x0042002c                ___RUNTIME_PSEUDO_RELOC_LIST__ = .
-                0x0042002c                __RUNTIME_PSEUDO_RELOC_LIST__ = .
+                0x00420128        0x4 dbg/bsp.o
+                0x0042012c                ___RUNTIME_PSEUDO_RELOC_LIST__ = .
+                0x0042012c                __RUNTIME_PSEUDO_RELOC_LIST__ = .
  *(.rdata_runtime_pseudo_reloc)
-                0x0042002c                ___RUNTIME_PSEUDO_RELOC_LIST_END__ = .
-                0x0042002c                __RUNTIME_PSEUDO_RELOC_LIST_END__ = .
+                0x0042012c                ___RUNTIME_PSEUDO_RELOC_LIST_END__ = .
+                0x0042012c                __RUNTIME_PSEUDO_RELOC_LIST_END__ = .
 
 .eh_frame       0x00421000      0xe00
  *(.eh_frame)
@@ -2924,222 +2927,222 @@ LOAD c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/crtend.o
                 0x0043ab19       0x49 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsmthread.o)
 
 .debug_pubtypes
-                0x0043b000     0x1000
+                0x0043b000     0x1200
  *(.debug_pubtypes)
  .debug_pubtypes
                 0x0043b000      0x13b c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
  .debug_pubtypes
                 0x0043b13b      0x26e dbg/bsp.o
  .debug_pubtypes
-                0x0043b3a9       0x66 dbg/main.o
+                0x0043b3a9       0x78 dbg/main.o
  .debug_pubtypes
-                0x0043b40f       0xa9 dbg/philo.o
+                0x0043b421       0xa9 dbg/philo.o
  .debug_pubtypes
-                0x0043b4b8       0x9a dbg/table.o
+                0x0043b4ca       0x9a dbg/table.o
  .debug_pubtypes
-                0x0043b552       0x5c dbg/qstamp.o
+                0x0043b564       0x6e dbg/qstamp.o
  .debug_pubtypes
-                0x0043b5ae      0x2d3 ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
+                0x0043b5d2      0x2d3 ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
  .debug_pubtypes
-                0x0043b881       0xf8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlssup.o)
+                0x0043b8a5       0xf8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlssup.o)
  .debug_pubtypes
-                0x0043b979       0x12 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(txtmode.o)
+                0x0043b99d       0x12 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(txtmode.o)
  .debug_pubtypes
-                0x0043b98b      0x10b c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
+                0x0043b9af      0x10b c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
  .debug_pubtypes
-                0x0043ba96       0x1f c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(gccmain.o)
+                0x0043baba       0x1f c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(gccmain.o)
  .debug_pubtypes
-                0x0043bab5       0x89 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(main.o)
+                0x0043bad9       0x89 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(main.o)
  .debug_pubtypes
-                0x0043bb3e       0xfa c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsthrd.o)
+                0x0043bb62       0xfa c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsthrd.o)
  .debug_pubtypes
-                0x0043bc38       0x50 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(snprintf.o)
+                0x0043bc5c       0x50 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(snprintf.o)
  .debug_pubtypes
-                0x0043bc88       0x50 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(vsnprintf.o)
+                0x0043bcac       0x50 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(vsnprintf.o)
  .debug_pubtypes
-                0x0043bcd8       0xd9 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
+                0x0043bcfc       0xd9 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
  .debug_pubtypes
-                0x0043bdb1       0x55 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
+                0x0043bdd5       0x55 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
  .debug_pubtypes
-                0x0043be06       0x37 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
+                0x0043be2a       0x37 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
  .debug_pubtypes
-                0x0043be3d       0x37 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
+                0x0043be61       0x37 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
  .debug_pubtypes
-                0x0043be74       0x36 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(dmisc.o)
+                0x0043be98       0x36 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(dmisc.o)
  .debug_pubtypes
-                0x0043beaa       0xee c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
+                0x0043bece       0xee c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
  .debug_pubtypes
-                0x0043bf98       0x36 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gmisc.o)
+                0x0043bfbc       0x36 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gmisc.o)
  .debug_pubtypes
-                0x0043bfce       0x1c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsmthread.o)
+                0x0043bff2       0x1c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsmthread.o)
 
-.debug_info     0x0043c000     0xce00
+.debug_info     0x0043d000     0xd000
  *(.debug_info)
- .debug_info    0x0043c000      0xa63 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
- .debug_info    0x0043ca63     0x1b3f dbg/bsp.o
- .debug_info    0x0043e5a2      0x8bb dbg/main.o
- .debug_info    0x0043ee5d     0x1374 dbg/philo.o
- .debug_info    0x004401d1     0x1194 dbg/table.o
- .debug_info    0x00441365      0x588 dbg/qstamp.o
- .debug_info    0x004418ed     0x11b9 ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
- .debug_info    0x00442aa6      0x8f0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlssup.o)
- .debug_info    0x00443396       0x76 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRTglob.o)
- .debug_info    0x0044340c       0x78 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRTfmode.o)
- .debug_info    0x00443484       0xe0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(txtmode.o)
- .debug_info    0x00443564       0xf1 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(cpu_features.o)
- .debug_info    0x00443655       0x72 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRT_fp10.o)
- .debug_info    0x004436c7      0x6d2 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
- .debug_info    0x00443d99      0x1c1 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(gccmain.o)
- .debug_info    0x00443f5a      0x3ea c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(main.o)
- .debug_info    0x00444344       0x72 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(crtst.o)
- .debug_info    0x004443b6      0x5e8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsthrd.o)
- .debug_info    0x0044499e       0xc5 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc-list.o)
- .debug_info    0x00444a63      0x26f c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(snprintf.o)
- .debug_info    0x00444cd2      0x272 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(vsnprintf.o)
- .debug_info    0x00444f44     0x1658 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
- .debug_info    0x0044659c      0x8a9 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
- .debug_info    0x00446e45      0x3e9 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
- .debug_info    0x0044722e      0x4cb c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
- .debug_info    0x004476f9      0x38d c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(dmisc.o)
- .debug_info    0x00447a86      0xea7 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
- .debug_info    0x0044892d      0x2d0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gmisc.o)
- .debug_info    0x00448bfd      0x1c0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsmthread.o)
+ .debug_info    0x0043d000      0xa63 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
+ .debug_info    0x0043da63     0x1b96 dbg/bsp.o
+ .debug_info    0x0043f5f9      0x935 dbg/main.o
+ .debug_info    0x0043ff2e     0x13d4 dbg/philo.o
+ .debug_info    0x00441302     0x11f4 dbg/table.o
+ .debug_info    0x004424f6      0x602 dbg/qstamp.o
+ .debug_info    0x00442af8     0x11b9 ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
+ .debug_info    0x00443cb1      0x8f0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlssup.o)
+ .debug_info    0x004445a1       0x76 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRTglob.o)
+ .debug_info    0x00444617       0x78 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRTfmode.o)
+ .debug_info    0x0044468f       0xe0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(txtmode.o)
+ .debug_info    0x0044476f       0xf1 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(cpu_features.o)
+ .debug_info    0x00444860       0x72 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRT_fp10.o)
+ .debug_info    0x004448d2      0x6d2 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
+ .debug_info    0x00444fa4      0x1c1 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(gccmain.o)
+ .debug_info    0x00445165      0x3ea c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(main.o)
+ .debug_info    0x0044554f       0x72 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(crtst.o)
+ .debug_info    0x004455c1      0x5e8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsthrd.o)
+ .debug_info    0x00445ba9       0xc5 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc-list.o)
+ .debug_info    0x00445c6e      0x26f c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(snprintf.o)
+ .debug_info    0x00445edd      0x272 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(vsnprintf.o)
+ .debug_info    0x0044614f     0x1658 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
+ .debug_info    0x004477a7      0x8a9 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
+ .debug_info    0x00448050      0x3e9 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
+ .debug_info    0x00448439      0x4cb c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
+ .debug_info    0x00448904      0x38d c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(dmisc.o)
+ .debug_info    0x00448c91      0xea7 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
+ .debug_info    0x00449b38      0x2d0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gmisc.o)
+ .debug_info    0x00449e08      0x1c0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsmthread.o)
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x00449000     0x2a00
+.debug_abbrev   0x0044a000     0x2c00
  *(.debug_abbrev)
- .debug_abbrev  0x00449000      0x242 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
- .debug_abbrev  0x00449242      0x474 dbg/bsp.o
- .debug_abbrev  0x004496b6      0x1eb dbg/main.o
- .debug_abbrev  0x004498a1      0x484 dbg/philo.o
- .debug_abbrev  0x00449d25      0x427 dbg/table.o
- .debug_abbrev  0x0044a14c      0x11c dbg/qstamp.o
- .debug_abbrev  0x0044a268      0x1c7 ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
- .debug_abbrev  0x0044a42f      0x1a4 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlssup.o)
- .debug_abbrev  0x0044a5d3       0x30 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRTglob.o)
- .debug_abbrev  0x0044a603       0x30 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRTfmode.o)
- .debug_abbrev  0x0044a633       0x30 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(txtmode.o)
- .debug_abbrev  0x0044a663       0x67 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(cpu_features.o)
- .debug_abbrev  0x0044a6ca       0x29 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRT_fp10.o)
- .debug_abbrev  0x0044a6f3      0x1c1 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
- .debug_abbrev  0x0044a8b4       0xa5 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(gccmain.o)
- .debug_abbrev  0x0044a959       0xc9 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(main.o)
- .debug_abbrev  0x0044aa22       0x30 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(crtst.o)
- .debug_abbrev  0x0044aa52      0x112 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsthrd.o)
- .debug_abbrev  0x0044ab64       0x30 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc-list.o)
- .debug_abbrev  0x0044ab94       0xcf c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(snprintf.o)
- .debug_abbrev  0x0044ac63       0xca c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(vsnprintf.o)
- .debug_abbrev  0x0044ad2d      0x33a c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
- .debug_abbrev  0x0044b067      0x1fe c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
- .debug_abbrev  0x0044b265      0x142 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
- .debug_abbrev  0x0044b3a7      0x17a c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
- .debug_abbrev  0x0044b521       0xde c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(dmisc.o)
- .debug_abbrev  0x0044b5ff      0x253 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
- .debug_abbrev  0x0044b852      0x122 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gmisc.o)
- .debug_abbrev  0x0044b974       0x74 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsmthread.o)
+ .debug_abbrev  0x0044a000      0x242 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
+ .debug_abbrev  0x0044a242      0x47d dbg/bsp.o
+ .debug_abbrev  0x0044a6bf      0x205 dbg/main.o
+ .debug_abbrev  0x0044a8c4      0x49e dbg/philo.o
+ .debug_abbrev  0x0044ad62      0x441 dbg/table.o
+ .debug_abbrev  0x0044b1a3      0x136 dbg/qstamp.o
+ .debug_abbrev  0x0044b2d9      0x1c7 ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
+ .debug_abbrev  0x0044b4a0      0x1a4 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlssup.o)
+ .debug_abbrev  0x0044b644       0x30 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRTglob.o)
+ .debug_abbrev  0x0044b674       0x30 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRTfmode.o)
+ .debug_abbrev  0x0044b6a4       0x30 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(txtmode.o)
+ .debug_abbrev  0x0044b6d4       0x67 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(cpu_features.o)
+ .debug_abbrev  0x0044b73b       0x29 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRT_fp10.o)
+ .debug_abbrev  0x0044b764      0x1c1 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
+ .debug_abbrev  0x0044b925       0xa5 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(gccmain.o)
+ .debug_abbrev  0x0044b9ca       0xc9 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(main.o)
+ .debug_abbrev  0x0044ba93       0x30 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(crtst.o)
+ .debug_abbrev  0x0044bac3      0x112 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsthrd.o)
+ .debug_abbrev  0x0044bbd5       0x30 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc-list.o)
+ .debug_abbrev  0x0044bc05       0xcf c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(snprintf.o)
+ .debug_abbrev  0x0044bcd4       0xca c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(vsnprintf.o)
+ .debug_abbrev  0x0044bd9e      0x33a c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
+ .debug_abbrev  0x0044c0d8      0x1fe c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
+ .debug_abbrev  0x0044c2d6      0x142 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
+ .debug_abbrev  0x0044c418      0x17a c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
+ .debug_abbrev  0x0044c592       0xde c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(dmisc.o)
+ .debug_abbrev  0x0044c670      0x253 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
+ .debug_abbrev  0x0044c8c3      0x122 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gmisc.o)
+ .debug_abbrev  0x0044c9e5       0x74 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsmthread.o)
 
-.debug_line     0x0044c000     0x2c00
+.debug_line     0x0044d000     0x2c00
  *(.debug_line)
- .debug_line    0x0044c000      0x133 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
- .debug_line    0x0044c133      0x292 dbg/bsp.o
- .debug_line    0x0044c3c5       0xe2 dbg/main.o
- .debug_line    0x0044c4a7      0x2b4 dbg/philo.o
- .debug_line    0x0044c75b      0x341 dbg/table.o
- .debug_line    0x0044ca9c       0x92 dbg/qstamp.o
- .debug_line    0x0044cb2e      0x2a1 ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
- .debug_line    0x0044cdcf       0xd2 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlssup.o)
- .debug_line    0x0044cea1       0x33 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRTglob.o)
- .debug_line    0x0044ced4       0x34 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRTfmode.o)
- .debug_line    0x0044cf08       0x33 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(txtmode.o)
- .debug_line    0x0044cf3b       0x78 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(cpu_features.o)
- .debug_line    0x0044cfb3       0x44 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRT_fp10.o)
- .debug_line    0x0044cff7      0x173 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
- .debug_line    0x0044d16a       0x75 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(gccmain.o)
- .debug_line    0x0044d1df       0xd4 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(main.o)
- .debug_line    0x0044d2b3       0x31 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(crtst.o)
- .debug_line    0x0044d2e4       0xe7 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsthrd.o)
- .debug_line    0x0044d3cb       0x3d c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc-list.o)
- .debug_line    0x0044d408       0xbd c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(snprintf.o)
- .debug_line    0x0044d4c5       0xca c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(vsnprintf.o)
- .debug_line    0x0044d58f      0x85f c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
- .debug_line    0x0044ddee      0x47a c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
- .debug_line    0x0044e268      0x169 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
- .debug_line    0x0044e3d1      0x1c9 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
- .debug_line    0x0044e59a      0x116 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(dmisc.o)
- .debug_line    0x0044e6b0      0x31b c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
- .debug_line    0x0044e9cb       0xc8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gmisc.o)
- .debug_line    0x0044ea93       0x73 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsmthread.o)
+ .debug_line    0x0044d000      0x133 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
+ .debug_line    0x0044d133      0x292 dbg/bsp.o
+ .debug_line    0x0044d3c5       0xea dbg/main.o
+ .debug_line    0x0044d4af      0x2bf dbg/philo.o
+ .debug_line    0x0044d76e      0x34d dbg/table.o
+ .debug_line    0x0044dabb       0xa5 dbg/qstamp.o
+ .debug_line    0x0044db60      0x2a1 ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
+ .debug_line    0x0044de01       0xd2 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlssup.o)
+ .debug_line    0x0044ded3       0x33 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRTglob.o)
+ .debug_line    0x0044df06       0x34 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRTfmode.o)
+ .debug_line    0x0044df3a       0x33 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(txtmode.o)
+ .debug_line    0x0044df6d       0x78 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(cpu_features.o)
+ .debug_line    0x0044dfe5       0x44 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRT_fp10.o)
+ .debug_line    0x0044e029      0x173 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
+ .debug_line    0x0044e19c       0x75 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(gccmain.o)
+ .debug_line    0x0044e211       0xd4 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(main.o)
+ .debug_line    0x0044e2e5       0x31 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(crtst.o)
+ .debug_line    0x0044e316       0xe7 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsthrd.o)
+ .debug_line    0x0044e3fd       0x3d c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc-list.o)
+ .debug_line    0x0044e43a       0xbd c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(snprintf.o)
+ .debug_line    0x0044e4f7       0xca c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(vsnprintf.o)
+ .debug_line    0x0044e5c1      0x85f c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
+ .debug_line    0x0044ee20      0x47a c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
+ .debug_line    0x0044f29a      0x169 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
+ .debug_line    0x0044f403      0x1c9 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
+ .debug_line    0x0044f5cc      0x116 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(dmisc.o)
+ .debug_line    0x0044f6e2      0x31b c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
+ .debug_line    0x0044f9fd       0xc8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gmisc.o)
+ .debug_line    0x0044fac5       0x73 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsmthread.o)
 
-.debug_frame    0x0044f000     0x1800
+.debug_frame    0x00450000     0x1800
  *(.debug_frame)
- .debug_frame   0x0044f000       0xc8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
- .debug_frame   0x0044f0c8      0x1d0 dbg/bsp.o
- .debug_frame   0x0044f298       0x38 dbg/main.o
- .debug_frame   0x0044f2d0      0x1a8 dbg/philo.o
- .debug_frame   0x0044f478      0x19c dbg/table.o
- .debug_frame   0x0044f614      0x270 ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
- .debug_frame   0x0044f884       0x84 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlssup.o)
- .debug_frame   0x0044f908       0x3c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(cpu_features.o)
- .debug_frame   0x0044f944       0x34 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRT_fp10.o)
- .debug_frame   0x0044f978       0xbc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
- .debug_frame   0x0044fa34       0x84 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(gccmain.o)
- .debug_frame   0x0044fab8       0x50 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(main.o)
- .debug_frame   0x0044fb08       0xc8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsthrd.o)
- .debug_frame   0x0044fbd0       0x2c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(snprintf.o)
- .debug_frame   0x0044fbfc       0x4c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(vsnprintf.o)
- .debug_frame   0x0044fc48      0x3d0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
- .debug_frame   0x00450018       0xb0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
- .debug_frame   0x004500c8       0xec c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
- .debug_frame   0x004501b4      0x100 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
- .debug_frame   0x004502b4       0xd0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(dmisc.o)
- .debug_frame   0x00450384      0x330 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
- .debug_frame   0x004506b4       0x7c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gmisc.o)
- .debug_frame   0x00450730       0x5c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsmthread.o)
+ .debug_frame   0x00450000       0xc8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
+ .debug_frame   0x004500c8      0x1d0 dbg/bsp.o
+ .debug_frame   0x00450298       0x38 dbg/main.o
+ .debug_frame   0x004502d0      0x1a8 dbg/philo.o
+ .debug_frame   0x00450478      0x19c dbg/table.o
+ .debug_frame   0x00450614      0x270 ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
+ .debug_frame   0x00450884       0x84 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlssup.o)
+ .debug_frame   0x00450908       0x3c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(cpu_features.o)
+ .debug_frame   0x00450944       0x34 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRT_fp10.o)
+ .debug_frame   0x00450978       0xbc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
+ .debug_frame   0x00450a34       0x84 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(gccmain.o)
+ .debug_frame   0x00450ab8       0x50 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(main.o)
+ .debug_frame   0x00450b08       0xc8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsthrd.o)
+ .debug_frame   0x00450bd0       0x2c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(snprintf.o)
+ .debug_frame   0x00450bfc       0x4c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(vsnprintf.o)
+ .debug_frame   0x00450c48      0x3d0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
+ .debug_frame   0x00451018       0xb0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
+ .debug_frame   0x004510c8       0xec c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
+ .debug_frame   0x004511b4      0x100 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
+ .debug_frame   0x004512b4       0xd0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(dmisc.o)
+ .debug_frame   0x00451384      0x330 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
+ .debug_frame   0x004516b4       0x7c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gmisc.o)
+ .debug_frame   0x00451730       0x5c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsmthread.o)
 
-.debug_str      0x00451000      0x400
+.debug_str      0x00452000      0x400
  *(.debug_str)
- .debug_str     0x00451000       0x58 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
- .debug_str     0x00451058       0x13 dbg/bsp.o
- .debug_str     0x0045106b       0x2b dbg/philo.o
- .debug_str     0x00451096       0x22 dbg/table.o
- .debug_str     0x004510b8       0x4e ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
- .debug_str     0x00451106       0x3e c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlssup.o)
- .debug_str     0x00451144        0xf c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(cpu_features.o)
- .debug_str     0x00451153       0x4e c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
- .debug_str     0x004511a1       0x1c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(gccmain.o)
- .debug_str     0x004511bd       0x3c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
- .debug_str     0x004511f9       0x22 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
- .debug_str     0x0045121b       0x19 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
- .debug_str     0x00451234       0x2a c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
- .debug_str     0x0045125e        0x9 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(dmisc.o)
- .debug_str     0x00451267       0x16 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
- .debug_str     0x0045127d        0x9 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gmisc.o)
+ .debug_str     0x00452000       0x58 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
+ .debug_str     0x00452058       0x13 dbg/bsp.o
+ .debug_str     0x0045206b       0x2b dbg/philo.o
+ .debug_str     0x00452096       0x22 dbg/table.o
+ .debug_str     0x004520b8       0x4e ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
+ .debug_str     0x00452106       0x3e c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlssup.o)
+ .debug_str     0x00452144        0xf c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(cpu_features.o)
+ .debug_str     0x00452153       0x4e c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
+ .debug_str     0x004521a1       0x1c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(gccmain.o)
+ .debug_str     0x004521bd       0x3c c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
+ .debug_str     0x004521f9       0x22 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
+ .debug_str     0x0045221b       0x19 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
+ .debug_str     0x00452234       0x2a c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
+ .debug_str     0x0045225e        0x9 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(dmisc.o)
+ .debug_str     0x00452267       0x16 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
+ .debug_str     0x0045227d        0x9 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gmisc.o)
 
-.debug_loc      0x00452000     0x9200
+.debug_loc      0x00453000     0x9200
  *(.debug_loc)
- .debug_loc     0x00452000      0x2a0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
- .debug_loc     0x004522a0      0x342 dbg/bsp.o
- .debug_loc     0x004525e2       0x4c dbg/main.o
- .debug_loc     0x0045262e      0x45e dbg/philo.o
- .debug_loc     0x00452a8c      0x4b7 dbg/table.o
- .debug_loc     0x00452f43      0x4e7 ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
- .debug_loc     0x0045342a      0x10a c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlssup.o)
- .debug_loc     0x00453534       0xbc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(cpu_features.o)
- .debug_loc     0x004535f0       0x38 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRT_fp10.o)
- .debug_loc     0x00453628      0x2ce c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
- .debug_loc     0x004538f6      0x12b c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(gccmain.o)
- .debug_loc     0x00453a21       0xd6 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(main.o)
- .debug_loc     0x00453af7      0x25a c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsthrd.o)
- .debug_loc     0x00453d51       0x58 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(snprintf.o)
- .debug_loc     0x00453da9       0xd5 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(vsnprintf.o)
- .debug_loc     0x00453e7e     0x20c2 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
- .debug_loc     0x00455f40     0x273d c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
- .debug_loc     0x0045867d      0x557 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
- .debug_loc     0x00458bd4      0x4a0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
- .debug_loc     0x00459074      0x519 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(dmisc.o)
- .debug_loc     0x0045958d     0x1723 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
- .debug_loc     0x0045acb0      0x2f7 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gmisc.o)
- .debug_loc     0x0045afa7       0x88 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsmthread.o)
+ .debug_loc     0x00453000      0x2a0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
+ .debug_loc     0x004532a0      0x342 dbg/bsp.o
+ .debug_loc     0x004535e2       0x4c dbg/main.o
+ .debug_loc     0x0045362e      0x45e dbg/philo.o
+ .debug_loc     0x00453a8c      0x4b7 dbg/table.o
+ .debug_loc     0x00453f43      0x4e7 ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
+ .debug_loc     0x0045442a      0x10a c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlssup.o)
+ .debug_loc     0x00454534       0xbc c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(cpu_features.o)
+ .debug_loc     0x004545f0       0x38 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(CRT_fp10.o)
+ .debug_loc     0x00454628      0x2ce c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
+ .debug_loc     0x004548f6      0x12b c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(gccmain.o)
+ .debug_loc     0x00454a21       0xd6 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(main.o)
+ .debug_loc     0x00454af7      0x25a c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsthrd.o)
+ .debug_loc     0x00454d51       0x58 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(snprintf.o)
+ .debug_loc     0x00454da9       0xd5 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(vsnprintf.o)
+ .debug_loc     0x00454e7e     0x20c2 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
+ .debug_loc     0x00456f40     0x273d c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
+ .debug_loc     0x0045967d      0x557 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
+ .debug_loc     0x00459bd4      0x4a0 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
+ .debug_loc     0x0045a074      0x519 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(dmisc.o)
+ .debug_loc     0x0045a58d     0x1723 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
+ .debug_loc     0x0045bcb0      0x2f7 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gmisc.o)
+ .debug_loc     0x0045bfa7       0x88 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(tlsmthread.o)
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -3156,20 +3159,20 @@ LOAD c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/crtend.o
 .debug_varnames
  *(.debug_varnames)
 
-.debug_ranges   0x0045c000      0x600
+.debug_ranges   0x0045d000      0x600
  *(.debug_ranges)
- .debug_ranges  0x0045c000       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
- .debug_ranges  0x0045c018       0x88 dbg/bsp.o
- .debug_ranges  0x0045c0a0       0x10 dbg/main.o
- .debug_ranges  0x0045c0b0       0xa8 dbg/philo.o
- .debug_ranges  0x0045c158       0x78 dbg/table.o
- .debug_ranges  0x0045c1d0       0x88 ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
- .debug_ranges  0x0045c258       0x30 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
- .debug_ranges  0x0045c288      0x1a8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
- .debug_ranges  0x0045c430       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
- .debug_ranges  0x0045c470       0x80 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
- .debug_ranges  0x0045c4f0       0x90 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
- .debug_ranges  0x0045c580       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
+ .debug_ranges  0x0045d000       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../crt2.o
+ .debug_ranges  0x0045d018       0x88 dbg/bsp.o
+ .debug_ranges  0x0045d0a0       0x10 dbg/main.o
+ .debug_ranges  0x0045d0b0       0xa8 dbg/philo.o
+ .debug_ranges  0x0045d158       0x78 dbg/table.o
+ .debug_ranges  0x0045d1d0       0x88 ../../../../ports/win32/dbg/libqp.a(qwin_gui.o)
+ .debug_ranges  0x0045d258       0x30 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingw32.a(pseudo-reloc.o)
+ .debug_ranges  0x0045d288      0x1a8 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(pformat.o)
+ .debug_ranges  0x0045d430       0x40 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(gdtoa.o)
+ .debug_ranges  0x0045d470       0x80 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(wcrtomb.o)
+ .debug_ranges  0x0045d4f0       0x90 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(mbrtowc.o)
+ .debug_ranges  0x0045d580       0x18 c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/../../../libmingwex.a(misc.o)
 
 .debug_types
  *(.debug_types)
@@ -3330,10 +3333,10 @@ PostQuitMessage@4                                 c:/qp/qtools/bin/../lib/gcc/mi
 QP::BUILD_DATE                                    dbg/qstamp.o
 QP::BUILD_TIME                                    dbg/qstamp.o
 QP::QActive::QActive(unsigned char (*)(void*, QP::QEvt const*)) ../../../../ports/win32/dbg/libqp.a(qf_qact.o)
-QP::QActive::QActive(unsigned char (*)(void*, QP::QEvt const*)) ../../../../ports/win32/dbg/libqp.a(qf_qact.o)
                                                   ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
                                                   dbg/table.o
                                                   dbg/philo.o
+QP::QActive::QActive(unsigned char (*)(void*, QP::QEvt const*)) ../../../../ports/win32/dbg/libqp.a(qf_qact.o)
 QP::QActive::get_()                               ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
                                                   ../../../../ports/win32/dbg/libqp.a(qf_port.o)
 QP::QActive::postLIFO(QP::QEvt const*)            ../../../../ports/win32/dbg/libqp.a(qf_actq.o)
@@ -3432,6 +3435,8 @@ QP::QF_leaveCriticalSection_()                    ../../../../ports/win32/dbg/li
                                                   ../../../../ports/win32/dbg/libqp.a(qf_dyn.o)
                                                   ../../../../ports/win32/dbg/libqp.a(qf_ps.o)
                                                   ../../../../ports/win32/dbg/libqp.a(qf_time.o)
+QP::QF_log2Lkup                                   ../../../../ports/win32/dbg/libqp.a(qf_act.o)
+                                                  ../../../../ports/win32/dbg/libqp.a(qf_ps.o)
 QP::QF_maxPool_                                   ../../../../ports/win32/dbg/libqp.a(qf_dyn.o)
                                                   ../../../../ports/win32/dbg/libqp.a(qf_mem.o)
                                                   ../../../../ports/win32/dbg/libqp.a(qf_port.o)
@@ -3690,9 +3695,9 @@ __cxxabiv1::__class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*,
 __cxxabiv1::__class_type_info::__do_upcast(__cxxabiv1::__class_type_info const*, void**) const c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
                                                   c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
 __cxxabiv1::__class_type_info::~__class_type_info() c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
-__cxxabiv1::__class_type_info::~__class_type_info() c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
-__cxxabiv1::__class_type_info::~__class_type_info() c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
                                                   c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(si_class_type_info.o)
+__cxxabiv1::__class_type_info::~__class_type_info() c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
+__cxxabiv1::__class_type_info::~__class_type_info() c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(class_type_info.o)
 __cxxabiv1::__forced_unwind::~__forced_unwind()   c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
 __cxxabiv1::__forced_unwind::~__forced_unwind()   c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
 __cxxabiv1::__forced_unwind::~__forced_unwind()   c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
@@ -4183,9 +4188,9 @@ std::bad_exception::~bad_exception()              c:/qp/qtools/bin/../lib/gcc/mi
 std::bad_exception::~bad_exception()              c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
 std::exception::what() const                      c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
 std::exception::~exception()                      c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
+std::exception::~exception()                      c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
+std::exception::~exception()                      c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
                                                   c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_alloc.o)
-std::exception::~exception()                      c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
-std::exception::~exception()                      c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_exception.o)
 std::set_terminate(void (*)())                    c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_terminate.o)
 std::set_unexpected(void (*)())                   c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_terminate.o)
 std::terminate()                                  c:/qp/qtools/bin/../lib/gcc/mingw32/4.5.2/libstdc++.a(eh_terminate.o)

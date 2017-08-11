@@ -1,7 +1,7 @@
 //****************************************************************************
 // DPP example for QXK
-// Last updated for version 5.7.2
-// Last updated on  2016-09-28
+// Last updated for version 5.9.6
+// Last updated on  2017-07-27
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -28,7 +28,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 // Contact information:
-// http://www.state-machine.com
+// https://state-machine.com
 // mailto:info@state-machine.com
 //****************************************************************************
 #include "qpcpp.h"
@@ -41,7 +41,6 @@ namespace DPP {
 static void Thread1_run(QP::QXThread * const me);
 static void Thread2_run(QP::QXThread * const me);
 
-
 static QP::QXThread l_test1(&Thread1_run, 0U);
 static QP::QXThread l_test2(&Thread2_run, 0U);
 static QP::QXMutex l_mutex;
@@ -51,8 +50,22 @@ static QP::QXSemaphore l_sema;
 QP::QXThread * const XT_Test1 = &l_test1;
 QP::QXThread * const XT_Test2 = &l_test2;
 
+// Thread-Local Storage for the "extended" threads ...........................
+struct TLS_test {
+    uint32_t foo;
+    uint8_t bar[10];
+};
+static TLS_test l_tls1;
+static TLS_test l_tls2;
+
+static void lib_fun(uint32_t x) {
+    QXK_TLS(TLS_test *)->foo = x;
+}
+
 //............................................................................
-static void Thread1_run(QP::QXThread * const /*me*/) {
+static void Thread1_run(QP::QXThread * const me) {
+
+    me->m_thread = &l_tls1; // initialize the TLS for Thread1
 
     l_mutex.init(3U);
 
@@ -62,22 +75,27 @@ static void Thread1_run(QP::QXThread * const /*me*/) {
         (void)l_sema.wait(BSP::TICKS_PER_SEC, 0U);
         BSP::ledOn();
 
-
         l_mutex.lock(); // exercise the mutex
         // some flating point code to exercise the VFP...
         float volatile x = 1.4142135F;
         x = x * 1.4142135F;
+        //QP::QXThread::delay(1U, 0U); // asserts (blocking while holding a mutex)
         l_mutex.unlock();
 
         QP::QXThread::delay(BSP::TICKS_PER_SEC/7, 0U);  // BLOCK
 
         // publish to Thread2
         QP::QF::PUBLISH(Q_NEW(QP::QEvt, TEST_SIG), &l_test1);
+
+        // test TLS
+        lib_fun(1U);
     }
 }
 
 //............................................................................
 static void Thread2_run(QP::QXThread * const me) {
+
+    me->m_thread = &l_tls2; // initialize the TLS for Thread2
 
     // subscribe to the test signal */
     me->subscribe(TEST_SIG);
@@ -86,7 +104,8 @@ static void Thread2_run(QP::QXThread * const me) {
     // NOTE: the semaphore is initialized in the highest-priority thread
     // that uses it. Alternatively, the semaphore can be initialized
     // before any thread runs.
-    l_sema.init(0U); // start with zero count
+    l_sema.init(0U,   // count==0 (signaling semaphore)
+                1U);  // max_count==1 (binary semaphore)
 
     for (;;) {
         // some flating point code to exercise the VFP...
@@ -101,9 +120,12 @@ static void Thread2_run(QP::QXThread * const me) {
             QP::QF::gc(e); // recycle the event manually!
         }
         else {
-            me->delay(BSP::TICKS_PER_SEC/2, 0U);  // wait some more (BLOCK)
+            QP::QXThread::delay(BSP::TICKS_PER_SEC/2, 0U);  // BLOCK
             l_sema.signal(); // signal Thread1
         }
+
+        // test TLS
+        lib_fun(2U);
     }
 }
 

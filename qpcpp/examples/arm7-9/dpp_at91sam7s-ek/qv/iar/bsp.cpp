@@ -1,7 +1,7 @@
 //****************************************************************************
 // Product: DPP on AT91SAM7S-EK, cooperative QV kernel, IAR-ARM toolset
-// Last Updated for Version: 5.8.0
-// Date of the Last Update:  2016-11-30
+// Last Updated for Version: 5.9.5
+// Date of the Last Update:  2017-07-20
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -28,7 +28,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 // Contact information:
-// http://www.state-machine.com
+// https://state-machine.com
 // mailto:info@state-machine.com
 //****************************************************************************
 #include "qpcpp.h"
@@ -40,6 +40,8 @@
 #pragma diag_suppress=Ta021  // call __iar_disable_interrupt from __ramfunc
 #pragma diag_suppress=Ta022  // possible ROM access <ptr> from __ramfunc
 #pragma diag_suppress=Ta023  // call to non __ramfunc from __ramfunc
+
+Q_DEFINE_THIS_FILE
 
 // extern "C" functions in C =================================================
 extern "C" {
@@ -59,8 +61,6 @@ void BSP_irq(void) {
 } // extern "C"
 
 namespace DPP {
-
-Q_DEFINE_THIS_FILE
 
 // Local objects -------------------------------------------------------------
 typedef void (*IntVector)(void);  // IntVector pointer-to-function
@@ -396,9 +396,13 @@ void QP::QS::onReset(void) {
 }
 //............................................................................
 //! callback function to execute a uesr command (to be implemented in BSP)
-void QP::QS::onCommand(uint8_t cmdId, uint32_t param) {
+void QS::onCommand(uint8_t cmdId, uint32_t param1,
+                   uint32_t param2, uint32_t param3)
+{
     (void)cmdId;
-    (void)param;
+    (void)param1;
+    (void)param2;
+    (void)param3;
     //TBD
 }
 #endif  // Q_SPY

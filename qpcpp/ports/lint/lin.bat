@@ -1,8 +1,8 @@
 @echo off
 :: ===========================================================================
 :: Product: QP/C++ build script for PC-Lint(TM), Standard C++ compiler
-: Last Updated for Version: 5.6.0
-:: Date of the Last Update: 2015-12-14
+:: Last Updated for Version: 5.9.3
+:: Date of the Last Update:  2017-06-19
 ::
 ::                    Q u a n t u m     L e a P s
 ::                    ---------------------------
@@ -29,18 +29,14 @@
 :: along with this program. If not, see <http://www.gnu.org/licenses/>.
 ::
 :: Contact information:
-:: http://www.state-machine.com
+:: https://state-machine.com
 :: mailto:info@state-machine.com
 :: ===========================================================================
 setlocal
 
 :: Options for calling lin.bat
-::
-:: -DQ_SPY  // for linting the Spy configuration (default for QS)
-:: up to 4 other options, if needed
 
 :: NOTE: adjust to for your installation directory of PC-Lint
-:: 
 set PC_LINT=C:\tools\lint
 
 if NOT exist "%PC_LINT%" (
@@ -48,20 +44,18 @@ if NOT exist "%PC_LINT%" (
     goto end
 )
 
-set LINTFLAGS=..\..\include\std.lnt options.lnt %1 %2 %3 %4
+set LINTFLAGS=..\..\include\std.lnt options.lnt -DQ_SPY -DQ_UTEST %1 %2
 
 :: do the linting...
-%PC_LINT%\lint-nt -os(lint_qep.log) %LINTFLAGS% -iqv ..\..\source\qep*.cpp
+%PC_LINT%\lint-nt -os(lint_qf.log)  %LINTFLAGS% -iqv ..\..\src\qf\*.cpp 
 
-%PC_LINT%\lint-nt -os(lint_qf.log)  %LINTFLAGS% -iqv ..\..\source\qf*.cpp 
+%PC_LINT%\lint-nt -os(lint_qv.log)  %LINTFLAGS% -iqv ..\..\src\qv\*.cpp
 
-%PC_LINT%\lint-nt -os(lint_qv.log)  %LINTFLAGS% -iqv ..\..\source\qv*.cpp
+%PC_LINT%\lint-nt -os(lint_qk.log)  %LINTFLAGS% -iqk ..\..\src\qk\*.cpp
 
-%PC_LINT%\lint-nt -os(lint_qk.log)  %LINTFLAGS% -iqk ..\..\source\qk*.cpp
+%PC_LINT%\lint-nt -os(lint_qxk.log) %LINTFLAGS% -iqxk ..\..\src\qxk\*.cpp
 
-%PC_LINT%\lint-nt -os(lint_qxk.log) %LINTFLAGS% -iqxk ..\..\source\qxk*.cpp
-
-%PC_LINT%\lint-nt -os(lint_qs.log)  %LINTFLAGS% -iqv -DQ_SPY ..\..\source\qs*.cpp
+%PC_LINT%\lint-nt -os(lint_qs.log)  %LINTFLAGS% -iqv -DQ_SPY ..\..\src\qs\*.cpp
 
 :end
 endlocal

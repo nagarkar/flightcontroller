@@ -1,7 +1,7 @@
 //****************************************************************************
 // Product: DPP example (console)
-// Last Updated for Version: 5.8.0
-// Date of the Last Update:  2016-11-30
+// Last Updated for Version: 5.9.5
+// Date of the Last Update:  2017-07-20
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -28,7 +28,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 // Contact information:
-// http://www.state-machine.com
+// https://state-machine.com
 // mailto:info@state-machine.com
 //****************************************************************************
 #include "qpcpp.h"
@@ -46,11 +46,10 @@
     #include "qspy.h"    // QSPY interface
 #endif
 
+Q_DEFINE_THIS_FILE
 
 //****************************************************************************
 namespace DPP {
-
-Q_DEFINE_THIS_FILE
 
 // local variables -----------------------------------------------------------
 static uint32_t l_rnd; // random seed

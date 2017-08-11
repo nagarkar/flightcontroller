@@ -227,7 +227,7 @@ __weak void BSP_InitPerfMarker() {
 }
 
 __weak void BSP_Initialize_Semihosting() {
-    initialise_monitor_handles();
+    //initialise_monitor_handles();
 }
 
 static uint16_t PRINTF_BUF_LEN = 200;

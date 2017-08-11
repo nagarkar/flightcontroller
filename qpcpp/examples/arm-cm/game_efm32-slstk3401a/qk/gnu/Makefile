@@ -28,7 +28,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# http://www.state-machine.com
+# https://state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
 # examples of invoking this Makefile:
@@ -69,7 +69,9 @@ QP_PORT_DIR := $(QPCPP)/ports/arm-cm/qk/gnu
 VPATH = \
 	.. \
 	../.. \
-	$(QPCPP)/source \
+	$(QPCPP)/src/qf \
+	$(QPCPP)/src/qk \
+	$(QPCPP)/src/qs \
 	$(QP_PORT_DIR) \
 	$(QPCPP)/3rd_party/efm32pg1b \
 	$(QPCPP)/3rd_party/efm32pg1b/gnu
@@ -78,7 +80,7 @@ VPATH = \
 INCLUDES  = \
 	-I../.. \
 	-I$(QPCPP)/include \
-	-I$(QPCPP)/source \
+	-I$(QPCPP)/src \
 	-I$(QP_PORT_DIR) \
 	-I$(QPCPP)/3rd_party/CMSIS/Include \
 	-I$(QPCPP)/3rd_party/efm32pg1b
@@ -165,7 +167,7 @@ FLOAT_ABI := -mfloat-abi=softfp
 # see http://gnutoolchains.com/arm-eabi/
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM = C:/tools/gnu_arm-eabi
+GNU_ARM := $(QTOOLS)/gnu_arm-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...

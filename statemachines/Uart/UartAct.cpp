@@ -37,6 +37,7 @@ using namespace AOs;
 void USART2_IRQHandler(void)
 {
 	QP_QXK_ISR_ENTRY();
+#if  !defined(Q_SPY)
 	UART_HandleTypeDef *hal = &huart2;
 	volatile uint32_t isrflags   = READ_REG(hal->Instance->SR);
 	if (isrflags & USART_SR_ORE) {
@@ -52,22 +53,29 @@ void USART2_IRQHandler(void)
 		(void)0;
 		AO_UartIn_DmaDataReadyCallback();
 	}
+#endif
 	QP_QXK_ISR_EXIT();
 }
 
 extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hal) {
-    UartOut::DmaDoneCallback();
+#if  !defined(Q_SPY)
+	UartOut::DmaDoneCallback();
+#endif
 }
 
 extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *hal) {
+#if  !defined(Q_SPY)
 	UartIn::DmaDoneCallback();
+#endif
 }
 
 extern "C" void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *hal) {
 	(void)0; // Unused. You can call the UartOut::DmaDoneCallback() function if required.
 }
 extern "C" void AO_UartIn_DmaDataReadyCallback(void) {
+#if  !defined(Q_SPY)
 	UartIn::DmaDataReadyCallback();
+#endif
 }
 
 void BSP_OVERRIDE_UART2_CALLBACKS(USART_HANDLE_TYPE_DEF *uart) {
@@ -75,6 +83,7 @@ void BSP_OVERRIDE_UART2_CALLBACKS(USART_HANDLE_TYPE_DEF *uart) {
 }
 
 extern "C" void App_UART_DMATransmitCplt(DMA_HandleTypeDef *hdma) {
+#if  !defined(Q_SPY)
   UART_HandleTypeDef* huart = ( UART_HandleTypeDef* )((DMA_HandleTypeDef* )hdma)->Parent;
   /* DMA Normal mode*/
   if((hdma->Instance->CR & DMA_SxCR_CIRC) == 0U)
@@ -95,7 +104,7 @@ extern "C" void App_UART_DMATransmitCplt(DMA_HandleTypeDef *hdma) {
   {
 	HAL_UART_TxCpltCallback(huart);
   }
-
+#endif
 }
 
 using namespace QP;
@@ -161,6 +170,13 @@ QP::QState UartAct::initial(UartAct * const me, QP::QEvt const * const e) {
     me->subscribe(UART_IN_DMA_RECV_SIG);
     me->subscribe(UART_IN_OVERFLOW_SIG);
     me->subscribe(UART_IN_HW_FAIL_SIG);
+
+    QS::obj_dict(me, me->m_name);
+    QS::obj_dict(&me->m_uartIn, "UARTIN");
+    QS::obj_dict(&me->m_uartOut, "UARTOUT");
+    QS_FUN_DICTIONARY(&UartAct::Root);
+    QS_FUN_DICTIONARY(&UartAct::Started);
+
     return Q_TRAN(&Root);
 }
 //${Uart::UartAct::SM::Root} .................................................

@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="4.0.1" links="0">
+ <framework name="qpcpp" license="../../../downloads/QPC-EVAL-170804A.qlc"/>
+ <package name="RAD" stereotype="0x02" namespace="RAD">
+  <class name="ComponentAO" superclass="qpcpp::QActive">
+   <attribute name="m_name" type="const char *" visibility="0x01" properties="0x00"/>
+   <attribute name="m_errorOccurred" type="bool" visibility="0x00" properties="0x00"/>
+   <attribute name="m_type" type="ComponentType" visibility="0x00" properties="0x00"/>
+   <attribute name="m_parent" type="ComponentAO *" visibility="0x00" properties="0x00"/>
+   <operation name="ComponentAO" type="" visibility="0x00" properties="0x02">
+    <documentation>/**
+ @param[in] name Name of this Active AO
+ @param[in] type One of Service or Device
+ @param[in] parent The Device or null.
+ @param[in]
+**/</documentation>
+    <parameter name="parent" type="ComponentAO *"/>
+    <parameter name="name = &quot;Missing Component Name&quot;" type="const char *"/>
+    <code>    : QActive((QStateHandler)&amp;initial)
+    , m_parent(parent)
+    , m_name(name)
+    , m_errorOccurred(false)
+
+if (parent == NULL) {
+  m_type = DEVICE;
+} else {
+  m_type = SERVICE;
+}
+//QS::obj_dict(this, &quot;ComponentAO&quot;);</code>
+   </operation>
+   <operation name="ArmActivityTimeout" type="void" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="ArmInitializationTimeout" type="void" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="DisarmActivityTimeout" type="void" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="DisarmInitializationTimeout" type="void" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="OnInitializationTimeout" type="void" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="OnActivityTimeout" type="void" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="RequestResources" type="void" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="AllResourcesGranted" type="bool" visibility="0x00" properties="0x06">
+    <code>return true;</code>
+   </operation>
+   <operation name="OnServiceRequest" type="void" visibility="0x00" properties="0x04">
+    <parameter name="request" type="RequestData "/>
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="OnServiceResponse" type="void" visibility="0x00" properties="0x04">
+    <parameter name="response" type="ResponseData "/>
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="OnInterrupt" type="void" visibility="0x00" properties="0x04">
+    <parameter name="interrupt" type="InterruptData"/>
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="OnCreate" type="void" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="OnStart" type="void" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="OnRestart" type="void" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="OnPause" type="void" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="OnStopped" type="void" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="OnError" type="void" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="ErrorOccurred" type="bool" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="HasSufficientActivityOccurred" type="bool" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="ConfirmComponentStart" type="void" visibility="0x00" properties="0x14"/>
+   <operation name="OnResourceGrant" type="void" visibility="0x00" properties="0x04">
+    <parameter name="resp" type="ResourceResponse &amp;"/>
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="OnResume" type="void" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="ClearError" type="void" visibility="0x00" properties="0x04">
+    <code>m_errorOccurred = false;</code>
+   </operation>
+   <operation name="SetErrorOccurred" type="void" visibility="0x00" properties="0x04">
+    <code>m_errorOccurred = true;</code>
+   </operation>
+   <operation name="ProvisionComponent" type="void" visibility="0x00" properties="0x04">
+    <parameter name="request" type="ProvisionComponentRequest &amp;"/>
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="ReserveResource" type="void" visibility="0x00" properties="0x04">
+    <parameter name="request" type="ResourceRequest &amp;"/>
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="GetDriverQueryResponse" type="DriverQueryResponse" visibility="0x00" properties="0x04">
+    <parameter name="req" type="DriverQueryRequest &amp;"/>
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="getOfficialId" type="ID" visibility="0x00" properties="0x04">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="Start" type="void" visibility="0x00" properties="0x04">
+    <parameter name="prio" type="uint8_t"/>
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="RequestComponentId" type="void" visibility="0x00" properties="0x14">
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="OnProvisionComponentResponse" type="void" visibility="0x00" properties="0x04">
+    <parameter name="resp" type="ProvisionComponentResponse &amp;"/>
+    <code>Q_onAssert(&quot;Unsupported Method&quot;, 0);</code>
+   </operation>
+   <operation name="OnInitial" type="void" visibility="0x00" properties="0x14"/>
+   <statechart>
+    <initial target="../1">
+     <action brief="Subscribe Messages, Setup Dictionaries">//me-&gt;OnInitial();</action>
+     <initial_glyph conn="8,5,5,0,50,4">
+      <action box="0,-2,34,2"/>
+     </initial_glyph>
+    </initial>
+    <state name="Zombie">
+     <documentation>Other plug to initialize variables.</documentation>
+     <entry>me-&gt;OnCreate();</entry>
+     <tran trig="START">
+      <action>me-&gt;OnStart();</action>
+      <choice target="../../5">
+       <guard brief="IsService">me-&gt;m_type == SERVICE</guard>
+       <choice_glyph conn="40,18,5,0,7,10">
+        <action box="1,3,10,2"/>
+       </choice_glyph>
+      </choice>
+      <choice target="../../6">
+       <guard brief="IsDevice">me-&gt;m_type == DEVICE</guard>
+       <choice_glyph conn="40,18,4,3,79,5">
+        <action box="-8,9,10,2"/>
+       </choice_glyph>
+      </choice>
+      <tran_glyph conn="32,18,3,-1,8">
+       <action box="0,-2,18,2"/>
+      </tran_glyph>
+     </tran>
+     <state name="Error">
+      <documentation>You reach this state if there is an error. Perform error recovery functions and restart yourself if you haven't reached max retries.</documentation>
+      <entry brief="System Reset">me-&gt;OnError();
+if(!MAX_RETRIES_REACHED()) {
+   me-&gt;POST(new QEvt(RESTART_SIG), me);
+}</entry>
+      <tran trig="RESTART" target="../../5">
+       <action>me-&gt;OnRestart();</action>
+       <tran_glyph conn="150,34,0,0,-13,-91,7">
+        <action box="-90,-12,22,3"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="139,34,13,22">
+       <entry box="1,2,6,2"/>
+      </state_glyph>
+     </state>
+     <state name="Stopped">
+      <documentation>In this state, no requests are accepted. Any resources owned by this component can be used by others.</documentation>
+      <entry>me-&gt;OnStopped();</entry>
+      <tran trig="RESTART" target="../../5">
+       <action>me-&gt;OnRestart();</action>
+       <tran_glyph conn="157,63,0,0,-47,-103,12">
+        <action box="-100,-46,10,2"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="139,63,21,6">
+       <entry box="1,2,6,2"/>
+      </state_glyph>
+     </state>
+     <state name="Paused">
+      <entry>me-&gt;OnPause();</entry>
+      <tran trig="RESUME" target="../../4">
+       <action>me-&gt;OnResume();</action>
+       <tran_glyph conn="139,78,3,1,-11">
+        <action box="-10,-3,10,2"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="139,74,21,6">
+       <entry box="1,2,6,2"/>
+      </state_glyph>
+     </state>
+     <state name="ServiceAcceptingRequests">
+      <documentation>In this state, you are accepting requests and responding.</documentation>
+      <entry>//me-&gt;ConfirmComponentStarted();</entry>
+      <tran trig="SERVICE_REQ">
+       <action>me-&gt;ClearError();
+me-&gt;OnServiceRequest(toRequest(e));</action>
+       <choice target="../../../1">
+        <guard brief="ErrorOccurred">me-&gt;ErrorOccurred()</guard>
+        <action>//PUBLISH_FAILURE_RESPONSE(e);</action>
+        <choice_glyph conn="78,65,5,3,59,-18,2">
+         <action box="1,0,10,2"/>
+        </choice_glyph>
+       </choice>
+       <tran_glyph conn="45,65,3,-1,33">
+        <action box="0,-2,15,2"/>
+       </tran_glyph>
+      </tran>
+      <tran trig="INTERRUPT">
+       <action>me-&gt;ClearError();
+me-&gt;OnInterrupt(toInterrupt(e));</action>
+       <choice target="../../../1">
+        <guard brief="ErrorOcurred">me-&gt;ErrorOccurred()</guard>
+        <choice_glyph conn="77,72,5,3,60,-25,2">
+         <action box="1,0,10,2"/>
+        </choice_glyph>
+       </choice>
+       <tran_glyph conn="45,72,3,-1,32">
+        <action box="0,-2,10,2"/>
+       </tran_glyph>
+      </tran>
+      <tran trig="ACTIVITY_TIMEOUT">
+       <action>me-&gt;ClearError();
+me-&gt;OnActivityTimeout();</action>
+       <choice target="../../../1">
+        <guard brief="InsufficientActivity">!me-&gt;HasSufficientActivityOccurred()</guard>
+        <choice_glyph conn="78,56,5,3,59,-9,2">
+         <action box="3,1,18,2"/>
+        </choice_glyph>
+       </choice>
+       <tran_glyph conn="45,56,3,-1,33">
+        <action box="0,-2,16,2"/>
+       </tran_glyph>
+      </tran>
+      <tran trig="SERVICE_RESP">
+       <action>me-&gt;ClearError();
+me-&gt;OnServiceResponse(toResponse(e));</action>
+       <tran_glyph conn="45,78,3,-1,32">
+        <action box="0,-2,15,2"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="45,48,83,32">
+       <entry box="1,2,6,2"/>
+      </state_glyph>
+     </state>
+     <state name="WaitingForInitialization">
+      <documentation>In this state, get your component ID, and Reserve all the resources you need so you can start accepting requests</documentation>
+      <entry brief="Resource timeout-timer">me-&gt;ArmInitializationTimeout();</entry>
+      <exit>me-&gt;DisarmInitializationTimeout();</exit>
+      <initial target="../2">
+       <initial_glyph conn="53,32,5,0,4,2">
+        <action box="0,-2,10,2"/>
+       </initial_glyph>
+      </initial>
+      <tran trig="INITIALIZATION_TIMEOUT" target="../../1">
+       <action>me-&gt;OnInitializationTimeout();</action>
+       <tran_glyph conn="98,35,1,3,41">
+        <action box="2,-3,20,2"/>
+       </tran_glyph>
+      </tran>
+      <state name="RequestingCompId">
+       <entry>me-&gt;RequestComponentId();</entry>
+       <tran trig="PROVISION_COMPONENT_RESP" target="../../3">
+        <action>ProvisionComponentResponse resp = 
+    toProvisionComponentResponse(e);
+me-&gt;OnProvisionComponentResponse(resp);</action>
+        <tran_glyph conn="52,42,2,2,2,35,-2">
+         <action box="3,0,30,2"/>
+        </tran_glyph>
+       </tran>
+       <state_glyph node="49,34,17,8">
+        <entry box="1,2,6,2"/>
+       </state_glyph>
+      </state>
+      <state name="RequestingResources">
+       <entry>me-&gt;RequestResources();</entry>
+       <tran trig="RESOURCE_GRANT">
+        <action>ResourceResponse resp = toResourceResponse(e);
+if (resp.isSuccess()) {
+    me-&gt;OnResourceGrant(resp);
+}</action>
+        <choice target="../../../../4">
+         <guard brief="AllResourcesGranted">me-&gt;AllResourcesGranted()</guard>
+         <choice_glyph conn="121,40,5,0,3,8">
+          <action box="-15,4,18,2"/>
+         </choice_glyph>
+        </choice>
+        <tran_glyph conn="94,40,1,-1,27">
+         <action box="5,-3,19,2"/>
+        </tran_glyph>
+       </tran>
+       <state_glyph node="75,34,19,8">
+        <entry box="1,2,6,2"/>
+       </state_glyph>
+      </state>
+      <state_glyph node="45,28,53,18">
+       <entry box="1,2,6,2"/>
+       <exit box="1,4,6,2"/>
+      </state_glyph>
+     </state>
+     <state name="DeviceAcceptingRequests">
+      <tran trig="PROVISION_COMPONENT_REQ">
+       <action>ProvisionComponentRequest req = 
+    toProvisionComponentRequest(e);
+me-&gt;ProvisionComponent(req);</action>
+       <choice target="../../../2">
+        <guard brief="ErrorOccured">me-&gt;ErrorOccurred()</guard>
+        <choice_glyph conn="73,92,5,1,89,-24,-2">
+         <action box="1,0,10,2"/>
+        </choice_glyph>
+       </choice>
+       <tran_glyph conn="45,92,3,-1,28">
+        <action box="0,-2,20,2"/>
+       </tran_glyph>
+      </tran>
+      <tran trig="RESOURCE_REQ">
+       <action>
+ResourceRequest req = toResourceRequest(e);
+me-&gt;ReserveResource(req);
+</action>
+       <choice target="../../../2">
+        <guard brief="ErrorOccured">me-&gt;ErrorOccurred()</guard>
+        <choice_glyph conn="73,95,5,1,89,-27,-2">
+         <action box="1,0,10,2"/>
+        </choice_glyph>
+       </choice>
+       <tran_glyph conn="45,95,3,-1,28">
+        <action box="0,-2,23,2"/>
+       </tran_glyph>
+      </tran>
+      <tran trig="DRIVER_REQ">
+       <action>DriverQueryRequest req = toDriverQueryRequest(e);
+me-&gt;GetDriverQueryResponse(req);</action>
+       <choice>
+        <guard brief="ErrorOccured">me-&gt;ErrorOccurred()</guard>
+        <choice_glyph conn="73,102,5,-1,89,-27,-2">
+         <action box="1,0,10,2"/>
+        </choice_glyph>
+       </choice>
+       <tran_glyph conn="45,102,3,-1,28">
+        <action box="0,-2,23,2"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="45,86,55,18"/>
+     </state>
+     <state_glyph node="32,9,138,98">
+      <entry box="1,2,6,2"/>
+     </state_glyph>
+    </state>
+    <state_diagram size="180,110"/>
+   </statechart>
+  </class>
+  <directory name="RAD">
+   <file name="ComponentAO.cpp">
+    <text>#include &quot;./ComponentAO.h&quot;
+
+
+using namespace QP;
+
+$define(RAD::ComponentAO)
+
+//$define(RAD::DeviceAO)</text>
+   </file>
+   <file name="ComponentAO.h">
+    <text>#ifndef _RAD_COMPONENT_H
+#define _RAD_COMPONENT_H
+
+#include &quot;RAD.h&quot;
+#include &quot;qpcpp.h&quot;
+
+
+namespace RAD {
+RequestData toRequest(QP::QEvt const *e);
+ResponseData toResponse(QP::QEvt const *e);
+ResourceRequest toResourceRequest(QP::QEvt const *e);
+ResourceResponse toResourceResponse(QP::QEvt const *e);
+ProvisionComponentRequest toProvisionComponentRequest(QP::QEvt const *e);
+ProvisionComponentResponse toProvisionComponentResponse(QP::QEvt const *e);
+InterruptData toInterrupt(QP::QEvt const *e);
+DriverQueryRequest toDriverQueryRequest(QP::QEvt const *e);
+
+#define PUBLISH_FAILURE_RESPONSE(e)                    (void)0
+#define BROADCAST_COMPONENT_STARTED(sig)    (void)0
+#define HAS_INSUFFICIENT_ACTIVITY()                        false
+#define MAX_RETRIES_REACHED()                                true
+#define POST_LIFO(sig)                                                    (void)0;
+
+} // namespae
+
+$declare(RAD::ComponentAO)
+
+//$declare(RAD::DeviceAO)
+
+#endif</text>
+   </file>
+  </directory>
+ </package>
+</model>

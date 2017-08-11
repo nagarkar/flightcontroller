@@ -1,7 +1,7 @@
 //****************************************************************************
 // DPP example for QXK
-// Last updated for version 5.8.0
-// Last updated on  2016-11-30
+// Last updated for version 5.9.6
+// Last updated on  2017-07-27
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -28,7 +28,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 // Contact information:
-// http://www.state-machine.com
+// https://state-machine.com
 // mailto:info@state-machine.com
 //****************************************************************************
 #include "qpcpp.h"

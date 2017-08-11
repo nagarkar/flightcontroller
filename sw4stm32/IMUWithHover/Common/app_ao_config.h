@@ -108,7 +108,23 @@ using namespace QP;
 	m(Signal, SYSTEM_PIN_SET_INTERRUPT_SIG)	\
 	m(Signal, SYSTEM_PIN_RESET_INTERRUPT_SIG)	/* 2, 68 */\
 	\
-	m(Signal, MAX_PUB_SIG)
+	m(Signal, START_SIG)	\
+	m(Signal, START_CFM_SIG)	\
+	m(Signal, RESTART_SIG)	\
+	m(Signal, RESUME_SIG)	\
+	m(Signal, INITIALIZATION_TIMEOUT_SIG)	\
+	m(Signal, PROVISION_COMPONENT_REQ_SIG)	\
+	m(Signal, PROVISION_COMPONENT_RESP_SIG)	\
+	m(Signal, RESOURCE_REQ_SIG)	\
+	m(Signal, DRIVER_REQ_SIG)  \
+	m(Signal, DRIVER_RESPONSE_SIG)  \
+	m(Signal, DEVICE_ERROR_SIG)  \
+	m(Signal, RESOURCE_GRANT_SIG)	\
+	m(Signal, ACTIVITY_TIMEOUT_SIG)	\
+	m(Signal, SERVICE_REQ_SIG)	\
+	m(Signal, INTERRUPT_SIG)	\
+	m(Signal, SERVICE_RESP_SIG)		\
+	m(Signal, MAX_PUB_SIG)	\
 
 SMARTENUM_DEFINE_ENUM(Signal, SIG_LIST)
 SMARTENUM_DECLARE_NAMES(Signal, SIG_LIST)
@@ -121,7 +137,10 @@ enum SignalAliases {
 // Higher value corresponds to higher priority, so later enum values are higher
 // priority. The maximum priority is defined in qf_port.h as QF_MAX_ACTIVE (32)
 enum {
-	PRIO_UART2_ACT = 1 /* Can't start with zero; throws assertion*/,
+	PRIO_RESERVED = 1 /* Can't start with zero; throws assertion*/,
+	PRIO_UART2_ACT,
+	PRIO_DEVICE,
+	PRIO_I2C_DRIVER,
 	PRIO_UART2_COMMANDER,
 	PRIO_BUMPER,
 	PRIO_USER_LED,
@@ -130,6 +149,15 @@ enum {
 	PRIO_MAX = QF_MAX_ACTIVE
 };
 
+enum QSPY_APP_RECORD_TYPES {
+	ACTIVE_LOGGER = QS_USER,
+
+}; // QSPY_APP_RECORD_TYPES
+
+enum Commands {
+	I2C_Read,
+	I2C_Write
+};
 
 #ifdef __cplusplus
 }

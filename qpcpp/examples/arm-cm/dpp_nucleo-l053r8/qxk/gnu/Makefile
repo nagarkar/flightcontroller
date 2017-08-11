@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C++, DPP on NUCLEO-L053R8, QXK kernel, GNU-ARM
-# Last Updated for Version: 5.6.0
-# Date of the Last Update:  2015-12-30
+# Last Updated for Version: 5.9.6
+# Date of the Last Update:  2017-08-03
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -28,7 +28,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# http://www.state-machine.com
+# https://state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
 # examples of invoking this Makefile:
@@ -58,7 +58,7 @@ PROJECT     := dpp-qxk
 #
 
 # location of the QP/C++ framework (if not provided in an environemnt var.)
-ifeq ($(	),)
+ifeq ($(QPCPP),)
 QPCPP := ../../../../..
 endif
 
@@ -69,7 +69,9 @@ QP_PORT_DIR := $(QPCPP)/ports/arm-cm/qxk/gnu
 VPATH = \
 	.. \
 	../.. \
-	$(QPCPP)/source \
+	$(QPCPP)/src/qf \
+	$(QPCPP)/src/qxk \
+	$(QPCPP)/src/qs \
 	$(QP_PORT_DIR) \
 	$(QPCPP)/3rd_party/nucleo-l053r8 \
 	$(QPCPP)/3rd_party/nucleo-l053r8/gnu
@@ -78,7 +80,7 @@ VPATH = \
 INCLUDES  = \
 	-I../.. \
 	-I$(QPCPP)/include \
-	-I$(QPCPP)/source \
+	-I$(QPCPP)/src \
 	-I$(QP_PORT_DIR) \
 	-I$(QPCPP)/3rd_party/CMSIS/Include \
 	-I$(QPCPP)/3rd_party/nucleo-l053r8
@@ -154,7 +156,7 @@ FLOAT_ABI :=
 # see http://gnutoolchains.com/arm-eabi/
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM = C:/tools/gnu_arm-eabi
+GNU_ARM := $(QTOOLS)/gnu_arm-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...

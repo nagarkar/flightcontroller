@@ -30,11 +30,12 @@ class Log {
 public:
     static void AddQPInterface(Fifo *fifo, QP::QSignal sig);
     static void DeleteQPInterface();
-    static void Write(char const *buf, uint32_t len, bool useQPInterface = true);
+    static bool Write(char const *buf, uint32_t len, bool useQPInterface = true);
     static uint32_t Print(char const *format, ...);
     static void ToggleEventLogging();
     static void Event(char const *name, char const *func, QP::QEvt const *e, bool useQPInterface = true);
     static void Debug(char const *name, char const *func, char const *format, ...);
+    static QP::QSignal m_writeSuccessSig;
 
 private:
 
@@ -42,7 +43,6 @@ private:
         BUF_LEN = 1000,
     };
     static Fifo *m_fifo;
-    static QP::QSignal m_writeSuccessSig;
     static char const m_truncatedError[];
 
 protected:
@@ -50,13 +50,20 @@ protected:
 
 };
 
-#define PRINT(format_, ...)      Log::Print(format_, ## __VA_ARGS__)
-#define DEBUG(format_, ...)      Log::Debug(me->m_name, __FUNCTION__, format_, ## __VA_ARGS__);
-// The following macros can only be used within an HSM. Newline is automatically appended.
-#define LOG_EVENT(e_)            Log::Event(me->m_name, __FUNCTION__, e_);
-#define LOG_EVENT_NOQP(e_)       Log::Event(me->m_name, __FUNCTION__, e_, false);
-#define TOGGLE_EVENT_LOGGING()   Log::ToggleEventLogging()
+static Log DUMMY_LOG;
 
+#define PRINT(format_, ...)      			Log::Print(format_, ## __VA_ARGS__)
+#define DEBUG(format_, ...)      			Log::Debug(me->m_name, __FUNCTION__, format_, ## __VA_ARGS__);
+#ifndef Q_SPY
+// The following macros can only be used within an HSM. Newline is automatically appended.
+#define LOG_EVENT(e_)            			Log::Event(me->m_name, __FUNCTION__, e_);
+#define LOG_EVENT_NOQP(e_)       	Log::Event(me->m_name, __FUNCTION__, e_, false);
+#define TOGGLE_EVENT_LOGGING()   Log::ToggleEventLogging()
+#else
+#define LOG_EVENT(e_)            			(void)0
+#define LOG_EVENT_NOQP(e_)       	(void)0
+#define TOGGLE_EVENT_LOGGING()   (void)0
+#endif
 } // namespace
 
 #endif // ACTIVE_LOG_H

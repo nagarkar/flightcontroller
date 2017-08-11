@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for DPP on STM32F746G-Discovery, QXK kernel, GNU-ARM
-# Last Updated for Version: 5.8.2
-# Date of the Last Update:  2017-02-04
+# Last Updated for Version: 5.9.5
+# Date of the Last Update:  2017-07-19
 #
 #                    Q u a n t u m     L e a P s
 #                    ---------------------------
@@ -28,7 +28,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # Contact information:
-# http://www.state-machine.com
+# https://state-machine.com
 # mailto:info@state-machine.com
 ##############################################################################
 # examples of invoking this Makefile:
@@ -69,7 +69,9 @@ QP_PORT_DIR := $(QPCPP)/ports/arm-cm/qxk/gnu
 VPATH = \
 	.. \
 	../.. \
-	$(QPCPP)/source \
+	$(QPCPP)/src/qf \
+	$(QPCPP)/src/qxk \
+	$(QPCPP)/src/qs \
 	$(QP_PORT_DIR) \
 	$(QPCPP)/3rd_party/stm32f7-discovery \
 	$(QPCPP)/3rd_party/stm32f7-discovery/gnu \
@@ -80,7 +82,7 @@ VPATH = \
 INCLUDES  = \
 	-I../.. \
 	-I$(QPCPP)/include \
-	-I$(QPCPP)/source \
+	-I$(QPCPP)/src \
 	-I$(QP_PORT_DIR) \
 	-I$(QPCPP)/3rd_party/CMSIS/Include \
 	-I$(QPCPP)/3rd_party/stm32f7-discovery \
@@ -96,7 +98,7 @@ ASM_SRCS :=
 
 # C source files
 C_SRCS := \
-	startup_stm32f4xx.c \
+	startup_stm32f746xx.c \
 	system_stm32f7xx.c \
 	stm32746g_discovery.c \
 	stm32f7xx_hal.c \
@@ -167,7 +169,7 @@ FLOAT_ABI := -mfloat-abi=softfp
 # see http://gnutoolchains.com/arm-eabi/
 #
 ifeq ($(GNU_ARM),)
-GNU_ARM = C:/tools/gnu_arm-eabi
+GNU_ARM := $(QTOOLS)/gnu_arm-eabi
 endif
 
 # make sure that the GNU-ARM toolset exists...

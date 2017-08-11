@@ -1,7 +1,7 @@
 ;*****************************************************************************
-; Product: QXK port to ARM Cortex-M (M0,M0+,M1,M3,M4,M7), ARM-Keil assembler
-; Last Updated for Version: 5.8.1
-; Date of the Last Update:  2016-12-12
+; Product: QXK port to ARM Cortex-M (M0,M0+,M3,M4,M7), ARM-Keil assembler
+; Last Updated for Version: 5.9.6
+; Date of the Last Update:  2017-07-28
 ;
 ;                    Q u a n t u m     L e a P s
 ;                    ---------------------------
@@ -28,7 +28,7 @@
 ; along with this program. If not, see <http://www.gnu.org/licenses/>.
 ;
 ; Contact information:
-; http://www.state-machine.com
+; https://state-machine.com
 ; mailto:info@state-machine.com
 ;*****************************************************************************
 
@@ -51,8 +51,8 @@ QXK_NEXT        EQU 4
 QXK_TOP_PRIO    EQU 8
 
     ; NOTE: keep in synch with the QMActive struct in "qf.h/qxk.h" !!!
-QMACTIVE_THREAD EQU 40
-QMACTIVE_PRIO   EQU 44
+QMACTIVE_OSOBJ  EQU 40
+QMACTIVE_PRIO   EQU 48
 
 
     AREA    |.text|, CODE, READONLY
@@ -73,18 +73,18 @@ QXK_init     FUNCTION
 
   IF {TARGET_ARCH_THUMB} == 3 ; Cortex-M0/M0+/M1 (v6-M, v6S-M)?
 
-    LDR     r1,=0xE000ED18    ; System Handler Priority Register
-    LDR     r2,[r1,#8]        ; load the System 12-15 Priority Register
-    MOVS    r3,#0xFF
-    LSLS    r3,r3,#16
-    ORRS    r2,r3             ; set PRI_14 (PendSV) to 0xFF
-    STR     r2,[r1,#8]        ; write the System 12-15 Priority Register
+    LDR     r3,=0xE000ED18    ; System Handler Priority Register
+    LDR     r2,[r3,#8]        ; r2 := SYSPRI3
+    MOVS    r1,#0xFF
+    LSLS    r1,r1,#16
+    ORRS    r2,r1
+    STR     r2,[r3,#8]        ; SYSPRI3 := r2, PendSV <- 0xFF
 
   ELSE                        ; Cortex-M3/M4/..
 
     ; NOTE:
-    ; On Cortex-M3/M4/.., this QXK port disables interrupts by means of the
-    ; BASEPRI register. However, this method cannot disable interrupt
+    ; On Cortex-M3/M4/M7.., this QXK port disables interrupts by means of
+    ; the BASEPRI register. However, this method cannot disable interrupt
     ; priority zero, which is the default for all interrupts out of reset.
     ; The following code changes the SysTick priority and all IRQ priorities
     ; to the safe value QF_BASEPRI, wich the QF critical section can disable.
@@ -124,16 +124,17 @@ QXK_init     FUNCTION
     LSLS    r1,r1,#8
     ORRS    r1,r1,#QF_BASEPRI
 
-    LDR     r3,=0xE000E004    ; Interrupt Controller Type Register
-    LDR     r3,[r3]           ; r3 := INTLINESUM
+    LDR     r2,=0xE000E400    ; NVIC_PRI0 register
+    LDR     r3,=0xE000E004    ; Interrupt Controller Type Register (ICTR)
+    LDR     r3,[r3]
+    ANDS    r3,r3,#7          ; r3 := ICTR[0:2] (INTLINESNUM)
     LSLS    r3,r3,#3
-    ADDS    r3,r3,#8          ; r3 == number of NVIC_PRIO registers
+    ADDS    r3,r3,#8          ; r3 == (# NVIC_PRIO registers)/4
 
     ; loop over all implemented NVIC_PRIO registers for IRQs...
 QXK_init_irq
     SUBS    r3,r3,#1
-    LDR     r2,=0xE000E400    ; NVIC_PRI0 register
-    STR     r1,[r2,r3,LSL #2] ; NVIC_PRI0[r3]  := r1
+    STR     r1,[r2,r3,LSL #2] ; NVIC_PRI0[r3] := r1
     CMP     r3,#0
     BNE     QXK_init_irq
 
@@ -180,7 +181,9 @@ PendSV_Handler FUNCTION
     CPSID   i                 ; disable interrupts (set PRIMASK)
   ELSE                        ; M3/M4/M7
     MOVS    r0,#QF_BASEPRI
-    MSR     BASEPRI,r0        ; selectively disable interrupts
+    CPSID   i                 ; selectively disable interrutps with BASEPRI
+    MSR     BASEPRI,r0        ; apply the workaround the Cortex-M7 erraturm
+    CPSIE   i                 ; 837070, see ARM-EPM-064408.
   ENDIF                       ; M3/M4/M7
 
     ; The PendSV exception handler can be preempted by an interrupt,
@@ -196,13 +199,13 @@ PendSV_Handler FUNCTION
 
     ; Load pointers into registers...
     MOV     r12,r0            ; save QXK_attr_.next in r12
-    LDR     r2,[r0,#QMACTIVE_THREAD] ; r2 := QXK_attr_.next->thread
+    LDR     r2,[r0,#QMACTIVE_OSOBJ] ; r2 := QXK_attr_.next->osObject
     LDR     r1,[r3,#QXK_CURR] ; r1 := QXK_attr_.curr
 
     CMP     r1,#0             ; (QXK_attr_.curr != 0)?
     BNE     PendSV_save_ex    ; branch if (current thread is extended)
 
-    CMP     r2,#0             ; (QXK_attr_.next->thread != 0)?
+    CMP     r2,#0             ; (QXK_attr_.next->osObject != 0)?
     BNE     PendSV_save_ao    ; branch if (next tread is extended)
 
 PendSV_activate
@@ -212,16 +215,16 @@ PendSV_activate
     ; The QXK activator must be called in a thread context, while this code
     ; executes in the handler contex of the PendSV exception. The switch
     ; to the Thread mode is accomplished by returning from PendSV using
-    ; a fabricated exception stack frame, where the return address is the
-    ; QXK activator QXK_activate_().
+    ; a fabricated exception stack frame, where the return address is
+    ; QXK_activate_().
     ;
     ; NOTE: the QXK activator is called with interrupts DISABLED and also
     ; it returns with interrupts DISABLED.
     MOVS    r3,#1
-    LSLS    r3,r3,#24         ; r3:=(1 << 24), set the T bit  (new xpsr)
+    LSLS    r3,r3,#24         ; r3 := (1 << 24), set the T bit  (new xpsr)
     LDR     r2,=QXK_activate_ ; address of QXK_activate_
     SUBS    r2,r2,#1          ; align Thumb-address at halfword (new pc)
-    LDR     r1,=Thread_ret    ; return address after the call (new lr)
+    LDR     r1,=Thread_ret    ; return address after the call   (new lr)
 
     SUB     sp,sp,#8*4        ; reserve space for exception stack frame
     ADD     r0,sp,#5*4        ; r0 := 5 registers below the top of stack
@@ -241,7 +244,7 @@ PendSV_error
     ; expected register contents:
     ; r0  -> QXK_attr_.next
     ; r1  -> QXK_attr_.curr
-    ; r2  -> QXK_attr_.next->thread (SP)
+    ; r2  -> QXK_attr_.next->osObject (SP)
     ; r3  -> &QXK_attr_
     ; r12 -> QXK_attr_.next
 PendSV_save_ao
@@ -264,14 +267,14 @@ PendSV_save_ao
   ENDIF                       ; M3/M4/M7
 
     CMP     r2,#0
-    BNE     PendSV_restore_ex ; branch if (QXK_attr_.next->thread != 0)
+    BNE     PendSV_restore_ex ; branch if (QXK_attr_.next->osObject != 0)
     ; otherwise continue to restoring next AO-thread...
 
     ;-------------------------------------------------------------------------
     ; Restoring AO-thread after crossing from eXtended-thread
     ; expected register contents:
     ; r1  -> QXK_attr_.curr
-    ; r2  -> QXK_attr_.next->thread (SP)
+    ; r2  -> QXK_attr_.next->osObject (SP)
     ; r3  -> &QXK_attr_
     ; r12 -> QXK_attr_.next
 PendSV_restore_ao
@@ -326,7 +329,7 @@ PendSV_restore_ao
     ; expected register contents:
     ; r0  -> QXK_attr_.next
     ; r1  -> QXK_attr_.curr
-    ; r2  -> QXK_attr_.next->thread (SP)
+    ; r2  -> QXK_attr_.next->osObject (SP)
     ; r3  -> &QXK_attr_
     ; r12 -> QXK_attr_.next
 PendSV_save_ex
@@ -344,6 +347,7 @@ PendSV_save_ex
 
     LDR     r1,[r3,#QXK_CURR] ; r1 := QXK_attr_.curr (restore value)
   ELSE                        ; M3/M4/M7
+    ISB                       ; reset pipeline after fetching PSP
     STMDB   r0!,{r4-r11}      ; save r4-r11 on top of the exception frame
   IF {TARGET_FPU_VFP} == {TRUE} ; if VFP available...
     TST     lr,#(1 << 4)      ; is it return with the VFP exception frame?
@@ -354,11 +358,11 @@ PendSV_save_ex
   ENDIF                       ; M3/M4/M7
 
     ; store the SP of the current extended-thread
-    STR     r0,[r1,#QMACTIVE_THREAD] ; QXK_attr_.curr->thread := r0
+    STR     r0,[r1,#QMACTIVE_OSOBJ] ; QXK_attr_.curr->osObject := r0
     MOV     r0,r12            ; QXK_attr_.next (restore value)
 
     CMP     r2,#0
-    BEQ     PendSV_restore_ao ; branch if (QXK_attr_.next->thread == 0)
+    BEQ     PendSV_restore_ao ; branch if (QXK_attr_.next->osObject == 0)
     ; otherwise continue to restoring next extended-thread...
 
     ;-------------------------------------------------------------------------
@@ -366,7 +370,7 @@ PendSV_save_ex
     ; expected register contents:
     ; r0  -> QXK_attr_.next
     ; r1  -> QXK_attr_.curr
-    ; r2  -> QXK_attr_.next->thread (SP)
+    ; r2  -> QXK_attr_.next->osObject (SP)
     ; r3  -> &QXK_attr_
     ; r12 -> QXK_attr_.next
 PendSV_restore_ex
@@ -421,6 +425,8 @@ Thread_ret FUNCTION
     ; thread. However, this must be accomplished by a return-from-exception,
     ; while we are still in the thread context. The switch to the exception
     ; contex is accomplished by triggering the NMI exception.
+    ; NOTE: The NMI exception is triggered with nterrupts DISABLED,
+    ; because QK activator disables interrutps before return.
 
     ; before triggering the NMI exception, make sure that the
     ; VFP stack frame will NOT be used...
@@ -428,6 +434,7 @@ Thread_ret FUNCTION
     MRS     r0,CONTROL        ; r0 := CONTROL
     BICS    r0,r0,#4          ; r0 := r0 & ~4 (FPCA bit)
     MSR     CONTROL,r0        ; CONTROL := r0 (clear CONTROL[2] FPCA bit)
+    ISB                       ; ISB after MSR CONTROL (ARM AN 321, Sect.4.16)
   ENDIF                       ; VFP available
 
     ; trigger NMI to return to preempted task...
@@ -490,7 +497,7 @@ QXK_stackInit_ FUNCTION
     ; r3 - size of stack [bytes]
 
     MOV     r12,r0            ; temporarily save r0 in r12 (act)
-    STR     r1,[r0,#QMACTIVE_THREAD] ; temporarily save the thread routine
+    STR     r1,[r0,#QMACTIVE_OSOBJ] ; temporarily save the thread routine
     ADDS    r3,r2,r3          ; r3 := end of stack (top of stack)
 
     ; round up the beginning of stack to the 8-byte boundary
@@ -521,9 +528,9 @@ QXK_stackInit_fill
 
     ; prepare the standard exception (without VFP) stack frame................
     MOV     r0,r12            ; restore r0 from r12 (act)
-    LDR     r1,[r0,#QMACTIVE_THREAD] ; restore the thread routine
+    LDR     r1,[r0,#QMACTIVE_OSOBJ] ; restore the thread routine
 
-    STR     r3,[r0,#QMACTIVE_THREAD] ; act->thread := top of stack
+    STR     r3,[r0,#QMACTIVE_OSOBJ] ; act->osObject := top of stack
 
   IF {TARGET_FPU_VFP} == {TRUE} ; if VFP available...
     MOVS    r2,#0

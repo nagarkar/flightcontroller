@@ -53,7 +53,7 @@ void Log::DeleteQPInterface() {
     QF_CRIT_EXIT(crit);
 }
 
-void Log::Write(char const *buf, uint32_t len, bool useQPInterface) {
+bool Log::Write(char const *buf, uint32_t len, bool useQPInterface) {
     if (m_fifo && useQPInterface) {
         bool status1 = false;
         bool status2 = false;
@@ -63,15 +63,17 @@ void Log::Write(char const *buf, uint32_t len, bool useQPInterface) {
         if (!m_fifo->IsTruncated()) {
             m_fifo->WriteNoCrit(reinterpret_cast<uint8_t const *>(buf), len, &status2);
         }
-        // Post MUST be outside critical section.
+        return status1 || status2;
+        /*
         if (status1 || status2) {
             Q_ASSERT(m_writeSuccessSig);
             Evt *evt = new Evt(m_writeSuccessSig);
             QF::PUBLISH(evt, NULL);
         }
+        */
     } else {
-        // TODO remove. Test only - write to BSP usart directly.
         BSP_XMIT_ON_DEFAULT_UART(buf, len);
+        return false;
     }
 }
 
@@ -82,7 +84,13 @@ uint32_t Log::Print(char const *format, ...) {
     uint32_t len = vsnprintf(printbuf, sizeof(printbuf), format, arg);
     va_end(arg);
     len = LESS(len, sizeof(printbuf) - 1);
+#ifdef Q_SPY
+    QS_BEGIN(ACTIVE_LOGGER, &DUMMY_LOG)
+        QS_STR(printbuf);
+    QS_END()
+#else
     Write(printbuf, len, true);
+#endif
     return len;
 }
 void Log::ToggleEventLogging() {
@@ -98,7 +106,13 @@ void Log::Event(char const *name, char const *func, QP::QEvt const *e, bool useQ
     uint32_t len = snprintf(buf, BUF_LEN, "[%lu] %s (%s): %s(%d)\n\r", BSP_GET_SYSTEM_MS, name, func, SignalArray[e->sig], e->sig);
     len = LESS(len, (BUF_LEN - 1));
     buf[len] = 0;
+#ifdef Q_SPY
+    QS_BEGIN(ACTIVE_LOGGER, &DUMMY_LOG)
+        QS_STR(buf);
+    QS_END()
+#else
     Write(buf, len, useQPInterface);
+#endif
 }
 
 void Log::Debug(char const *name, char const *func, char const *format, ...) {
@@ -116,10 +130,18 @@ void Log::Debug(char const *name, char const *func, char const *format, ...) {
         len = LESS(len, MAX_LEN - 1);
     }
     Q_ASSERT(len <= (sizeof(buf) - 3));
+#ifndef Q_SPY
     buf[len++] = '\n';
     buf[len++] = '\r';
+#endif
     buf[len] = 0;
+#ifdef Q_SPY
+    QS_BEGIN(ACTIVE_LOGGER, &DUMMY_LOG)
+        QS_STR(buf);
+    QS_END()
+#else
     Write(buf, len);
+#endif
 }
 
 } // namespace

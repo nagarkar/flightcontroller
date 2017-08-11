@@ -1,7 +1,7 @@
 ///***************************************************************************
 // Product: DPP example, EK-TM4C123GXL board, uC/OS-II kernel
-// Last updated for version 5.8.0
-// Last updated on  2016-11-30
+// Last updated for version 5.9.5
+// Last updated on  2017-07-20
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
@@ -28,7 +28,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 // Contact information:
-// http://www.state-machine.com
+// https://state-machine.com
 // mailto:info@state-machine.com
 //****************************************************************************
 #include "qpcpp.h"
@@ -41,10 +41,10 @@
 #include "gpio.h"                // GPIO driver (TI)
 // add other drivers if necessary...
 
+Q_DEFINE_THIS_FILE
+
 // namespace DPP *************************************************************
 namespace DPP {
-
-Q_DEFINE_THIS_FILE
 
 // Local-scope objects -------------------------------------------------------
 #define LED_RED     (1U << 1)
@@ -391,9 +391,13 @@ void QS::onReset(void) {
 }
 //............................................................................
 //! callback function to execute a user command (to be implemented in BSP)
-void QS::onCommand(uint8_t cmdId, uint32_t param) {
+void QS::onCommand(uint8_t cmdId, uint32_t param1,
+                   uint32_t param2, uint32_t param3)
+{
     (void)cmdId;
-    (void)param;
+    (void)param1;
+    (void)param2;
+    (void)param3;
     //TBD
 }
 #endif // Q_SPY
